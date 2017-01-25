@@ -94,10 +94,11 @@ function split_Callback(hObject, eventdata, handles)
 % hObject    handle to split (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+SplitHalf;
 
 % --- Executes on button press in ICC.
 function ICC_Callback(hObject, eventdata, handles)
 % hObject    handle to ICC (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+ICC;
