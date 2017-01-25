@@ -247,26 +247,16 @@ for i = 1:runs
     cd (dir_results);
     
     
+    
     disp('...moves 4D files to results folder...');
     % move files
     for k = 1:runs
-        img_name = sprintf('%d_%s',k,name);
-        file1 = sprintf('M:\\SeSyN\\019\\BMBF_itech\\Juliane\\niftii\\%06d\\stats_%d_maskfix\\%s.nii',vp(1),k,img_name);
-        file2 = sprintf('M:\\SeSyN\\019\\BMBF_itech\\Juliane\\niftii\\%06d\\stats_%d_maskfix\\%s.mat',vp(1),k,img_name);
+        txt1=sprintf('choose 4D.nii run %d (statistics dir first subject)',k);
+        txt2=sprintf('choose 4D.mat run %d (statistics dir first subject)',k);
+        file1 = spm_select(1,'nii',txt1);
+        file2 = spm_select(1,'mat',txt2);
         movefile (file1,dir_results,'f');
         movefile (file2,dir_results,'f');
-       
-        if k == 1
-            img_name = sprintf('%d_%s.nii',k,name);
-            first_4d = load_nii (img_name);
-        elseif k == 2
-            img_name = sprintf('%d_%s.nii',k,name);
-            second_4d = load_nii (img_name);
-        elseif k == 3
-            img_name = sprintf('%d_%s.nii',k,name);
-            third_4d = load_nii (img_name);
-        end;
-
     end;
     disp('...DONE');
     
