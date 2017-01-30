@@ -6,19 +6,11 @@ cd(dir_results);
 runs = 3;
 nr_subj=126;
 for i = 1:runs
-    if i == 1
-        img_1 = load_nii(sprintf('%d_fourNEU.nii',i));
-        img_1 = img_1.img;
-        img_1 (~img_1) = nan;
-    elseif i == 2
-        img_2 = load_nii(sprintf('%d_fourNEU.nii',i));
-        img_2 = img_2.img;
-        img_2 (~img_2) = nan;
-    elseif i == 3
-        img_3 = load_nii(sprintf('%d_fourNEU.nii',i));
-        img_3 = img_3.img;
-        img_3 (~img_3) = nan;
-    end;
+    img = load_nii(sprintf('%d_fourNEU.nii',i));
+    evalstr = sprintf('img_%d = img;',i);
+    eval(evalstr);
+    evalstr = sprintf('img_%d = img_%d.img;',i,i);
+    eval(evalstr);
 end;
     
 temp_img = 'M:\SeSyN\019\Juliane\Toolbox\results_gui\con_0003.nii';
@@ -28,121 +20,101 @@ dim = size(temp_img.img);
     y = dim(2);
     z = dim(3);
 
-if runs > 1
-    
+data=zeros(nr_subj,runs);
+ICC_con=zeros(x,y,z);
+ICC_abs=zeros(x,y,z);
+
+disp('calculating ICCs')
     for ind_x = 1:x
         for ind_y = 1:y
-            for ind_z = 1:z
-                for ind_subj = 1:nr_subj
-                    img1_voxel(ind_subj,1) = img_1 (ind_x, ind_y, ind_z, ind_subj);
-                    img2_voxel(ind_subj,1) = img_2 (ind_x, ind_y, ind_z, ind_subj);                
-                end;              
-                %ICC
-                if all(~isnan(img1_voxel)) || all(~isnan(img2_voxel))
-                    %create data table for ANOVA
-                    t = table(img1_voxel, img2_voxel,'VariableNames',{'t1','t2'});
-                    %create within-subject variable
-                    Time = [1 2];
-                    %fit model
-                    rm = fitrm(t,'t1-t2~1','WithinDesign',Time);
-                    %run ANOVA
-                    ranovatbl = ranova(rm);
-                    %calculate ICC
-                        within = ranovatbl.MeanSq(1);
-                        between = ranovatbl.MeanSq(2);
-                        ICC = within./(sum(between+within)); 
-                else 
-                    ICC = 0;
+           for ind_z = 1:z
+                for ind_run = 1:runs
+                    for ind_subj = 1:nr_subj
+                       estr = sprintf('img%d_voxel(ind_subj,1)= img_%d (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run);
+                       eval(estr);
+                    end;
+                    estr = sprintf('data(:,ind_run)=img%d_voxel;',ind_run);
+                    eval(estr);
                 end;
-                
-                %matrix with ICC value for each voxel
-                ICC_1_2(ind_x, ind_y, ind_z) = ICC;
-                                
-            end;
+                    %ICC
+                    nsamples=nr_subj*runs;
+
+                    grandmean=0;
+                    for sub=1:nr_subj,     
+                        for sess=1:runs,
+                           grandmean= grandmean + data(sub,sess);
+                        end
+
+                    end;
+                    grandmean=grandmean./nsamples;
+
+                    sessionmean=zeros(runs,1);
+                    for sess=1:runs
+                        for sub=1:nr_subj,  
+                            sessionmean(sess) = sessionmean(sess) + data(sub,sess);
+                        end
+                        sessionmean(sess)=sessionmean(sess)./nr_subj;
+                    end
+
+                    subjmean=zeros(nr_subj,1);
+                    for sub=1:nr_subj
+                        for sess=1:runs
+                            subjmean(sub)=subjmean(sub) + data(sub,sess);
+                        end
+                          subjmean(sub)=subjmean(sub)./runs;
+                    end
+
+                    % mean squares
+                    BMS=0; % between subject
+                    WMS=0; % within subject 
+                    EMS=0; % error
+                    JMS=0; % session
+                    
+                    for sub=1:nr_subj,    
+                        BMS = BMS + (subjmean(sub)-grandmean).^2;
+                        for sess=1:runs
+                            WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
+                            EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                        end
+                    end;
+
+                    for sess=1:runs
+                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+                    end;
+
+                    %define the true value of the mean square.
+                    BMS= runs.*BMS./(nr_subj-1);
+                    WMS= WMS./(runs-1)./nr_subj;
+                    JMS= nr_subj.*JMS./(runs-1);
+                    EMS= EMS./(runs-1)./(nr_subj-1); 
+
+                    %consistency agreement  
+                    voxICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS); 
+
+                    %absolute agreement 
+                    voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+                                                       runs.* (JMS-EMS)./nr_subj);
+                                                   
+                    ICC_con(ind_x, ind_y, ind_z) = voxICC_con;
+                    ICC_abs(ind_x, ind_y, ind_z) = voxICC_abs;
+           end; 
         end;
-    end;
-end;
-
-% save ICC map
-target_img = temp_img;
-target_img.fileprefix = 'ICC_1_2.nii';
-target_img.img = ICC_1_2;
-save_nii(target_img,target_img.fileprefix);
-
-if runs >2
-
-for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                   for ind_subj = 1:nr_subj
-                    img2_voxel(ind_subj,1) = img_2 (ind_x, ind_y, ind_z, ind_subj);
-                    img3_voxel(ind_subj,1) = img_3 (ind_x, ind_y, ind_z, ind_subj);                
-                end;              
-                %ICC
-                if all(~isnan(img2_voxel)) || all(~isnan(img3_voxel))
-                    %create data table for ANOVA
-                    t = table(img2_voxel, img3_voxel,'VariableNames',{'t1','t2'});
-                    %create within-subject variable
-                    Time = [1 2];
-                    %fit model
-                    rm = fitrm(t,'t1-t2~1','WithinDesign',Time);
-                    %run ANOVA
-                    ranovatbl = ranova(rm);
-                    %calculate ICC
-                        within = ranovatbl.MeanSq(1);
-                        between = ranovatbl.MeanSq(2);
-                        ICC = within./(sum(between+within)); 
-                else 
-                    ICC = 0;
-                end;
-                
-                %matrix with ICC value for each voxel
-                ICC_2_3(ind_x, ind_y, ind_z) = ICC;
-                          
-            end;
-        end;
-    end;
- % save ICC map
-target_img = temp_img;
-target_img.fileprefix = 'ICC_2_3.nii';
-target_img.img = ICC_2_3;
-save_nii(target_img,target_img.fileprefix);   
+     end;
     
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                   for ind_subj = 1:nr_subj
-                    img1_voxel(ind_subj,1) = img_1 (ind_x, ind_y, ind_z, ind_subj);
-                    img3_voxel(ind_subj,1) = img_3 (ind_x, ind_y, ind_z, ind_subj);                
-                end;              
-                %ICC
-                if all(~isnan(img1_voxel)) || all(~isnan(img3_voxel))
-                    %create data table for ANOVA
-                    t = table(img1_voxel, img3_voxel,'VariableNames',{'t1','t2'});
-                    %create within-subject variable
-                    Time = [1 2];
-                    %fit model
-                    rm = fitrm(t,'t1-t2~1','WithinDesign',Time);
-                    %run ANOVA
-                    ranovatbl = ranova(rm);
-                    %calculate ICC
-                        within = ranovatbl.MeanSq(1);
-                        between = ranovatbl.MeanSq(2);
-                        ICC = within./(sum(between+within)); 
-                else 
-                    ICC = 0;
-                end;
-                
-                %matrix with ICC value for each voxel
-                ICC_1_3(ind_x, ind_y, ind_z) = ICC;
-                          
-                                
-            end;
-        end;
-    end;
-% save ICC map
+
+
+    
+disp('saving ICC images')
+ % save ICC maps
 target_img = temp_img;
-target_img.fileprefix = 'ICC_1_3.nii';
-target_img.img = ICC_1_3;
-save_nii(target_img,target_img.fileprefix);
-end;
+target_img.fileprefix = 'ICC_con.nii';
+target_img.img = ICC_con;
+save_nii(target_img,target_img.fileprefix); 
+
+clear target_img;
+target_img = temp_img;
+target_img.fileprefix = 'ICC_abs.nii';
+target_img.img = ICC_abs;
+save_nii(target_img,target_img.fileprefix); 
+    
+disp('finished ICCs')
