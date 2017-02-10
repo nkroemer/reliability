@@ -22,7 +22,7 @@ function varargout = Reliabilitool(varargin)
 
 % Edit the above text to modify the response to help Reliabilitool
 
-% Last Modified by GUIDE v2.5 05-Jan-2017 17:04:56
+% Last Modified by GUIDE v2.5 10-Feb-2017 11:21:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -73,12 +73,12 @@ function varargout = Reliabilitool_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on button press in FourD.
-function FourD_Callback(hObject, eventdata, handles)
-% hObject    handle to FourD (see GCBO)
+% --- Executes on button press in specify.
+function specify_Callback(hObject, eventdata, handles)
+% hObject    handle to specify (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-FourD;
+design;
 
 
 % --- Executes on button press in CorrMaps.
@@ -96,9 +96,31 @@ function split_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 SplitHalf;
 
-% --- Executes on button press in ICC.
-function ICC_Callback(hObject, eventdata, handles)
-% hObject    handle to ICC (see GCBO)
+% --- Executes on button press in ICC_vox.
+function ICC_vox_Callback(hObject, eventdata, handles)
+% hObject    handle to ICC_vox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-ICC;
+ICC_vox;
+
+% --- Executes on button press in dice_vox.
+function dice_vox_Callback(hObject, eventdata, handles)
+% hObject    handle to dice_vox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Overlap;
+
+% --- Executes on button press in ICC_ROI.
+function ICC_ROI_Callback(hObject, eventdata, handles)
+% hObject    handle to ICC_ROI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+ICC_roi;
+
+
+% --- Executes on button press in dice_ROI.
+function dice_ROI_Callback(hObject, eventdata, handles)
+% hObject    handle to dice_ROI (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Overlap_ROI;
