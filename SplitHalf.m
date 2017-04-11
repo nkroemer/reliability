@@ -22,7 +22,7 @@ function varargout = SplitHalf(varargin)
 
 % Edit the above text to modify the response to help SplitHalf
 
-% Last Modified by GUIDE v2.5 07-Feb-2017 09:20:39
+% Last Modified by GUIDE v2.5 10-Apr-2017 15:48:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,9 +77,12 @@ function design_Callback(hObject, eventdata, handles)
 % hObject    handle to design (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-study_design = cellstr(spm_select(1,'mat','load study design'));
-load(study_design{1});
+disp('starting creation of SplitHalf statistics');
+
+name_study_design = cellstr(spm_select(1,'mat','load study design'));
+load(name_study_design{1});
 assignin('base','study_design',study_design);
+assignin('base','name_study_design',name_study_design);
 
 function nr_con_Callback(hObject, eventdata, handles)
 % hObject    handle to nr_subj (see GCBO)
@@ -108,6 +111,26 @@ function par_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of par
+function split_name_Callback(hObject, eventdata, handles)
+% hObject    handle to split_name (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of split_name as text
+%        str2double(get(hObject,'String')) returns contents of split_name as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function split_name_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to split_name (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 
 % --- Executes on button press in run.
@@ -115,27 +138,33 @@ function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-oldpointer = get(handles.figure1, 'pointer'); 
-set(handles.figure1, 'pointer', 'watch') 
-drawnow;
+
 cwd=pwd;
+
+%% set parameters
+
+% get study design info
 study_design=evalin('base','study_design');
+name_study_design=evalin('base','name_study_design');
 subjects = study_design.subject_list;
 load(subjects);
 n = str2double(study_design.number_subjects);
-con = str2double(get(handles.nr_con,'String'));
-par = get(handles.par,'value');
 stats_path = study_design.stats_path;
 runs = str2double(study_design.number_sessions);
 stats_dir = study_design.stats_directory;
 
-% create list with SPM.mat files
-SPM_list = cell(n,runs);
+% get GUI input
+con_vec = str2num(get(handles.nr_con,'String'));
+split_name = get(handles.split_name,'String');
 
+%% create list with SPM.mat files
+
+SPM_list = cell(n,runs);
+disp('...create list with all SPM.mat files...')
 for j = 1:runs
     for i = 1:n
         cd(stats_path);
-        cd(sprintf('%d',vp(i)));
+        cd(sprintf('%s',vp{i}));
         cd(sprintf(stats_dir,j));
 
         if exist('SPM.mat','file')==2
@@ -143,123 +172,281 @@ for j = 1:runs
             path=sprintf('%s\\SPM.mat',path);
             SPM_list{i,j}=path;
         end;
-
     end; 
 end;
 
+%% add study design info
 % info split directory in study_design
-split_dir = sprintf('%s_split',stats_dir);
+split_dir = sprintf('%s_split_half',stats_dir);
 study_design.split_directory=split_dir;
 
 % info number parametric modulators in study_design
 dir_spm = SPM_list{1};
 load(dir_spm);
-nr_para = size(SPM.Sess.U(con).P,2);
-if strcmp(SPM.Sess.U(con).P(1).name,'none')
+con = con_vec(1,1);
+if strcmp(SPM.Sess(1).U(con).P(1).name,'none')
     study_design.number_parametric = 0;
+    nr_para = 0;
 else
-study_design.number_parametric = nr_para;
+    nr_para = size(SPM.Sess(1).U(con).P,2);
+    study_design.number_parametric = nr_para;
 end;
+
+name=name_study_design{1};
+save(name,'study_design');
+
+
+%% loads and modifies SPM for each participant
 
 for m = 1:runs
     for count = 1:n
-    %%---loads and modifies SPM for each participant
+        fprintf('...load and modify SPM.mat for %s in session %d...',vp{count},m)
         dir_spm = SPM_list{count,m};
         load(dir_spm);
-
-        %split onsets
-        onsets = SPM.Sess.U(con).ons;
-        rng('shuffle');
-        pos = randperm(length(onsets))';
-        onsets1 = onsets(pos(1:end/2));
-        onsets2 = onsets(pos(end/2:end));
-
-        %split parametric value
-        if par==0
-            if nr_para == 1
-                mod = SPM.Sess.U(con).P.P;
-                mod1 = mod(pos(1:end/2));
-                mod2 = mod(pos(end/2:end));
-            end;
-            if nr_para > 1
-                for k = 1:nr_para
-                evalstr=sprintf('mod%d = SPM.Sess.U(con).P(k).P',k);
-                eval(evalstr);
-                evalstr1=sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k);
-                eval(evalstr1);
-                evalstr2=sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k);
-                eval(evalstr2);
+        U_temp=[];
+        % create vector for session number (SPM.Sess(nr))
+        sess_length = length(SPM.Sess);
+        U_length = length(SPM.Sess(1).U);
+        sess_nr = zeros(1,length(con_vec));
+        if sess_length > 1
+            for ind_contrast = 1:length(con_vec)
+                con = con_vec(1,ind_contrast);
+                for sess_ind = 1:sess_length
+                        if con > (sess_ind.*U_length)-U_length && con <= sess_ind.*U_length
+                            sess_nr(1,ind_contrast) = sess_ind;
+                        end;
                 end;
             end;
-        end;
+            for ind_con = 1:length(con_vec)
 
-        %create new conditions 
-        U(1).name{1} = 'half1';
-        U(1).ons = onsets1;
-        U(1).dur = zeros(length(onsets1),1);
-        U(1).orth = 1;
-        U(1).dt = SPM.Sess.U(con).dt;
-        U(1).u = SPM.Sess.U(con).u;
-        U(1).pst = SPM.Sess.U(con).pst;    
+                sess_count = sess_nr(1,ind_con);
+                if sess_count == 1
+                    con = con_vec(1,ind_con);
+                else
+                    con = con_vec(1,ind_con)-((sess_count-1).*U_length);
+                end;
 
-        U(2).name{1} = 'half2';
-        U(2).ons = onsets2;
-        U(2).dur = zeros(length(onsets2),1);
-        U(2).orth = 1;    
-        U(2).dt = SPM.Sess.U(con).dt;
-        U(2).u = SPM.Sess.U(con).u;
-        U(2).pst = SPM.Sess.U(con).pst;
+                %split onsets
+                onsets = SPM.Sess(sess_count).U(con).ons;
+                rng('shuffle');
+                pos = randperm(length(onsets))';
+                onsets1 = onsets(pos(1:end/2));
+                onsets2 = onsets(pos(end/2:end));
 
-        if par==0 && nr_para==1
-            U(1).P.name = 'value';
-            U(1).P.P = mod1;
-            U(1).P.h = 1;
-            U(1).P.i = [1,2];
-            U(2).P.name = 'value';
-            U(2).P.P = mod2;
-            U(2).P.h = 1;
-            U(2).P.i = [1,2];
-        elseif par==0 && nr_para>1
-            for l = 1:nr_para
-                U(1).P(l).name = 'value';
-                evalstr= sprintf('U(1).P(l).P = mod%d_1',l);
-                eval(evalstr);
-                U(1).P(l).h = 1;
-                U(1).P(l).i = [1,l+1];
-                U(2).P(l).name = 'value';
-                evalstr= sprintf('U(2).P(l).P = mod%d_2',l);
-                eval(evalstr);           
-                U(2).P(l).h = 1;
-                U(2).P(l).i = [1,l+1];
+                %split parametric value
+                if nr_para == 1
+                    mod = SPM.Sess(sess_count).U(con).P.P;
+                    mod1 = mod(pos(1:end/2));
+                    mod2 = mod(pos(end/2:end));
+                end;
+                if nr_para > 1
+                    for k = 1:nr_para
+                    eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P',k));
+                    eval(sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k));
+                    eval(sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k));
+                    end;
+                end;
+
+                %create new conditions 
+                name = SPM.Sess(sess_count).U(con).name{1};
+                U(1).name{1} = sprintf('half1_%s',name);
+                U(1).ons = onsets1;
+                U(1).dur = zeros(length(onsets1),1);
+                if isfield(SPM.Sess(sess_count).U(con),'orth')
+                    U(1).orth = SPM.Sess(sess_count).U(con).orth;
+                end;
+                if nr_para==1
+                    U(1).P.name = 'par_value_1';
+                    U(1).P.P = mod1;
+                    U(1).P.h = 1;
+                    U(1).P.i = [1,2];
+                    U(2).P.name = 'par_value_2';
+                    U(2).P.P = mod2;
+                    U(2).P.h = 1;
+                    U(2).P.i = [1,2];
+                elseif nr_para>1
+                    for l = 1:nr_para
+                        U(1).P(l).name = sprintf('par_value_1_%d',l);
+                        eval(sprintf('U(1).P(l).P = mod%d_1',l));
+                        eval(evalstr);
+                        U(1).P(l).h = 1;
+                        U(1).P(l).i = [1,l+1];
+                        U(2).P(l).name = sprintf('par_value_2_%d',l);
+                        eval(sprintf('U(2).P(l).P = mod%d_2',l));
+                        U(2).P(l).h = 1;
+                        U(2).P(l).i = [1,l+1];
+                    end;
+                else
+                    U(1).P.name = 'none';
+                    U(1).P.h = 0;
+                    U(1).P.i = 1;
+                    U(2).P.name = 'none';
+                    U(2).P.h = 0;
+                    U(2).P.i = 1;
+                end;
+                U(1).dt = SPM.Sess(sess_count).U(con).dt;
+                U(1).u = SPM.Sess(sess_count).U(con).u;
+                U(1).pst = SPM.Sess(sess_count).U(con).pst;    
+
+                U(2).name{1} = sprintf('half2_%s',name);
+                U(2).ons = onsets2;
+                U(2).dur = zeros(length(onsets2),1);
+                if isfield(SPM.Sess(sess_count).U(con),'orth')
+                    U(2).orth = SPM.Sess(sess_count).U(con).orth;
+                end;
+                U(2).dt = SPM.Sess(sess_count).U(con).dt;
+                U(2).u = SPM.Sess(sess_count).U(con).u;
+                U(2).pst = SPM.Sess(sess_count).U(con).pst;
+
+
+
+
+                Sess(sess_count).U(1:con-1) = SPM.Sess(sess_count).U(1:con-1);
+                U_rest = SPM.Sess(sess_count).U(con+1:end);
+                Sess(sess_count).U(con) = U(1);
+                Sess(sess_count).U(con+1) = U(2);
+                Sess(sess_count).U(end+1:(end+length(U_rest))) = U_rest;
+
+
+                U = [];
             end;
-        else    
-            U(1).P.name = 'none';
-            U(1).P.h = 0;
-            U(1).P.i = 1;
-            U(2).P.name = 'none';
-            U(2).P.h = 0;
-            U(2).P.i = 1;
+            for sess_count = 1:sess_length
+                SPM.Sess(sess_count).U = Sess(sess_count).U;
+            end;
+        else
+            for ind_con = 1:length(con_vec)
+                con = con_vec(1,ind_con);
+                sess_count = 1;
+                
+                %split onsets
+                onsets = SPM.Sess(sess_count).U(con).ons;
+                rng('shuffle');
+                pos = randperm(length(onsets))';
+                onsets1 = onsets(pos(1:end/2));
+                onsets2 = onsets(pos(end/2:end));
+
+                %split parametric value
+                if nr_para == 1
+                    mod = SPM.Sess(sess_count).U(con).P.P;
+                    mod1 = mod(pos(1:end/2));
+                    mod2 = mod(pos(end/2:end));
+                end;
+                if nr_para > 1
+                    for k = 1:nr_para
+                    eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P',k));
+                    eval(sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k));
+                    eval(sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k));
+                    end;
+                end;
+
+                %create new conditions 
+                name = SPM.Sess(sess_count).U(con).name{1};
+                U(1).name{1} = sprintf('half1_%s',name);
+                U(1).ons = onsets1;
+                U(1).dur = zeros(length(onsets1),1);
+                if isfield(SPM.Sess(sess_count).U(con),'orth')
+                    U(1).orth = SPM.Sess(sess_count).U(con).orth;
+                end;                
+                if nr_para==1
+                    U(1).P.name = 'par_value_1';
+                    U(1).P.P = mod1;
+                    U(1).P.h = 1;
+                    U(1).P.i = [1,2];
+                    U(2).P.name = 'par_value_2';
+                    U(2).P.P = mod2;
+                    U(2).P.h = 1;
+                    U(2).P.i = [1,2];
+                elseif nr_para>1
+                    for l = 1:nr_para
+                        U(1).P(l).name = sprintf('par_value_1_%d',l);
+                        eval(sprintf('U(1).P(l).P = mod%d_1',l));
+                        eval(evalstr);
+                        U(1).P(l).h = 1;
+                        U(1).P(l).i = [1,l+1];
+                        U(2).P(l).name = sprintf('par_value_2_%d',l);
+                        eval(sprintf('U(2).P(l).P = mod%d_2',l));
+                        U(2).P(l).h = 1;
+                        U(2).P(l).i = [1,l+1];
+                    end;
+                else
+                    U(1).P.name = 'none';
+                    U(1).P.h = 0;
+                    U(1).P.i = 1;
+                    U(2).P.name = 'none';
+                    U(2).P.h = 0;
+                    U(2).P.i = 1;
+                end;
+                U(1).dt = SPM.Sess(sess_count).U(con).dt;
+                U(1).u = SPM.Sess(sess_count).U(con).u;
+                U(1).pst = SPM.Sess(sess_count).U(con).pst;    
+
+                U(2).name{1} = sprintf('half2_%s',name);
+                U(2).ons = onsets2;
+                U(2).dur = zeros(length(onsets2),1);
+                if isfield(SPM.Sess(sess_count).U(con),'orth')
+                    U(2).orth = SPM.Sess(sess_count).U(con).orth;
+                end;
+                U(2).dt = SPM.Sess(sess_count).U(con).dt;
+                U(2).u = SPM.Sess(sess_count).U(con).u;
+                U(2).pst = SPM.Sess(sess_count).U(con).pst;
+
+                eval(sprintf('U_%d = U;',ind_con));    
+                U = [];
+            end;
+            for ind_con = 1:length(con_vec)
+                if ind_con == 1
+                    con = con_vec(1,ind_con);
+                    Sess(sess_count).U(1:con-1) = SPM.Sess(sess_count).U(1:con-1);
+                    eval(sprintf('Sess(sess_count).U(con) = U_%d(1);',ind_con));
+                    eval(sprintf('Sess(sess_count).U(con+1) = U_%d(2);',ind_con));
+                    if ind_con ~= length(con_vec)
+                        next_con = con_vec(1,ind_con+1);
+                        Sess(sess_count).U(con+2:next_con-1) = SPM.Sess(sess_count).U(con+1:next_con-1);
+                    else
+                        U_rest = SPM.Sess(sess_count).U(con+1:end);
+                        if length(U_rest) ~= 0
+                        Sess(sess_count).U(end+1:(end+length(U_rest))) = U_rest;
+                        end;
+                    end;                       
+                else
+                    con = con_vec(1,ind_con);
+                    eval(sprintf('Sess(sess_count).U(end+1) = U_%d(1);',ind_con));
+                    eval(sprintf('Sess(sess_count).U(end+1) = U_%d(2);',ind_con));
+                    if ind_con ~= length(con_vec)
+                        next_con = con_vec(1,ind_con+1);
+                        rest = SPM.Sess(sess_count).U(con+1:next_con-1);
+                        Sess(sess_count).U(end+1:end+length(rest)) = rest;
+                    else
+                        U_rest = SPM.Sess(sess_count).U(con+1:end);
+                        Sess(sess_count).U(end+1:end+length(U_rest)) = U_rest;
+                    end;
+                end;
+            end;
+            for sess_count = 1:sess_length
+                SPM.Sess(sess_count).U = Sess(sess_count).U;
+            end;
         end;
 
-        SPM.Sess.U = U;   
-
+            
         %new stats folder
         cd(stats_path);
-        cd(sprintf('%d',vp(count)));
+        cd(sprintf('%s',vp{count}));
         newstats_dir = sprintf(stats_dir,m); 
-        new_dir = sprintf('%s_split',newstats_dir);
-        if ~isdir(new_dir)
+        new_dir = sprintf('%s_split_%s',newstats_dir,split_name);
+        %if ~isdir(new_dir)
         mkdir(new_dir)
-        dir_results = sprintf('%s\\%d\\%s',stats_path,vp(count),new_dir);
+        dir_results = sprintf('%s\\%s\\%s',stats_path,vp{count},new_dir);
         SPM.swd = dir_results;
         evalstr = sprintf('save %s\\SPM.mat SPM',dir_results);
         eval(evalstr);
 
-        %estimation of GLM
+        %% estimation of GLM
         cd(dir_results);
 
-        %% part of spm_fMRI_design
-            %-Construct Design matrix {X}
+        %--->part of spm_fMRI_design
+        fprintf('...do statistics for %s in session %d...',vp{count},m);
+
+        %-Construct Design matrix {X}
         %-Microtime onset and microtime resolution
         try
             fMRI_T     = SPM.xBF.T;
@@ -329,7 +516,6 @@ for m = 1:runs
             for i = 1:length(Bn)
                 Bname{end + 1} = [sprintf('Sn(%i) ',s) Bn{i}];
             end
-
         end
         %-Place design matrix structure in xX
         SPM.xX.X    = [Xx Xb];
@@ -340,7 +526,8 @@ for m = 1:runs
         SPM.xX.name = {Xname{:} Bname{:}};
 
         save SPM.mat SPM;
-        %% parts of spm_spm to estimate GLM
+        
+        %--->parts of spm_spm to estimate GLM
          SVNid = '$Rev: 6015 $';
         %-Say hello
         SPMid = spm('FnBanner',mfilename,SVNid);
@@ -690,106 +877,94 @@ for m = 1:runs
 
         % building contrasts 
         disp('...creating contrast images...')
-        if  par==0
-            cons = cell(1,2*nr_para+2);
-            for o = 1:2*nr_para+2
-            evalstr=sprintf('con%d=zeros(size(SPM.xX.xKXs.X,2),1);',o);
-            eval(evalstr);
-            evalstr1=sprintf('con%d(%d,1)=1;',o,o);
-            eval(evalstr1);
-            evalstr2=sprintf('cons{o}=con%d',o);
-            eval(evalstr2);
+        if  nr_para>0
+            cons = cell(1,(length(con_vec).*nr_para)+length(con_vec));
+            for o = 1:(length(con_vec)+nr_para)*2
+                eval(sprintf('con%d=zeros(size(SPM.xX.xKXs.X,2),1);',o));
+                eval(sprintf('con%d(%d,1)=1;',o,o));
+                eval(sprintf('cons{o}=con%d;',o));
             end;
         else
-            con1=zeros(size(SPM.xX.xKXs.X,2),1);
-            con1(1,1)=1;
-            con2=zeros(size(SPM.xX.xKXs.X,2),1);
-            con2(2,1)=1;
+            cons = {};
+            for ind_cons = 1:length(con_vec)
+                con = con_vec(1,ind_cons);
+                eval(sprintf('con%d_1=zeros(size(SPM.xX.xKXs.X,2),1);',ind_cons));
+                eval(sprintf('con%d_1(%d,1)=1;',ind_cons,con+ind_cons-1));
+                eval(sprintf('cons{end+1}=con%d_1;',ind_cons));
+                eval(sprintf('con%d_2=zeros(size(SPM.xX.xKXs.X,2),1);',ind_cons));
+                eval(sprintf('con%d_2(%d+1,1)=1;',ind_cons,con+ind_cons-1));
+                eval(sprintf('cons{end+1}=con%d_2;',ind_cons));
+            end;
         end;    
+        cons
 
-            if par == 0
-                nams = cell(1,2*nr_para+2);
-                nam1 = 'half1';
-                nams{1}=nam1;
-
+        for ind_con = 1:length(con_vec)
+            eval(sprintf('nams_%d = cell(1,2*(1+nr_para));',ind_con));
+            nam1 = sprintf('half1_reg%d',con_vec(ind_con));
+            eval(sprintf('nams_%d{1}=nam1;',ind_con));
+            nam2 = sprintf('half2_reg%d',con_vec(ind_con));
+            eval(sprintf('nams_%d{2}=nam2;',ind_con));
+            if nr_para > 0
                 for p = 2:nr_para+1
-                name1=sprintf('half1_value%d',p-1);
-                evalstr = sprintf('nam%d = name1;',p-1);
-                eval(evalstr);
-                evalstr4=sprintf('nams{p}=nam%d',p-1);
-                eval(evalstr4);
+                    name1=sprintf('half1_con%d_value%d',con_vec(ind_con),p-1);
+                    eval(sprintf('nams_%d{p}=name1',ind_con));
                 end;
-
                 for q = (nr_para+2):(2*nr_para+2)
                     if q == nr_para+2
-                        name2 = 'half2';
-                        evalstr3=sprintf('nam%d = name2',q);
-                        eval(evalstr3);
+                        name2 = sprintf('half2_con%d',con_vec(ind_con));
+                        eval(sprintf('nams_%d{q}=name2',ind_con));
                     else
-                        name3=sprintf('half2_value%d',q-(nr_para+1));
-                        evalstr = sprintf('nam%d = name3;',q-(nr_para+1));
-                        eval(evalstr);
+                        name3=sprintf('half2_con%d_value%d',con_vec(ind_con),q-(nr_para+1));
+                        eval(sprintf('nams_%d{q} = name3;',con_vec(ind_con)));
                     end;
-                    evalstr5=sprintf('nams{q}=nam%d',q-(nr_para+1));
-                    eval(evalstr5);
-                end;
 
-
-                DxCon=struct('name',nams,'STAT', 'T', 'c', cons,'X0','','iX0','c','X1o','','eidf','1','Vcon','','Vspm','');    
-                sX = SPM.xX.xKXs;
-                for r = 1:length(nams)
-                        Fc = spm_FcUtil('Set',nams{r}, 'T', 'c', cons{r}, sX);
-                        DxCon(1).X0 =Fc.X0;
-                        DxCon(1).X1o = Fc.X1o;
-                        clear Fc
-                end;
-            else
-                nam1 = 'half1';
-                nam2 = 'half2';
-                DxCon=struct('name',{nam1,nam2},'STAT', 'T', 'c', {con1,con2},'X0','','iX0','c','X1o','','eidf','1','Vcon','','Vspm','');    
-                sX = SPM.xX.xKXs;
-                for s = 1:2
-                    if s == 1
-                        Fc = spm_FcUtil('Set',nam1, 'T', 'c', con1, sX);
-                        DxCon(1).X0 =Fc.X0;
-                        DxCon(1).X1o = Fc.X1o;
-                        clear Fc
-                    elseif s == 2 
-                        Fc = spm_FcUtil('Set',nam2, 'T', 'c', con2, sX);
-                        DxCon(2).X0 =Fc.X0;
-                        DxCon(2).X1o = Fc.X1o;
-                        clear Fc
-                    end;
                 end;
             end;
-
-            %-Append to SPM.xCon
-            % SPM will automatically save any contrasts that evaluate successfully
-            %------------------------------------------------------------------
-            if isempty(SPM.xCon)
-                SPM.xCon = DxCon;
-            elseif ~isempty(DxCon)
-                SPM.xCon(end+1) = DxCon;
-            end
-            vec=1:(2*nr_para+2);
-            SPM = spm_contrasts(SPM,vec);
-
-            i1=SPM.Sess.Fc(1).i;
-            i2=SPM.Sess.Fc(2).i;
-
-            p1=SPM.Sess.Fc(1).p;
-            p2=SPM.Sess.Fc(2).p;
-
-            Fc=struct('i',{i1,i2},'name',{'half1','half2'},'p',{p1,p2});
-
-            SPM.Sess.Fc = Fc;
-
-            save SPM.mat SPM;
         end;
-        clearvars -except oldpointer handles run runs count vp n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
-        fprintf('...new statistic for %d done...',vp(count));
+        nams={};
+        for ind_con = 1:length(con_vec)
+            eval(sprintf('nams={nams{:},nams_%d{:}}',ind_con));
+        end;
+                
+            DxCon=struct('name',nams,'STAT', 'T', 'c', cons,'X0','','iX0','c','X1o','','eidf','1','Vcon','','Vspm','');    
+            sX = SPM.xX.xKXs;
+            for r = 1:length(nams)
+                Fc = spm_FcUtil('Set',nams{r}, 'T', 'c', cons{r}, sX);
+                DxCon(1).X0 =Fc.X0;
+                DxCon(1).X1o = Fc.X1o;
+                clear Fc
+            end;
+
+
+        %-Append to SPM.xCon
+        % SPM will automatically save any contrasts that evaluate successfully
+        %------------------------------------------------------------------
+        if isempty(SPM.xCon)
+            SPM.xCon = DxCon;
+        elseif ~isempty(DxCon)
+            SPM.xCon(end+1) = DxCon;
+        end;
+        save SPM.mat SPM
+        vec=1:2*(length(con_vec)*nr_para+length(con_vec));
+        SPM = spm_contrasts(SPM,vec);
+
+%         i1=SPM.Sess.Fc(1).i;
+%         i2=SPM.Sess.Fc(2).i;
+% 
+%         p1=SPM.Sess.Fc(1).p;
+%         p2=SPM.Sess.Fc(2).p;
+% 
+%         Fc=struct('i',{i1,i2},'name',{'half1','half2'},'p',{p1,p2});
+% 
+%         SPM.Sess.Fc = Fc;
+
+        save SPM.mat SPM;
+        %end;
+        clearvars -except split_name con_vec study_design oldpointer handles run runs count vp n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
+        fprintf('...new statistic for %s in session %d done...\n',vp{count},m);
     end;
 end;
+
 disp('creating 4D images');
 %% Create 4D images out of 3D images 
 % uses SPM12
@@ -803,60 +978,110 @@ batch_name = 'batch_3dto4d_split.mat';
 % results directory
 dir_results = study_design.results_directory;
 
-
-%% generate contrasts of interest
-first = 1;
-second = 2+nr_para;
-%% create batch
+% create batch
+for ind_con = 1:2+nr_para:2*(length(con_vec)+nr_para)
 for i = 1:2:2*runs
-        if i == 1
-           sess = 1;
-        end;
-    for j=1:length(vp)
-            
-            
-                stats_dir_filled = sprintf(split_dir,sess);
-                con_img1 = sprintf('%s\\%d\\%s\\con_%04d.nii,1',stats_path,vp(j),stats_dir_filled,first);
-                matlabbatch{i}.spm.util.cat.vols{j,1} = con_img1;
-                con_img2 = sprintf('%s\\%d\\%s\\con_%04d.nii,1',stats_path,vp(j),stats_dir_filled,second);
-                matlabbatch{i+1}.spm.util.cat.vols{j,1} = con_img2;
+    if i == 1
+        sess = 1;
     end;
     
-    img_name1 = sprintf('%s1_%d.nii',name,sess);
+    for j=1:length(vp)
+        stats_dir_filled = sprintf(split_dir,sess);
+        con_img1 = sprintf('%s\\%s\\%s\\con_%04d.nii,1',stats_path,vp{j},stats_dir_filled,ind_con);
+        matlabbatch{i}.spm.util.cat.vols{j,1} = con_img1;
+        con_img2 = sprintf('%s\\%s\\%s\\con_%04d.nii,1',stats_path,vp{j},stats_dir_filled,ind_con+1);
+        matlabbatch{i+1}.spm.util.cat.vols{j,1} = con_img2;
+    end;
+    
+    img_name1 = sprintf('%s1_con%04d_%d.nii',name,ind_con,sess);
     matlabbatch{i}.spm.util.cat.name = img_name1;
     matlabbatch{i}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
-    img_name2 = sprintf('%s2_%d.nii',name,sess);
+    img_name2 = sprintf('%s2_con%04d_%d.nii',name,ind_con+1,sess);
     matlabbatch{i+1}.spm.util.cat.name = img_name2;
     matlabbatch{i+1}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
 
     sess=sess+1;
 end;
-
-%% save batch
+% save batch
 save(batch_name,'matlabbatch');
 
-%% run batch
+% run batch
 spm_jobman('serial',batch_name);
+end;
 
-%% move files
+
+
+% move files
 % SPM saves 4D files by default in stats directory of first subject
 % move to directory defined for results
-
+for ind_con = 1:2:2*length(con_vec)
 for k = 1:runs
-    img_name1 = sprintf('%s1_%d',name,k);
-    img_name2 = sprintf('%s2_%d',name,k); 
+    img_name1 = sprintf('%s1_con%04d_%d',name,ind_con,k);
+    img_name2 = sprintf('%s2_con%04d_%d',name,ind_con+1,k); 
     stats_dir_filled = sprintf(split_dir,k);
-    file1 = sprintf('%s\\%d\\%s\\%s.nii',stats_path,vp(1),stats_dir_filled,img_name1);
-    file2 = sprintf('%s\\%d\\%s\\%s.mat',stats_path,vp(1),stats_dir_filled,img_name1);
-    file3 = sprintf('%s\\%d\\%s\\%s.nii',stats_path,vp(1),stats_dir_filled,img_name2);
-    file4 = sprintf('%s\\%d\\%s\\%s.mat',stats_path,vp(1),stats_dir_filled,img_name2);
+    file1 = sprintf('%s\\%s\\%s\\%s.nii',stats_path,vp{1},stats_dir_filled,img_name1);
+    file2 = sprintf('%s\\%s\\%s\\%s.mat',stats_path,vp{1},stats_dir_filled,img_name1);
+    file3 = sprintf('%s\\%s\\%s\\%s.nii',stats_path,vp{1},stats_dir_filled,img_name2);
+    file4 = sprintf('%s\\%s\\%s\\%s.mat',stats_path,vp{1},stats_dir_filled,img_name2);
     movefile (file1,dir_results,'f');
     movefile (file2,dir_results,'f');
     movefile (file3,dir_results,'f');
     movefile (file4,dir_results,'f');
 end;
+end;
+
+%create 4D and move it for parametric modulators
+if par == 1
+    for ind_par = 1:nr_para
+        % create batch
+        for i = 1:2:2*runs
+            if i == 1
+                sess = 1;
+            end;
+            
+            for j=1:length(vp)
+                stats_dir_filled = sprintf(split_dir,sess);
+                con_img1 = sprintf('%s\\%s\\%s\\con_%04d.nii,1',stats_path,vp{j},stats_dir_filled,first+ind_par);
+                matlabbatch{i}.spm.util.cat.vols{j,1} = con_img1;
+                con_img2 = sprintf('%s\\%s\\%s\\con_%04d.nii,1',stats_path,vp{j},stats_dir_filled,second+ind_par);
+                matlabbatch{i+1}.spm.util.cat.vols{j,1} = con_img2;
+            end;
+
+            img_name1 = sprintf('%s1_par%d_%d.nii',name,ind_par,sess);
+            matlabbatch{i}.spm.util.cat.name = img_name1;
+            matlabbatch{i}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
+            img_name2 = sprintf('%s2_par%d_%d.nii',name,ind_par,sess);
+            matlabbatch{i+1}.spm.util.cat.name = img_name2;
+            matlabbatch{i+1}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
+
+            sess=sess+1;
+        end;
+
+        % save batch
+        save(batch_name,'matlabbatch');
+
+        % run batch
+        spm_jobman('serial',batch_name);
+
+        % move files
+        % SPM saves 4D files by default in stats directory of first subject
+        % move to directory defined for results
+
+        for k = 1:runs
+            img_name1 = sprintf('%s1_par%d_%d',name,ind_par,k);
+            img_name2 = sprintf('%s2_par%d_%d',name,ind_par,k); 
+            stats_dir_filled = sprintf(split_dir,k);
+            file1 = sprintf('%s\\%s\\%s\\%s.nii',stats_path,vp{1},stats_dir_filled,img_name1);
+            file2 = sprintf('%s\\%s\\%s\\%s.mat',stats_path,vp{1},stats_dir_filled,img_name1);
+            file3 = sprintf('%s\\%s\\%s\\%s.nii',stats_path,vp{1},stats_dir_filled,img_name2);
+            file4 = sprintf('%s\\%s\\%s\\%s.mat',stats_path,vp{1},stats_dir_filled,img_name2);
+            movefile (file1,dir_results,'f');
+            movefile (file2,dir_results,'f');
+            movefile (file3,dir_results,'f');
+            movefile (file4,dir_results,'f');
+        end;
+    end;
+end;
 
 
-set(handles.figure1, 'pointer', oldpointer)
-
-
+cd(cwd);

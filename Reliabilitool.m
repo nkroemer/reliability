@@ -22,7 +22,7 @@ function varargout = Reliabilitool(varargin)
 
 % Edit the above text to modify the response to help Reliabilitool
 
-% Last Modified by GUIDE v2.5 10-Feb-2017 11:21:58
+% Last Modified by GUIDE v2.5 20-Mar-2017 14:38:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -103,13 +103,6 @@ function ICC_vox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 ICC_vox;
 
-% --- Executes on button press in dice_vox.
-function dice_vox_Callback(hObject, eventdata, handles)
-% hObject    handle to dice_vox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-Overlap;
-
 % --- Executes on button press in ICC_ROI.
 function ICC_ROI_Callback(hObject, eventdata, handles)
 % hObject    handle to ICC_ROI (see GCBO)
@@ -123,4 +116,36 @@ function dice_ROI_Callback(hObject, eventdata, handles)
 % hObject    handle to dice_ROI (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-Overlap_ROI;
+Overlap;
+
+
+% --- Executes on button press in define.
+function define_Callback(hObject, eventdata, handles)
+% hObject    handle to define (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Contrast_Def;
+
+
+% --- Executes on button press in similarity.
+function similarity_Callback(hObject, eventdata, handles)
+% hObject    handle to similarity (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Similarity;
+
+
+% --- Executes on button press in corr2roi.
+function corr2roi_Callback(hObject, eventdata, handles)
+% hObject    handle to corr2roi (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Corr2ROI;
+
+
+% --- Executes on button press in icc2roi.
+function icc2roi_Callback(hObject, eventdata, handles)
+% hObject    handle to icc2roi (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+ICC2ROI;

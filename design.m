@@ -22,7 +22,7 @@ function varargout = design(varargin)
 
 % Edit the above text to modify the response to help design
 
-% Last Modified by GUIDE v2.5 03-Feb-2017 09:20:38
+% Last Modified by GUIDE v2.5 10-Apr-2017 14:54:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -134,14 +134,13 @@ function list_Callback(hObject, eventdata, handles)
 list_subj = cellstr(spm_select(Inf,'mat','load list with subjects'));
 assignin('base','list',list_subj);
 
-% --- Executes on button press in dir.
-function dir_Callback(hObject, eventdata, handles)
-% hObject    handle to dir (see GCBO)
+% --- Executes on button press in dir_results.
+function dir_results_Callback(hObject, eventdata, handles)
+% hObject    handle to dir_results (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 dir_results = cellstr(spm_select(Inf,'dir','choose results directory'));
-assignin('base','dir',dir_results);
-
+assignin('base','dir_results',dir_results);
 
 function con_Callback(hObject, eventdata, handles)
 % hObject    handle to con (see GCBO)
@@ -219,93 +218,218 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+
+
+function con_count_Callback(hObject, eventdata, handles)
+% hObject    handle to con_count (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of con_count as text
+%        str2double(get(hObject,'String')) returns contents of con_count as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function con_count_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to con_count (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+% --- Executes on button press in two_cons.
+function two_cons_Callback(hObject, eventdata, handles)
+% hObject    handle to two_cons (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of two_cons
+
+
+
+function con1_Callback(hObject, eventdata, handles)
+% hObject    handle to con1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of con1 as text
+%        str2double(get(hObject,'String')) returns contents of con1 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function con1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to con1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function con1_count_Callback(hObject, eventdata, handles)
+% hObject    handle to con1_count (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of con1_count as text
+%        str2double(get(hObject,'String')) returns contents of con1_count as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function con1_count_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to con1_count (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function con2_Callback(hObject, eventdata, handles)
+% hObject    handle to con2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of con2 as text
+%        str2double(get(hObject,'String')) returns contents of con2 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function con2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to con2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function con2_count_Callback(hObject, eventdata, handles)
+% hObject    handle to con2_count (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of con2_count as text
+%        str2double(get(hObject,'String')) returns contents of con2_count as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function con2_count_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to con2_count (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function form_Callback(hObject, eventdata, handles)
+% hObject    handle to form (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of form as text
+%        str2double(get(hObject,'String')) returns contents of form as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function form_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to form (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function single_run_Callback(hObject, eventdata, handles)
+% hObject    handle to single_run (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of single_run as text
+%        str2double(get(hObject,'String')) returns contents of single_run as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function single_run_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to single_run (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in single.
+function single_Callback(hObject, eventdata, handles)
+% hObject    handle to single (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of single
+
 function save_Callback(hObject, eventdata, handles)
 % hObject    handle to save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-oldpointer = get(handles.figure1, 'pointer'); 
-set(handles.figure1, 'pointer', 'watch') 
-drawnow;
-
-subjects = get(handles.subjects,'String');
-runs = get(handles.runs,'String');
-list=evalin('base','list');
-dir=evalin('base','dir');
-con=get(handles.con,'String');
-stats = get(handles.stats,'String');
-dir_stats=evalin('base','dir_stats');
-load('template_3D-4D.mat');
-prefix_design = get(handles.prefix_design,'String');
-name_design = sprintf('%s_study_design.mat',prefix_design);
-
-
-
-study_design = struct('number_subjects',subjects,'number_sessions',runs,'subject_list',list,'results_directory',dir,'contrast',con,'stats_directory',stats,'stats_path',dir_stats);
-clearvars dir list;
-assignin('base','study_design',study_design);
-% %save study_design in results folder
-% save(name_design,'study_design');
-
-name ='4D';
-batch_name = sprintf('batch_3Dto4D_%s.mat',con);
-
-runs=str2double(study_design.number_sessions); 
-nr_subj=str2double(study_design.number_subjects);
-load(study_design.subject_list);
-con=study_design.contrast;
-
-disp('...load contrast images to create 4D images...');
-for i = 1:runs
-    cd (study_design.stats_path)
-    con_list=cell(nr_subj,1);
-            for j = 1:nr_subj
-                cd (sprintf('%d',vp(j)));
-                cd (sprintf(study_design.stats_directory,i));
-                con_list{j,1}=sprintf('%s\\%s.nii,1',pwd,con);
-                cd (study_design.stats_path);
-            end;
-    estr=sprintf('con_img_%d = con_list;',i);
-    eval(estr);
+disp('starting creation of study design strucutre');
+%% set parameters
+%get GUI input
+subjects = get(handles.subjects,'String'); % number of participants
+list=evalin('base','list'); % list with participant codes
+dir_results=evalin('base','dir_results'); % result directory
+stats = get(handles.stats,'String'); % stats folder
+dir_stats=evalin('base','dir_stats'); % directory with statistics
+prefix_design = get(handles.prefix_design,'String'); % prefix for study design
+name_design = sprintf('%s_study_design.mat',prefix_design); % creates study design file name
+single = get(handles.single,'value');
+if single == 1
+    single_run = get(handles.single_run,'String');
+    runs = '1';
+else
+    runs = get(handles.runs,'String'); % number of sessions
 end;
+box = pwd;
 
-    % create batch
-    disp('...creates batch...');
-    for i = 1:runs
-        img_name = sprintf('%s_%d.nii',name,i);
-        matlabbatch{i}.spm.util.cat.name = img_name;
-        if i == 1
-        matlabbatch{i}.spm.util.cat.vols = con_img_1;
-        elseif i == 2
-        matlabbatch{i}.spm.util.cat.vols = con_img_2;
-        elseif i == 3
-        matlabbatch{i}.spm.util.cat.vols = con_img_3;
-        end;
-        matlabbatch{i}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
-    end;
+%% generate study_design
+disp('...save study design');
 
-    % save batch
-    save(batch_name,'matlabbatch');
-   
-    disp('...runs batch...');
-    spm_jobman('serial',batch_name);
+if single == 0
+    study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);
+else
+    study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'identifier_session',single_run,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);
+end;    
 
-    % go to results folder 
-    cd (study_design.results_directory);
-        
-    disp('...moves 4D files to results folder...');
-    % move files
-    for k = 1:runs
-        stats=sprintf(study_design.stats_directory,k);
-        first=sprintf('%s\\%d\\%s',study_design.stats_path,vp(1),stats);
-        file1 = sprintf('%s\\%s_%d.nii',first,name,k);
-        file2 = sprintf('%s\\%s_%d.mat',first,name,k);
-        movefile (file1,study_design.results_directory,'f');
-        movefile (file2,study_design.results_directory,'f');
-    end;
-    %save study design in results folder
-    save(name_design,'study_design');
+%% save study design in results folder
+cd(dir_results{1})
+save(name_design,'study_design');
+disp('...DONE');
+cd(box);
 
-
-    set(handles.figure1, 'pointer', oldpointer)
-    disp('...DONE');
     
