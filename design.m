@@ -22,7 +22,7 @@ function varargout = design(varargin)
 
 % Edit the above text to modify the response to help design
 
-% Last Modified by GUIDE v2.5 10-Apr-2017 14:54:44
+% Last Modified by GUIDE v2.5 02-Jun-2017 10:56:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -398,7 +398,7 @@ function save_Callback(hObject, eventdata, handles)
 % hObject    handle to save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('starting creation of study design strucutre');
+disp('Starting creation of study design...');
 %% set parameters
 %get GUI input
 subjects = get(handles.subjects,'String'); % number of participants
@@ -418,7 +418,7 @@ end;
 box = pwd;
 
 %% generate study_design
-disp('...save study design');
+disp('...save study design...');
 
 if single == 0
     study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);
@@ -433,3 +433,14 @@ disp('...DONE');
 cd(box);
 
     
+
+
+% --- Executes during object creation, after setting all properties.
+function axes2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes2
+axes(hObject);
+imshow('logo.png');

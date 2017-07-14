@@ -22,7 +22,7 @@ function varargout = Reliabilitool(varargin)
 
 % Edit the above text to modify the response to help Reliabilitool
 
-% Last Modified by GUIDE v2.5 20-Mar-2017 14:38:32
+% Last Modified by GUIDE v2.5 11-May-2017 09:37:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,7 +71,7 @@ function varargout = Reliabilitool_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
-
+disp('Starting fMRelI...');
 
 % --- Executes on button press in specify.
 function specify_Callback(hObject, eventdata, handles)
@@ -149,3 +149,22 @@ function icc2roi_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 ICC2ROI;
+
+
+% --- Executes on button press in summary.
+function summary_Callback(hObject, eventdata, handles)
+% hObject    handle to summary (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Summary;
+
+
+% --- Executes during object creation, after setting all properties.
+function axes2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes1
+axes(hObject);
+imshow('logo.png');
