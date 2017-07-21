@@ -22,7 +22,7 @@ function varargout = ICC_vox(varargin)
 
 % Edit the above text to modify the response to help ICC_vox
 
-% Last Modified by GUIDE v2.5 10-Apr-2017 16:26:51
+% Last Modified by GUIDE v2.5 02-Jun-2017 14:37:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -120,10 +120,11 @@ function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('starting calculation of ICC voxelwise');
+disp('Starting calculation of ICC voxelwise...');
 
 boxpath = pwd;
-
+%% define file seperator 
+f = filesep;
 %% set parameters
 %get study design information
 study_design=evalin('base','study_design');
@@ -138,6 +139,7 @@ dir_results = study_design.results_directory;
 if runs == 1
     single_run = str2double(study_design.identifier_session);
 end;
+nr_para = study_design.number_parametric;
 
 %get GUI input
 cons = get(handles.con,'value');
@@ -165,12 +167,23 @@ if split == 0 && two_cons == 0
     end;
 disp('...loads image dimensions..');
 stats_temp =sprintf(stats,1);
-temp_img = sprintf('%s\\%s\\%s\\%s',path,vp{1},stats_temp,con);
+temp_img = sprintf('%s%s%s%s%s%s%s%s%s%s',path,f,f,vp{1},f,f,stats_temp,f,f,con);
 temp_img=load_nii(temp_img);
 dim = size(temp_img.img);
 x = dim(1);
 y = dim(2);
 z = dim(3);
+
+    if nr_para > 0
+        for ind_para = 1:nr_para
+               for i = 1:runs    
+                    nii = sprintf('4D_par%d_%d.nii',ind_para,i);
+                    img1 = load_nii(nii);
+                    eval(sprintf('img_%d_par%d = img1;',i,ind_para));
+                    eval(sprintf('img_%d_par%d = img_%d_par%d.img;',i,ind_para,i,ind_para));
+               end; 
+         end;
+     end;
 
 elseif split == 1
     nr_para = study_design.number_parametric;
@@ -183,10 +196,10 @@ elseif split == 1
         eval(sprintf('img_%d_split2 = img_%d_split2.img;',single_run,single_run));
     else
         for i = 1:runs    
-            img1 = load_nii(sprintf('4D_%d_split1.nii',i));
+            img1 = load_nii(sprintf('4D_split1_%d.nii',i));
             eval(sprintf('img_%d_split1 = img1;',i));
             eval(sprintf('img_%d_split1 = img_%d_split1.img;',i,i));
-            img2 = load_nii(sprintf('4D_%d_split2.nii',i));
+            img2 = load_nii(sprintf('4D_split2_%d.nii',i));
             eval(sprintf('img_%d_split2 = img2;',i));
             eval(sprintf('img_%d_split2 = img_%d_split2.img;',i,i));
         end;
@@ -218,7 +231,7 @@ elseif split == 1
     end;
     disp('...loads image dimensions..');
     stats_temp =sprintf(stats,1);
-    temp_img = sprintf('%s\\%s\\%s\\%s',path,vp{1},stats_temp,con);
+    temp_img = sprintf('%s%s%s%s%s%s%s%s%s%s',path,f,f,vp{1},f,f,stats_temp,f,f,con);
     temp_img=load_nii(temp_img);
     dim = size(temp_img.img);
     x = dim(1);
@@ -246,7 +259,7 @@ elseif two_cons == 1
     end;
     disp('...loads image dimensions..');
     stats_temp =sprintf(stats,1);
-    temp_img = sprintf('%s\\%s\\%s\\%s',path,vp{1},stats_temp,con1);
+    temp_img = sprintf('%s%s%s%s%s%s%s%s%s%s',path,f,f,vp{1},f,f,stats_temp,f,f,con1);
     temp_img=load_nii(temp_img);
     dim = size(temp_img.img);
     x = dim(1);
@@ -256,7 +269,7 @@ end;
 
 
 %% initialization 
-if split == 0 && two_cons == 0
+if split == 0 && two_cons == 0 
     data=zeros(nr_subj,runs);
 else
     data=zeros(nr_subj,2);
@@ -401,6 +414,149 @@ cols{1,end+1} = 'min_z_ICC_abs';
 summary(1,end+1) = my_max;
 cols{1,end+1} = 'max_z_ICC_abs'; 
 
+
+% for parametric modulator
+if nr_para > 0
+    for ind_para = 1:nr_para
+        for ind_x = 1:x
+            fprintf('scanning x = %d \n', ind_x);
+            for ind_y = 1:y
+               for ind_z = 1:z
+                    for ind_run = 1:runs
+                        for ind_subj = 1:nr_subj
+                           eval(sprintf('img%d_par%d_voxel(ind_subj,1)= img_%d_par%d (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_para,ind_run,ind_para));
+                        end;
+                        eval(sprintf('data(:,ind_run)=img%d_par%d_voxel;',ind_run,ind_para));
+                    end;
+
+                    %ICC
+                    nsamples=nr_subj*runs;
+
+                    grandmean=0;
+                    for sub=1:nr_subj,     
+                        for sess=1:runs,
+                           grandmean= grandmean + data(sub,sess);
+                        end;
+                    end;
+                    grandmean=grandmean./nsamples;
+
+                    sessionmean=zeros(runs,1);
+                    for sess=1:runs
+                        for sub=1:nr_subj,  
+                            sessionmean(sess) = sessionmean(sess) + data(sub,sess);
+                        end;
+                        sessionmean(sess)=sessionmean(sess)./nr_subj;
+                    end;
+
+                    subjmean=zeros(nr_subj,1);
+                    for sub=1:nr_subj
+                        for sess=1:runs
+                            subjmean(sub)=subjmean(sub) + data(sub,sess);
+                        end;
+                        subjmean(sub)=subjmean(sub)./runs;
+                    end;
+
+                    % mean squares
+                    BMS=0; % between subject
+                    WMS=0; % within subject 
+                    EMS=0; % error
+                    JMS=0; % session
+
+                    for sub=1:nr_subj,    
+                        BMS = BMS + (subjmean(sub)-grandmean).^2;
+                        for sess=1:runs
+                            WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
+                            EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                        end
+                    end;
+
+                    for sess=1:runs
+                        JMS = JMS + (sessionmean(sess)-grandmean).^2;
+                    end;
+
+                    %define the true value of the mean square.
+                    BMS= runs.*BMS./(nr_subj-1);
+                    WMS= WMS./(runs-1)./nr_subj;
+                    JMS= nr_subj.*JMS./(runs-1);
+                    EMS= EMS./(runs-1)./(nr_subj-1); 
+
+                    %consistency agreement  
+                    if cons==1
+                        voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                        ICC_con(ind_x, ind_y, ind_z) = voxICC_con;
+                        z_ICC_con(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+                    end;
+
+                    %absolute agreement 
+                    if abs==1
+                        voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + runs.* (JMS-EMS)./nr_subj);
+                        ICC_abs(ind_x, ind_y, ind_z) = voxICC_abs;
+                        z_ICC_abs(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+                    end;
+               end; 
+            end;
+         end;
+
+    disp('saving ICC images')
+    % save ICC maps
+    target_img = temp_img;
+    target_img.fileprefix = sprintf('ICC_con_par%d.nii',ind_para);
+    target_img.img = ICC_con;
+    save_nii(target_img,target_img.fileprefix); 
+
+    clear target_img;
+    target_img = temp_img;
+    target_img.fileprefix = sprintf('ICC_abs_par%d.nii',ind_para);
+    target_img.img = ICC_abs;
+    save_nii(target_img,target_img.fileprefix); 
+
+    target_img = temp_img;
+    target_img.fileprefix = sprintf('z_ICC_con_par%d.nii',ind_para);
+    target_img.img = z_ICC_con;
+    save_nii(target_img,target_img.fileprefix); 
+
+    clear target_img;
+    target_img = temp_img;
+    target_img.fileprefix = sprintf('z_ICC_abs_par%d.nii',ind_para);
+    target_img.img = z_ICC_abs;
+    save_nii(target_img,target_img.fileprefix); 
+
+    %compute z mean ICC
+    mean_z = mean(z_ICC_con(:),'omitnan');
+    summary(1,end+1)=mean_z;
+    cols{1,end+1} = sprintf('mean_z_ICC_con_par%d',ind_para);
+    %compute min and max ICC
+    [my_min, idx] = min(z_ICC_con(:));
+    [my_max, idx] = max(z_ICC_con(:));
+    summary(1,end+1)= my_min;
+    cols{1,end+1} = sprintf('min_z_ICC_con_par%d',ind_para);
+    summary(1,end+1) = my_max;
+    cols{1,end+1} = sprintf('max_z_ICC_con_par%d',ind_para); 
+
+    %compute z mean ICC
+    mean_z = mean(z_ICC_abs(:),'omitnan');
+    summary(1,end+1)=mean_z;
+    cols{1,end+1} = sprintf('mean_z_ICC_abs_par%d',ind_para);
+    %compute min and max ICC
+    [my_min, idx] = min(z_ICC_abs(:));
+    [my_max, idx] = max(z_ICC_abs(:));
+    summary(1,end+1)= my_min;
+    cols{1,end+1} = sprintf('min_z_ICC_abs_par%d',ind_para);
+    summary(1,end+1) = my_max;
+    cols{1,end+1} = sprintf('max_z_ICC_abs_par%d',ind_para); 
+    end;
+end;
+assignin('base','summary',summary);
+assignin('base','cols',cols);
+
+results_ICCvox=dataset({summary(1,:),cols{:}});
+assignin('base','results_ICCvox',results_ICCvox);
+    
+cd(dir_results);             
+save results_ICCvox.mat results_ICCvox      
+
+disp('finished ICC voxelwise')
+cd(boxpath);
 %based on split-half
 elseif split == 1
      for ind_x = 1:x
@@ -409,7 +565,7 @@ elseif split == 1
            for ind_z = 1:z
                 for ind_run = 1:runs
                     if runs == 1
-                        eval(sprintf('data_%d = zeros(nr_subj,2)',single_run));
+                        eval(sprintf('data_%d = zeros(nr_subj,2);',single_run));
                         for ind_subj = 1:nr_subj
                            eval(sprintf('img%d_voxel_split1(ind_subj,1)= img_%d_split1 (ind_x, ind_y, ind_z, ind_subj);',single_run,single_run));
                            eval(sprintf('img%d_voxel_split2(ind_subj,1)= img_%d_split2 (ind_x, ind_y, ind_z, ind_subj);',single_run,single_run));
@@ -422,8 +578,8 @@ elseif split == 1
                            eval(sprintf('img%d_voxel_split1(ind_subj,1)= img_%d_split1 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run));
                            eval(sprintf('img%d_voxel_split2(ind_subj,1)= img_%d_split2 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run));
                         end;
-                        eval(sprintf('data_%d(:,1)=img%d_voxel_split1;',ind_run));
-                        eval(sprintf('data_%d(:,2)=img%d_voxel_split2;',ind_run));
+                        eval(sprintf('data_%d(:,1)=img%d_voxel_split1;',ind_run,ind_run));
+                        eval(sprintf('data_%d(:,2)=img%d_voxel_split2;',ind_run,ind_run));
                     end;
                 end;
                 
@@ -437,7 +593,7 @@ elseif split == 1
                     grandmean=0;
                     for sub=1:nr_subj,     
                         for sess=1:2,
-                           eval(sprintf('grandmean= grandmean + data_%d(sub,sess)',ind_run));
+                           eval(sprintf('grandmean= grandmean + data_%d(sub,sess);',ind_run));
                         end
                     end;
                     grandmean=grandmean./nsamples;
@@ -445,7 +601,7 @@ elseif split == 1
                     sessionmean=zeros(2,1);
                     for sess=1:2
                         for sub=1:nr_subj,  
-                            eval(sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess)',ind_run));
+                            eval(sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess);',ind_run));
                         end
                         sessionmean(sess)=sessionmean(sess)./nr_subj;
                     end
@@ -453,7 +609,7 @@ elseif split == 1
                     subjmean=zeros(nr_subj,1);
                     for sub=1:nr_subj
                         for sess=1:2
-                            eval(sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess)',ind_run));
+                            eval(sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess);',ind_run));
                         end
                         subjmean(sub)=subjmean(sub)./2;
                     end
@@ -467,8 +623,8 @@ elseif split == 1
                     for sub=1:nr_subj,    
                         BMS = BMS + (subjmean(sub)-grandmean).^2;
                         for sess=1:2
-                            eval(sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2',ind_run));
-                            eval(sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2',ind_run));
+                            eval(sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2;',ind_run));
+                            eval(sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;',ind_run));
                         end
                     end;
 
@@ -563,13 +719,13 @@ elseif split == 1
                             if runs == 1
                                 ind_run = single_run;
                             end;
-                            eval(sprintf('data_%d = zeros(nr_subj,2)',ind_run));
+                            eval(sprintf('data_%d = zeros(nr_subj,2);',ind_run));
                             for ind_subj = 1:nr_subj
                                eval(sprintf('img%d_par%d_voxel_split1(ind_subj,1)= img_%d_par%d_split1 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_para,ind_run,ind_para));
                                eval(sprintf('img%d_par%d_voxel_split2(ind_subj,1)= img_%d_par%d_split2 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_para,ind_run,ind_para));
                             end;
-                            eval(sprintf('data_%d(:,1)=img%d_par%d_voxel_split1;',ind_run,ind_para));
-                            eval(sprintf('data_%d(:,2)=img%d_par%d_voxel_split2;',ind_run,ind_para));
+                            eval(sprintf('data_%d(:,1)=img%d_par%d_voxel_split1;',ind_run,ind_run,ind_para));
+                            eval(sprintf('data_%d(:,2)=img%d_par%d_voxel_split2;',ind_run,ind_run,ind_para));
                         end;
                         %ICC
                         for ind_run = 1:runs
@@ -581,7 +737,7 @@ elseif split == 1
                             grandmean=0;
                             for sub=1:nr_subj,     
                                 for sess=1:2,
-                                   eval(sprintf('grandmean= grandmean + data_%d(sub,sess)',ind_run));
+                                   eval(sprintf('grandmean= grandmean + data_%d(sub,sess);',ind_run));
                                 end
                             end;
                             grandmean=grandmean./nsamples;
@@ -589,7 +745,7 @@ elseif split == 1
                             sessionmean=zeros(2,1);
                             for sess=1:2
                                 for sub=1:nr_subj,  
-                                    eval(sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess)',ind_run));
+                                    eval(sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess);',ind_run));
                                 end
                                 sessionmean(sess)=sessionmean(sess)./nr_subj;
                             end
@@ -597,7 +753,7 @@ elseif split == 1
                             subjmean=zeros(nr_subj,1);
                             for sub=1:nr_subj
                                 for sess=1:2
-                                    eval(sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess)',ind_run));
+                                    eval(sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess);',ind_run));
                                 end
                                 subjmean(sub)=subjmean(sub)./2;
                             end
@@ -611,8 +767,8 @@ elseif split == 1
                             for sub=1:nr_subj,    
                                 BMS = BMS + (subjmean(sub)-grandmean).^2;
                                 for sess=1:2
-                                    eval(sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2',ind_run));
-                                    eval(sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2',ind_run));
+                                    eval(sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2;',ind_run));
+                                    eval(sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;',ind_run));
                                 end
                             end;
 
@@ -697,10 +853,21 @@ elseif split == 1
              end; 
         end;    
     end;
+assignin('base','summary',summary);
+assignin('base','cols',cols);
 
+results_ICCvox=dataset({summary(1,:),cols{:}});
+assignin('base','results_ICCvox',results_ICCvox);
+    
+cd(dir_results);             
+save results_ICCvox_split.mat results_ICCvox      
+
+disp('finished ICC voxelwise')
+cd(boxpath);
 % two contrasts out of one statistic
 elseif two_cons == 1
 for i_run = 1:runs
+    disp('...ICC between contrasts...');
     if runs == 1
         i_run = single_run;
     end;
@@ -833,11 +1000,6 @@ summary(1,end+1)= my_min;
 cols{1,end+1} = sprintf('min_z_ICC_abs_%d',i_run);
 summary(1,end+1) = my_max;
 cols{1,end+1} = sprintf('max_z_ICC_abs_%d',i_run);     
-
-end;
-
-end;
-    
 assignin('base','summary',summary);
 assignin('base','cols',cols);
 
@@ -845,7 +1007,163 @@ results_ICCvox=dataset({summary(1,:),cols{:}});
 assignin('base','results_ICCvox',results_ICCvox);
     
 cd(dir_results);             
-save results_ICCvox.mat results_ICCvox      
+save results_ICCvox_betweenContrasts.mat results_ICCvox      
 
 disp('finished ICC voxelwise')
 cd(boxpath);
+end;
+
+for i_con = 1:2
+    eval(sprintf('ind_con = con%d_count;',i_con));
+
+for ind_x = 1:x
+        fprintf('scanning x = %d \n', ind_x);
+        for ind_y = 1:y
+           for ind_z = 1:z
+                for ind_run = 1:runs
+                    for ind_subj = 1:nr_subj
+                       eval(sprintf('img%d_%d_voxel(ind_subj,1)= img_%d_%d (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_con,ind_run,ind_con));
+                    end;
+                    eval(sprintf('data(:,ind_run)=img%d_%d_voxel;',ind_run,ind_con));
+                end;
+                
+                %ICC
+                nsamples=nr_subj*runs;
+
+                grandmean=0;
+                for sub=1:nr_subj,     
+                    for sess=1:runs,
+                       grandmean= grandmean + data(sub,sess);
+                    end;
+                end;
+                grandmean=grandmean./nsamples;
+
+                sessionmean=zeros(runs,1);
+                for sess=1:runs
+                    for sub=1:nr_subj,  
+                        sessionmean(sess) = sessionmean(sess) + data(sub,sess);
+                    end;
+                    sessionmean(sess)=sessionmean(sess)./nr_subj;
+                end;
+
+                subjmean=zeros(nr_subj,1);
+                for sub=1:nr_subj
+                    for sess=1:runs
+                        subjmean(sub)=subjmean(sub) + data(sub,sess);
+                    end;
+                    subjmean(sub)=subjmean(sub)./runs;
+                end;
+
+                % mean squares
+                BMS=0; % between subject
+                WMS=0; % within subject 
+                EMS=0; % error
+                JMS=0; % session
+
+                for sub=1:nr_subj,    
+                    BMS = BMS + (subjmean(sub)-grandmean).^2;
+                    for sess=1:runs
+                        WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
+                        EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                    end
+                end;
+
+                for sess=1:runs
+                    JMS = JMS + (sessionmean(sess)-grandmean).^2;
+                end;
+
+                %define the true value of the mean square.
+                BMS= runs.*BMS./(nr_subj-1);
+                WMS= WMS./(runs-1)./nr_subj;
+                JMS= nr_subj.*JMS./(runs-1);
+                EMS= EMS./(runs-1)./(nr_subj-1); 
+
+                %consistency agreement  
+                if cons==1
+                    voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                    ICC_con(ind_x, ind_y, ind_z) = voxICC_con;
+                    z_ICC_con(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+                end;
+
+                %absolute agreement 
+                if abs==1
+                    voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + runs.* (JMS-EMS)./nr_subj);
+                    ICC_abs(ind_x, ind_y, ind_z) = voxICC_abs;
+                    z_ICC_abs(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+                end;
+           end; 
+        end;
+     end;
+
+disp('saving ICC images')
+% save ICC maps
+target_img = temp_img;
+target_img.fileprefix = sprintf('ICC_con_con%d.nii',ind_con);
+target_img.img = ICC_con;
+save_nii(target_img,target_img.fileprefix); 
+
+clear target_img;
+target_img = temp_img;
+target_img.fileprefix = sprintf('ICC_abs_con%d.nii',ind_con);
+target_img.img = ICC_abs;
+save_nii(target_img,target_img.fileprefix); 
+
+target_img = temp_img;
+target_img.fileprefix = sprintf('z_ICC_con_con%d.nii',ind_con);
+target_img.img = z_ICC_con;
+save_nii(target_img,target_img.fileprefix); 
+
+clear target_img;
+target_img = temp_img;
+target_img.fileprefix = sprintf('z_ICC_abs_con%d.nii',ind_con);
+target_img.img = z_ICC_abs;
+save_nii(target_img,target_img.fileprefix); 
+
+%compute z mean ICC
+mean_z = mean(z_ICC_con(:),'omitnan');
+summary(1,end+1)=mean_z;
+cols{1,end+1} = sprintf('mean_z_ICC_con_con%d',ind_con);
+%compute min and max ICC
+[my_min, idx] = min(z_ICC_con(:));
+[my_max, idx] = max(z_ICC_con(:));
+summary(1,end+1)= my_min;
+cols{1,end+1} = sprintf('min_z_ICC_con_con%d',ind_con);
+summary(1,end+1) = my_max;
+cols{1,end+1} = sprintf('max_z_ICC_con_con%d',ind_con); 
+%compute z mean ICC
+mean_z = mean(z_ICC_abs(:),'omitnan');
+summary(1,end+1)=mean_z;
+cols{1,end+1} = sprintf('mean_z_ICC_abs_con%d',ind_con);
+%compute min and max ICC
+[my_min, idx] = min(z_ICC_abs(:));
+[my_max, idx] = max(z_ICC_abs(:));
+summary(1,end+1)= my_min;
+cols{1,end+1} = sprintf('min_z_ICC_abs_con%d',ind_con);
+summary(1,end+1) = my_max;
+cols{1,end+1} = sprintf('max_z_ICC_abs_con%d',ind_con); 
+
+assignin('base','summary',summary);
+assignin('base','cols',cols);
+
+results_ICCvox=dataset({summary(1,:),cols{:}});
+assignin('base','results_ICCvox',results_ICCvox);
+    
+cd(dir_results);             
+save results_ICCvox_withinContrasts.mat results_ICCvox      
+
+disp('finished ICC voxelwise')
+cd(boxpath);
+end;
+end;
+    
+
+
+% --- Executes during object creation, after setting all properties.
+function axes1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes1
+axes(hObject);
+imshow('logo.png');

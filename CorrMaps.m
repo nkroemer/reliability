@@ -22,7 +22,7 @@ function varargout = CorrMaps(varargin)
 
 % Edit the above text to modify the response to help CorrMaps
 
-% Last Modified by GUIDE v2.5 10-Apr-2017 16:07:02
+% Last Modified by GUIDE v2.5 02-Jun-2017 14:35:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -143,8 +143,9 @@ function run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-disp('starting calculation of correlation maps');
-
+disp('Starting calculation of correlation maps...');
+%% define file seperator 
+f = filesep;
 %% set parameters
 %get study design information
 study_design=evalin('base','study_design');
@@ -159,6 +160,7 @@ dir_results=study_design.results_directory;
 if runs == 1
     single_run = str2double(study_design.identifier_session);
 end;
+par = study_design.number_parametric;
 
 %get GUI input
 pear = get(handles.pearson,'value');
@@ -172,7 +174,7 @@ if two_cons == 0
     con=contrast_def.contrast;
     disp('...loads image dimensions..');
     stats_temp =sprintf(stats,1);
-    temp_img = sprintf('%s\\%s\\%s\\%s',path,vp{1},stats_temp,con);
+    temp_img = sprintf('%s%s%s%s%s%s%s%s%s%s',path,f,f,vp{1},f,f,stats_temp,f,f,con);
     temp_img=load_nii(temp_img);
     dim = size(temp_img.img);
     x = dim(1);
@@ -190,7 +192,7 @@ else
     else
         stats_temp =sprintf(stats,1);
     end;
-    temp_img = sprintf('%s\\%s\\%s\\%s',path,vp{1},stats_temp,con1);
+    temp_img = sprintf('%s%s%s%s%s%s%s%s%s%s',path,f,f,vp{1},f,f,stats_temp,f,f,con1);
     temp_img=load_nii(temp_img);
     dim = size(temp_img.img);
     x = dim(1);
@@ -207,76 +209,79 @@ summary = [];
 
 %% create correlation maps
 %% 'normal' design
-if split == 0 && two_cons == 0
-    % 1 vs 2
-    disp('...creates correlation maps...');
-    if runs>=1
-    fprintf('...\n session 1 & 2\n...')
+if split == 0 && two_cons == 0 && runs > 1
     
-    %load 4D images
-    one = load_nii('4D_1.nii');
-    one = one.img;
-    one (~one) = nan;
+    for i_run = 1:runs
+        for i_sec = 1:runs-i_run
+        if i_run+i_sec <= runs
+            fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
+            %load 4D images
+            file1 = sprintf('4D_%d.nii',i_run);
+            one = load_nii(file1);
+            one = one.img;
+            one (~one) = nan;
 
-    second = load_nii('4D_2.nii');
-    second = second.img;
-    second (~second) = nan;
+            file2 = sprintf('4D_%d.nii',i_run+i_sec);
+            second = load_nii(file2);
+            second = second.img;
+            second (~second) = nan;
 
-    % create correlation vectors 
-    r_vec_pear_1_2 = zeros(x,y,z);
-    r_vec_spea_1_2 = zeros(x,y,z);
-    z_r_vec_pear_1_2 = zeros(x,y,z);
-    z_r_vec_spea_1_2 = zeros(x,y,z);
+            % create correlation vectors 
+            r_vec_pear_1_2 = zeros(x,y,z);
+            r_vec_spea_1_2 = zeros(x,y,z);
+            z_r_vec_pear_1_2 = zeros(x,y,z);
+            z_r_vec_spea_1_2 = zeros(x,y,z);
     
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                first_voxel = one (ind_x, ind_y, ind_z, :);
-                second_voxel = second (ind_x, ind_y, ind_z, :);
-                % Pearson
-                if pear==1
-                    r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                    if isnan (r(1,2))
-                        r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                        z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                    else
-                        r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-                        z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
+            for ind_x = 1:x
+                 fprintf('...voxel x = %d,...\n',ind_x) 
+               for ind_y = 1:y
+                    for ind_z = 1:z
+                        first_voxel = one (ind_x, ind_y, ind_z, :);
+                        second_voxel = second (ind_x, ind_y, ind_z, :);
+                        % Pearson
+                        if pear==1
+                            r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
+                            if isnan (r(1,2))
+                                r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                                z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                            else
+                                r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
+                                z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
+                            end;
+                        end;
+                        %Spearman
+                        if spea==1
+                            first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
+                            second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
+                            r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
+                            r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
+                            z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
+                        end;
                     end;
                 end;
-                %Spearman
-                if spea==1
-                    first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                    second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                    r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                    r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                    z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-                end;
             end;
-        end;
-    end;
     
     % save correlation maps
     target_img = temp_img;
-    file = sprintf('%s_pear_1_2.nii',name);
+    file = sprintf('%s_pear_%d_%d.nii',name,i_run,i_run+i_sec);
     target_img.fileprefix = file;
     target_img.img = r_vec_pear_1_2;
     save_nii(target_img,target_img.fileprefix);  
          
     target_img = temp_img;
-    file = sprintf('z_%s_pear_1_2.nii',name);
+    file = sprintf('z_%s_pear_%d_%d.nii',name,i_run,i_run+i_sec);
     target_img.fileprefix = file;
     target_img.img = z_r_vec_pear_1_2;
     save_nii(target_img,target_img.fileprefix);                     
 
     target_img = temp_img;
-    file = sprintf('%s_spea_1_2.nii',name);
+    file = sprintf('%s_spea_%d_%d.nii',name,i_run,i_run+i_sec);
     target_img.fileprefix = file;
     target_img.img = r_vec_spea_1_2;
     save_nii(target_img,target_img.fileprefix);
                     
     target_img = temp_img;
-    file = sprintf('z_%s_spea_1_2.nii',name);
+    file = sprintf('z_%s_spea_%d_%d.nii',name,i_run,i_run+i_sec);
     target_img.fileprefix = file;
     target_img.img = z_r_vec_spea_1_2;
     save_nii(target_img,target_img.fileprefix);                      
@@ -285,401 +290,115 @@ if split == 0 && two_cons == 0
     mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
     mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
     summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_pear_1_2';
+    cols{1,end+1} = sprintf('mean_pear_%d_%d',i_run,i_run+i_sec);
     
     mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
     mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
     summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_spea_1_2';    
+    cols{1,end+1} = sprintf('mean_spea_%d_%d',i_run,i_run+i_sec);    
 
-    end; 
-    %% 1 vs 3
-
-    if runs>2
-    fprintf('...\n session 1 & 2 & 3\n...')
-    
-    %load additional 4D image
-    third = load_nii('4D_3.nii');
-    third = third.img;
-    third (~third) = nan;
-
-    % create correlation vectors 
-    r_vec_pear_1_3 = zeros(x,y,z);
-    r_vec_spea_1_3 = zeros(x,y,z);
-    z_r_vec_pear_1_3 = zeros(x,y,z);
-    z_r_vec_spea_1_3 = zeros(x,y,z);
-    
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                first_voxel = one (ind_x, ind_y, ind_z, :);
-                third_voxel = third (ind_x, ind_y, ind_z, :);
-                % Pearson
-                if pear==1
-                    r = corrcoef(first_voxel,third_voxel, 'rows', 'pairwise');
-                    if isnan (r(1,2))
-                        r_vec_pear_1_3(ind_x, ind_y, ind_z) = 0;
-                        z_r_vec_pear_1_3(ind_x, ind_y, ind_z) = 0;
-                       
-                    else
-                        r_vec_pear_1_3(ind_x, ind_y, ind_z) = r(1,2);
-                        z_r_vec_pear_1_3(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                   
-                    end;
-
-                end;
-                %Spearman
-                if spea==1
-                  first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                  third_voxel = squeeze(third (ind_x, ind_y, ind_z, :));
-                  r = corr(first_voxel,third_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                  r_vec_spea_1_3(ind_x, ind_y, ind_z) = r;  
-                  z_r_vec_spea_1_3(ind_x, ind_y, ind_z) = atanh(r);  
-                end;
-            end;
+        end; 
         end;
     end;
-
-    % save correlation map
-    target_img = temp_img;
-    file = sprintf('%s_pear_1_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_pear_1_3;
-    save_nii(target_img,target_img.fileprefix);
-    
-    target_img = temp_img;
-    file = sprintf('%s_spea_1_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_spea_1_3;
-    save_nii(target_img,target_img.fileprefix);
-                    
-    target_img = temp_img;
-    file = sprintf('z_%s_pear_1_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_pear_1_3;
-    save_nii(target_img,target_img.fileprefix);
-    
-    target_img = temp_img;
-    file = sprintf('z_%s_spea_1_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_spea_1_3;
-    save_nii(target_img,target_img.fileprefix);
-                    
-    %compute z mean and inverse Fisher's transformation
-    mean_z = mean(z_r_vec_pear_1_3(~isinf(z_r_vec_pear_1_3)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_pear_1_3';
-    mean_z = mean(z_r_vec_spea_1_3(~isinf(z_r_vec_spea_1_3)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_spea_1_3';
-
-    % 2 vs 3
-    % create correlation vectors 
-    r_vec_pear_2_3 = zeros(x,y,z);
-    r_vec_spea_2_3 = zeros(x,y,z);
-    z_r_vec_pear_2_3 = zeros(x,y,z);
-    z_r_vec_spea_2_3 = zeros(x,y,z);
-
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                second_voxel = second (ind_x, ind_y, ind_z, :);
-                third_voxel = third (ind_x, ind_y, ind_z, :);
-                % Pearson
-                if pear==1
-                    r = corrcoef(second_voxel,third_voxel, 'rows', 'pairwise');
-                    if isnan (r(1,2))
-                        r_vec_pear_2_3(ind_x, ind_y, ind_z) = 0;
-                        z_r_vec_pear_2_3(ind_x, ind_y, ind_z) = 0;
-
-                    else
-                        r_vec_pear_2_3(ind_x, ind_y, ind_z) = r(1,2);
-                        z_r_vec_pear_2_3(ind_x, ind_y, ind_z) = atanh(r(1,2));
-
-                    end;
-
-                end;
-                %Spearman
-                if spea==1
-                    second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                    third_voxel = squeeze(third (ind_x, ind_y, ind_z, :));
-                  r = corr(second_voxel,third_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                  r_vec_spea_2_3(ind_x, ind_y, ind_z) = r;  
-                  z_r_vec_spea_2_3(ind_x, ind_y, ind_z) = atanh(r);  
-
-                end;
-            end;
-        end;
-    end;     
-
-    % save correlation map
-    target_img = temp_img;
-    file = sprintf('%s_pear_2_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_pear_2_3;
-    save_nii(target_img,target_img.fileprefix); 
-    
-    target_img = temp_img;
-    file = sprintf('%s_spea_2_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_spea_2_3;
-    save_nii(target_img,target_img.fileprefix);
-
-    target_img = temp_img;
-    file = sprintf('z_%s_pear_2_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_pear_2_3;
-    save_nii(target_img,target_img.fileprefix); 
-    
-    target_img = temp_img;
-    file = sprintf('z_%s_spea_2_3.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_spea_2_3;
-    save_nii(target_img,target_img.fileprefix);
-                    
-    %compute z mean and inverse Fisher's transformation
-    mean_z = mean(z_r_vec_pear_2_3(~isinf(z_r_vec_pear_2_3)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_pear_2_3';
-    mean_z = mean(z_r_vec_spea_2_3(~isinf(z_r_vec_spea_2_3)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_spea_2_3';
-                
-    end;
-
-    if runs>3
-        
-    fprintf('...\n session 1 & 2 & 3 & 4\n...')
-    
-    %load additional 4D image
-    four = load_nii('4D_4.nii');
-    four = four.img;
-    four (~four) = nan;
-
-    % 1 vs 4
-    % create correlation vectors 
-    r_vec_pear_1_4 = zeros(x,y,z);
-    r_vec_spea_1_4 = zeros(x,y,z);
-    z_r_vec_pear_1_4 = zeros(x,y,z);
-    z_r_vec_spea_1_4 = zeros(x,y,z);
-    
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                first_voxel = one (ind_x, ind_y, ind_z, :);
-                four_voxel = four (ind_x, ind_y, ind_z, :);
-                % Pearson
-                if pear==1
-                    r = corrcoef(first_voxel,four_voxel, 'rows', 'pairwise');
-                    if isnan (r(1,2))
-                        r_vec_pear_1_4(ind_x, ind_y, ind_z) = 0;
-                        z_r_vec_pear_1_4(ind_x, ind_y, ind_z) = 0;
-                        
-                    else
-                        r_vec_pear_1_4(ind_x, ind_y, ind_z) = r(1,2);
-                        z_r_vec_pear_1_4(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                       
-                    end;
-
-                end;
-                %Spearman
-                if spea==1
-                    first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                    four_voxel = squeeze(four (ind_x, ind_y, ind_z, :));
-                    r = corr(first_voxel,four_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                    r_vec_spea_1_4(ind_x, ind_y, ind_z) = r;  
-                    z_r_vec_spea_1_4(ind_x, ind_y, ind_z) = atanh(r);  
-                end;
-            end;
-        end;
-    end;
-    % save correlation map
-    target_img = temp_img;
-    file = sprintf('%s_pear_1_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_pear_1_4;
-    save_nii(target_img,target_img.fileprefix);  
-    target_img = temp_img;
-    file = sprintf('%s_spea_1_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_spea_1_4;
-    save_nii(target_img,target_img.fileprefix);
-
-    target_img = temp_img;
-    file = sprintf('z_%s_pear_1_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_pear_1_4;
-    save_nii(target_img,target_img.fileprefix);  
-    target_img = temp_img;
-    file = sprintf('z_%s_spea_1_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_spea_1_4;
-    save_nii(target_img,target_img.fileprefix);
-
-
-     %compute z mean and inverse Fisher's transformation
-    mean_z = mean(z_r_vec_pear_1_4(~isinf(z_r_vec_pear_1_4)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_pear_1_4';
-    mean_z = mean(z_r_vec_spea_1_4(~isinf(z_r_vec_spea_1_4)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_spea_1_4';
-
-    
-    % 2 vs 4
-    % create correlation vectors 
-    r_vec_pear_2_4 = zeros(x,y,z);
-    r_vec_spea_2_4 = zeros(x,y,z);
-    z_r_vec_pear_2_4 = zeros(x,y,z);
-    z_r_vec_spea_2_4 = zeros(x,y,z);
-    
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                second_voxel = second (ind_x, ind_y, ind_z, :);
-                four_voxel = four (ind_x, ind_y, ind_z, :);
-                % Pearson
-                if pear==1
-                    r = corrcoef(second_voxel,four_voxel, 'rows', 'pairwise');
-                    if isnan (r(1,2))
-                        r_vec_pear_2_4(ind_x, ind_y, ind_z) = 0;
-                        z_r_vec_pear_2_4(ind_x, ind_y, ind_z) = 0;
-                    else
-                        r_vec_pear_2_4(ind_x, ind_y, ind_z) = r(1,2);
-                        z_r_vec_pear_2_4(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                    end;
-                end;
-                %Spearman
-                if spea==1
-                    second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                    four_voxel = squeeze(four (ind_x, ind_y, ind_z, :));
-                    r = corr(second_voxel,four_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                    r_vec_spea_2_4(ind_x, ind_y, ind_z) = r;  
-                    z_r_vec_spea_2_4(ind_x, ind_y, ind_z) = atanh(r);  
-                end;
-            end;
-        end;
-    end; 
-    
-    % save correlation map
-    target_img = temp_img;
-    file = sprintf('%s_pear_2_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_pear_2_4;
-    save_nii(target_img,target_img.fileprefix);  
-    
-    target_img = temp_img;
-    file = sprintf('%s_spea_2_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = r_vec_spea_2_4;
-    save_nii(target_img,target_img.fileprefix);
-
-    target_img = temp_img;
-    file = sprintf('z_%s_pear_2_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_pear_2_4;
-    save_nii(target_img,target_img.fileprefix);  
-    
-    target_img = temp_img;
-    file = sprintf('z_%s_spea_2_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_spea_2_4;
-    save_nii(target_img,target_img.fileprefix);
-
-    %compute z mean and inverse Fisher's transformation
-    mean_z = mean(z_r_vec_pear_2_4(~isinf(z_r_vec_pear_2_4)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_pear_2_4';
-    mean_z = mean(z_r_vec_spea_2_4(~isinf(z_r_vec_spea_2_4)),'omitnan');
-    mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-    summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_spea_2_4';
  
+if par > 0    
+    for i_par = 1:par
+    for i_run = 1:runs
+       for i_sec = 1:runs-i_run
 
-    % 3 vs 4
-    % create correlation vectors 
-    r_vec_pear_3_4 = zeros(x,y,z);
-    r_vec_spea_3_4 = zeros(x,y,z);
-    z_r_vec_pear_3_4 = zeros(x,y,z);
-    z_r_vec_spea_3_4 = zeros(x,y,z);
+        if i_run+1 <= runs
+            fprintf('...creates correlation maps for parametric modulator %d in session %d and session %d...\n',i_par,i_run,i_run+i_sec);
+            %load 4D images
+            file1 = sprintf('4D_par%d_%d.nii',i_par,i_run);
+            one = load_nii(file1);
+            one = one.img;
+            one (~one) = nan;
+
+            file2 = sprintf('4D_par%d_%d.nii',i_par,i_run+i_sec);
+            second = load_nii(file2);
+            second = second.img;
+            second (~second) = nan;
+
+            % create correlation vectors 
+            r_vec_pear_1_2 = zeros(x,y,z);
+            r_vec_spea_1_2 = zeros(x,y,z);
+            z_r_vec_pear_1_2 = zeros(x,y,z);
+            z_r_vec_spea_1_2 = zeros(x,y,z);
     
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                third_voxel = third (ind_x, ind_y, ind_z, :);
-                four_voxel = four (ind_x, ind_y, ind_z, :);
-                % Pearson
-                if pear==1
-                    r = corrcoef(third_voxel,four_voxel, 'rows', 'pairwise');
-                    if isnan (r(1,2))
-                        r_vec_pear_3_4(ind_x, ind_y, ind_z) = 0;
-                        z_r_vec_pear_3_4(ind_x, ind_y, ind_z) = 0;
-                    else
-                        r_vec_pear_3_4(ind_x, ind_y, ind_z) = r(1,2);
-                        z_r_vec_pear_3_4(ind_x, ind_y, ind_z) = atanh(r(1,2));
+            for ind_x = 1:x
+                fprintf('...voxel x = %d,...\n',ind_x) 
+                for ind_y = 1:y
+                    for ind_z = 1:z
+                        first_voxel = one (ind_x, ind_y, ind_z, :);
+                        second_voxel = second (ind_x, ind_y, ind_z, :);
+                        % Pearson
+                        if pear==1
+                            r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
+                            if isnan (r(1,2))
+                                r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                                z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                            else
+                                r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
+                                z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
+                            end;
+                        end;
+                        %Spearman
+                        if spea==1
+                            first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
+                            second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
+                            r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
+                            r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
+                            z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
+                        end;
                     end;
                 end;
-                %Spearman
-                if spea==1
-                    third_voxel = squeeze(third (ind_x, ind_y, ind_z, :));
-                    four_voxel = squeeze(four (ind_x, ind_y, ind_z, :));
-                    r = corr(third_voxel,four_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                    r_vec_spea_3_4(ind_x, ind_y, ind_z) = r;  
-                    z_r_vec_spea_3_4(ind_x, ind_y, ind_z) = atanh(r);  
-                end;
             end;
-        end;
-    end;  
-    % save correlation map
+    
+    % save correlation maps
     target_img = temp_img;
-    file = sprintf('%s_pear_3_4.nii',name);
+    file = sprintf('%s_pear_par%d_%d_%d.nii',name,i_par,i_run,i_run+i_sec);
     target_img.fileprefix = file;
-    target_img.img = r_vec_pear_3_4;
-    save_nii(target_img,target_img.fileprefix);   
+    target_img.img = r_vec_pear_1_2;
+    save_nii(target_img,target_img.fileprefix);  
+         
     target_img = temp_img;
-    file = sprintf('%s_spea_3_4.nii',name);
+    file = sprintf('z_%s_pear_par%d_%d_%d.nii',name,i_par,i_run,i_run+i_sec);
     target_img.fileprefix = file;
-    target_img.img = r_vec_spea_3_4;
-    save_nii(target_img,target_img.fileprefix);
+    target_img.img = z_r_vec_pear_1_2;
+    save_nii(target_img,target_img.fileprefix);                     
 
     target_img = temp_img;
-    file = sprintf('z_%s_pear_3_4.nii',name);
+    file = sprintf('%s_spea_par%d_%d_%d.nii',name,i_par,i_run,i_run+i_sec);
     target_img.fileprefix = file;
-    target_img.img = z_r_vec_pear_3_4;
-    save_nii(target_img,target_img.fileprefix);   
-    target_img = temp_img;
-    file = sprintf('z_%s_spea_3_4.nii',name);
-    target_img.fileprefix = file;
-    target_img.img = z_r_vec_spea_3_4;
+    target_img.img = r_vec_spea_1_2;
     save_nii(target_img,target_img.fileprefix);
-
-      %compute z mean and inverse Fisher's transformation
-    mean_z = mean(z_r_vec_pear_3_4(~isinf(z_r_vec_pear_3_4)),'omitnan');
+                    
+    target_img = temp_img;
+    file = sprintf('z_%s_spea_par%d_%d_%d.nii',name,i_par,i_run,i_run+i_sec);
+    target_img.fileprefix = file;
+    target_img.img = z_r_vec_spea_1_2;
+    save_nii(target_img,target_img.fileprefix);                      
+    
+    %compute z mean and inverse Fisher's transformation
+    mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
     mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
     summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_pear_3_4';
-    mean_z = mean(z_r_vec_spea_3_4(~isinf(z_r_vec_spea_3_4)),'omitnan');
+    cols{1,end+1} = sprintf('mean_pear_par%d_%d_%d',i_par,i_run,i_run+i_sec);
+    
+    mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
     mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
     summary(1,end+1)=mean_r;
-    cols{1,end+1} = 'mean_spea_3_4';
-  
-    end;
-   
-    if runs>4
-    msg='Toolbox only allows 4 runs. Please adapt the script or contact the developers.';
-    error(msg);
-    end;
+    cols{1,end+1} = sprintf('mean_spea_par%d_%d_%d',i_par,i_run,i_run+i_sec);    
 
+        end; 
+    end;
+    end;
+    end;
+end;
+    
+    
 %% based on split half
 elseif split == 1
-    par = study_design.number_parametric;
     for i = 1:runs
         fprintf('...creates correlation maps for splitted session %d...\n',i);
         if runs == 1 
@@ -875,11 +594,15 @@ elseif split == 1
                             end;
                             %Spearman
                             if spea==1
+                                first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
+                                second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
+                                r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
                                 % correction for understimation of reliability via
                                 % split-half
                                 r = (2.*r)./(1+r);
                                 r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
                                 z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);  
+ 
                             end;
                         end;
                     end;
@@ -1187,6 +910,228 @@ elseif two_cons == 1
         end;
     end;
     end;
+    for i_run = 1:runs
+        fprintf('...\n compare parametric modulators for contrasts of session %d\n...',i_run)
+    
+        if runs == 1
+            one = load_nii(sprintf('4D_%s_%d.nii',con1,single_run));
+            one = one.img;
+            one (~one) = nan;
+
+            second = load_nii(sprintf('4D_%s_%d.nii',con2,single_run));
+            second = second.img;
+            second (~second) = nan;
+        else
+            one = load_nii(sprintf('4D_%s_%d.nii',con1,i_run));
+            one = one.img;
+            one (~one) = nan;
+
+            second = load_nii(sprintf('4D_%s_%d.nii',con2,i_run));
+            second = second.img;
+            second (~second) = nan;
+        end;
+        % create correlation vectors 
+        r_vec_pear_1_2 = zeros(x,y,z);
+        r_vec_spea_1_2 = zeros(x,y,z);
+        z_r_vec_pear_1_2 = zeros(x,y,z);
+        z_r_vec_spea_1_2 = zeros(x,y,z);
+
+        for ind_x = 1:x
+            fprintf('..correlations voxels x = %d\n',ind_x)
+            for ind_y = 1:y
+                for ind_z = 1:z
+                    first_voxel = one (ind_x, ind_y, ind_z, :);
+                    second_voxel = second (ind_x, ind_y, ind_z, :);
+                    % Pearson
+                    if pear==1
+                        r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
+                        if isnan (r(1,2))
+                            r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                            z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                        else
+                            r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
+                            z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
+                        end;
+                    end;
+                    %Spearman
+                    if spea==1
+                        first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
+                        second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
+                        r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
+                        r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
+                        z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
+                    end;
+                end;
+            end;
+        end;
+        
+        if runs == 1
+            % save correlation map
+            fprintf('...saving maps...\n')
+            target_img = temp_img;
+            file = sprintf('%s_pear_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = r_vec_pear_1_2;
+            save_nii(target_img,target_img.fileprefix);  
+
+            target_img = temp_img;
+            file = sprintf('z_%s_pear_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = z_r_vec_pear_1_2;
+            save_nii(target_img,target_img.fileprefix);                     
+
+            target_img = temp_img;
+            file = sprintf('%s_spea_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = r_vec_spea_1_2;
+            save_nii(target_img,target_img.fileprefix);
+
+            target_img = temp_img;
+            file = sprintf('z_%s_spea_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = z_r_vec_spea_1_2;
+            save_nii(target_img,target_img.fileprefix);  
+
+            %compute z mean and inverse Fisher's transformation
+            mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+            summary(1,end+1)=mean_r;
+            cols{1,end+1} = sprintf('mean_pear_%d_con%d_con%d',single_run,con1_count,con2_count);
+            mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+            summary(1,end+1)=mean_r;
+            cols{1,end+1} = sprintf('mean_spea_%d_con%d_con%d',single_run,con1_count,con2_count);
+          
+        else
+            % save correlation map
+            fprintf('...saving maps...\n')
+            target_img = temp_img;
+            file = sprintf('%s_pear_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = r_vec_pear_1_2;
+            save_nii(target_img,target_img.fileprefix);  
+
+            target_img = temp_img;
+            file = sprintf('z_%s_pear_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = z_r_vec_pear_1_2;
+            save_nii(target_img,target_img.fileprefix);                     
+
+            target_img = temp_img;
+            file = sprintf('%s_spea_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = r_vec_spea_1_2;
+            save_nii(target_img,target_img.fileprefix);
+
+            target_img = temp_img;
+            file = sprintf('z_%s_spea_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
+            target_img.fileprefix = file;
+            target_img.img = z_r_vec_spea_1_2;
+            save_nii(target_img,target_img.fileprefix);  
+
+            %compute z mean and inverse Fisher's transformation
+            mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+            summary(1,end+1)=mean_r;
+            cols{1,end+1} = sprintf('mean_pear_%d_con%d_con%d',i_run,con1_count,con2_count);
+            mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+            summary(1,end+1)=mean_r;
+            cols{1,end+1} = sprintf('mean_spea_%d_con%d_con%d',i_run,con1_count,con2_count);
+
+        end;
+    end;
+    % compare contrasts between sessions
+    for i_con = 1:2
+        eval(sprintf('con=con%d;',i_con));
+        eval(sprintf('con_count = con%d_count;',i_con));
+    for i_run = 1:runs
+        for count = 1:runs-1
+            if i_run+count <= runs
+            if runs > 1
+                fprintf('...\n compare contrast %s between sessions\n...',con)
+                one = load_nii(sprintf('4D_%s_%d.nii',con,i_run));
+                one = one.img;
+                one (~one) = nan;
+
+                second = load_nii(sprintf('4D_%s_%d.nii',con,i_run+count));
+                second = second.img;
+                second (~second) = nan;
+                % create correlation vectors 
+                r_vec_pear_1_2 = zeros(x,y,z);
+                r_vec_spea_1_2 = zeros(x,y,z);
+                z_r_vec_pear_1_2 = zeros(x,y,z);
+                z_r_vec_spea_1_2 = zeros(x,y,z);
+
+                for ind_x = 1:x
+                    fprintf('..correlations voxels x = %d\n',ind_x)
+                    for ind_y = 1:y
+                        for ind_z = 1:z
+                            first_voxel = one (ind_x, ind_y, ind_z, :);
+                            second_voxel = second (ind_x, ind_y, ind_z, :);
+                            % Pearson
+                            if pear==1
+                                r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
+                                if isnan (r(1,2))
+                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
+                                else
+                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
+                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
+                                end;
+                            end;
+                            %Spearman
+                            if spea==1
+                                first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
+                                second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
+                                r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
+                                r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
+                                z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
+                            end;
+                        end;
+                    end;
+                end;
+
+                % save correlation map
+                fprintf('...saving maps...\n')
+                target_img = temp_img;
+                file = sprintf('%s_pear_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
+                target_img.fileprefix = file;
+                target_img.img = r_vec_pear_1_2;
+                save_nii(target_img,target_img.fileprefix);  
+
+                target_img = temp_img;
+                file = sprintf('z_%s_pear_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
+                target_img.fileprefix = file;
+                target_img.img = z_r_vec_pear_1_2;
+                save_nii(target_img,target_img.fileprefix);                     
+
+                target_img = temp_img;
+                file = sprintf('%s_spea_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
+                target_img.fileprefix = file;
+                target_img.img = r_vec_spea_1_2;
+                save_nii(target_img,target_img.fileprefix);
+
+                target_img = temp_img;
+                file = sprintf('z_%s_spea_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
+                target_img.fileprefix = file;
+                target_img.img = z_r_vec_spea_1_2;
+                save_nii(target_img,target_img.fileprefix);  
+
+                %compute z mean and inverse Fisher's transformation
+                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_pear_%d_%d_con%d',i_run,i_run+count,con_count);
+                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_spea_%d_%d_con%d',i_run,i_run+count,con_count);
+            end;
+            end;
+        end;
+    end;
+    end;
 end;
 
 
@@ -1197,3 +1142,14 @@ cd(dir_results);
 save results_corr.mat results_corr            
 disp('...finished correlation maps')
 cd(boxpath);
+
+
+% --- Executes during object creation, after setting all properties.
+function axes2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes1
+axes(hObject);
+imshow('logo.png');

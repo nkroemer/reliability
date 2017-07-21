@@ -22,7 +22,7 @@ function varargout = Corr2ROI(varargin)
 
 % Edit the above text to modify the response to help Corr2ROI
 
-% Last Modified by GUIDE v2.5 16-Mar-2017 15:39:02
+% Last Modified by GUIDE v2.5 02-Jun-2017 14:40:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -172,7 +172,9 @@ function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('starting creation of ROI out of correlation maps');
+disp('Starting creation of ROI out of correlation maps...');
+%% define file seperator 
+f = filesep;
 study_design = evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');
 box_path=pwd;
@@ -180,6 +182,7 @@ box_path=pwd;
 %get study design info
 results_dir = study_design.results_directory;
 stats_path = study_design.stats_path;
+runs = str2double(study_design.number_sessions);
 load(study_design.subject_list); % loads vp list
 stats_filled = sprintf(study_design.stats_directory,1);
 two_cons = contrast_def.two_contrasts;
@@ -194,8 +197,8 @@ disp('...reslicing atlas...');
 cd('atlas')
 atlas_dir = pwd;
 atlas_name = 'atlas.nii';
-atlas_compl = sprintf('%s\\%s',atlas_dir,atlas_name);
-    matlabbatch{1}.spm.spatial.coreg.write.ref = {sprintf('%s\\%s\\%s\\%s,1',stats_path,vp{1},stats_filled,con)};
+atlas_compl = sprintf('%s%s%s%s',atlas_dir,f,f,atlas_name);
+    matlabbatch{1}.spm.spatial.coreg.write.ref = {sprintf('%s%s%s%s%s%s%s%s%s%s,1',stats_path,f,f,vp{1},f,f,stats_filled,f,f,con)};
     matlabbatch{1}.spm.spatial.coreg.write.source = {sprintf('%s,1',atlas_compl)};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;
     matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
@@ -209,7 +212,7 @@ atlas_compl = sprintf('%s\\%s',atlas_dir,atlas_name);
     spm_jobman('serial',matlabbatch);
 
 % load resliced atlas
-atlas_r = sprintf('%s\\r%s',atlas_dir,atlas_name);
+atlas_r = sprintf('%s%s%sr%s',atlas_dir,f,f,atlas_name);
 movefile (atlas_r,results_dir,'f');
 cd(results_dir);
 atlas = load_nii(sprintf('r%s',atlas_name));
@@ -224,7 +227,7 @@ k = str2double(get(handles.k,'String'));
 r_thres = str2double(get(handles.corr_threshold,'String'));
 
 % loads template image to generate image dimensions
-temp_img = sprintf('%s\\%s\\%s\\%s',stats_path,vp{1},stats_filled,con); % Beispielbild FOOD-Kontrast
+temp_img = sprintf('%s%s%s%s%s%s%s%s%s%s',stats_path,f,f,vp{1},f,f,stats_filled,f,f,con); % Beispielbild FOOD-Kontrast
 temp_img=load_nii(temp_img);
 dim = size(temp_img.img);
 x = dim(1);
@@ -335,8 +338,8 @@ for i = 1:nr_clusters
             numbers(m,1) = lab_neu{m,2};
         end;
         [numbers_sort,sort_idx] = sort(numbers);
-        labels_sorted = lab_neu(sort_idx,:);
-        if strcmp(labels_sorted(end,1),'no label')
+        labels_sorted = lab_neu(sort_idx,1);
+        if strcmp(labels_sorted(end,1),'no label') && length(labels_sorted)>1
             main_label = labels_sorted(end-1,1);
         else
             main_label = labels_sorted(end,1);
@@ -346,11 +349,77 @@ for i = 1:nr_clusters
     clearvars vec_voxels labels_voxels
 end;
 
+% conversion to MNI coordinates
+ex4d = dir('4D*.nii');
+nifti_header = load_untouch_header_only(ex4d(1).name);
+
+transformation_matrix = [nifti_header.hist.srow_x;nifti_header.hist.srow_y;nifti_header.hist.srow_z];
+
+for ind_clust = 1:length(C)
+    for coordinates = 1:length(C(ind_clust).XYZ)
+        mni_coordinates(coordinates,1:3) = transformation_matrix *[C(ind_clust).XYZ(1,coordinates) C(ind_clust).XYZ(2,coordinates) C(ind_clust).XYZ(3,coordinates) 1]';
+    end;
+        mni_coordinates = mni_coordinates';
+        C(ind_clust).mni = mni_coordinates;
+        clearvars mni_coordinates
+end;
 
 
 cluster_name = sprintf('cluster_%d_%0.2f_corr.mat',k,r_thres);
 save(cluster_name,'C');
 
+% calculate activation estimate for each cluster and each subject
+cd(results_dir);
+nr_cluster = length(C);
+
+%collect cluster coordinates
+for count_cl = 1:nr_cluster
+    name = strtok(C(count_cl).main_label{1});
+    eval(sprintf('%s_xyz = C(count_cl).XYZ;',name));
+end;
+
+%load 4D images
+for count_runs = 1:runs
+    if two_cons == 1
+        file = sprintf('4D_%s_%d.nii',con,count_runs);
+        eval(sprintf('FourD_%d = load_nii(file);',count_runs));
+    else
+        file = sprintf('4D_%d.nii',count_runs);
+        eval(sprintf('FourD_%d = load_nii(file);',count_runs));
+    end;
+end;
+
+%extract and average activation in cluster
+for count_runs = 1:runs
+    for count_cl = 1:nr_cluster
+                fprintf('...extracting data for cluster %d...\n',count_cl)
+
+        name = strtok(C(count_cl).main_label{1});
+        eval(sprintf('vox = size(%s_xyz,2);',name));
+        sum_vox = [];
+        for ind_subj = 1:length(vp)
+        for x = 1:vox
+            eval(sprintf('sum_vox = [sum_vox;FourD_%d.img(%s_xyz(1,x),%s_xyz(2,x),%s_xyz(3,x),ind_subj)];',count_runs,name,name,name));
+        end;
+        BOLD = mean(sum_vox);
+        eval(sprintf('BOLD_%s{ind_subj,1} = vp{ind_subj};',name));
+        eval(sprintf('BOLD_%s{ind_subj,1+count_runs} = BOLD;',name));        
+        end;
+        eval(sprintf('save BOLD_%s_CorrROI_%d_%0.2f.mat BOLD_%s;',name,k,r_thres,name));
+    end;
+end;
+
 
 cd(box_path);
 disp('DONE');
+
+
+% --- Executes during object creation, after setting all properties.
+function axes2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes2
+axes(hObject);
+imshow('logo.png');
