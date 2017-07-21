@@ -86,7 +86,7 @@ function CorrMaps_Callback(hObject, eventdata, handles)
 % hObject    handle to CorrMaps (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-CorrMaps;
+CorrICC;
 
 
 % --- Executes on button press in split.
@@ -95,20 +95,6 @@ function split_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 SplitHalf;
-
-% --- Executes on button press in ICC_vox.
-function ICC_vox_Callback(hObject, eventdata, handles)
-% hObject    handle to ICC_vox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-ICC_vox;
-
-% --- Executes on button press in ICC_ROI.
-function ICC_ROI_Callback(hObject, eventdata, handles)
-% hObject    handle to ICC_ROI (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-ICC_roi;
 
 
 % --- Executes on button press in dice_ROI.
