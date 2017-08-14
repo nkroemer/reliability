@@ -1945,93 +1945,7 @@ if nr_para > 0
                     end;   
 
         end;
-        % computing average ICC
-        disp('...computing total ICC...')
-        ROI_subj = zeros(nr_subj,runs);
-        for ind_subj = 1:nr_subj
-            for ind_run = 1:runs
-                if runs == 1
-                    ind_run = single_run;
-                end;
-                eval(sprintf('img%d_%d = img_par%d_%d (:,:,:,ind_subj);',ind_run,ind_subj,ind_par,ind_run));
-                eval(sprintf('ROI_subj(ind_subj,ind_run) = mean(img%d_%d(:));',ind_run,ind_subj));
-            end;
-        end;                
-                    %ICC
-                    nsamples=nr_subj*runs;
-
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:runs,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
-                    end;
-                    grandmean=grandmean./nsamples;
-
-                    sessionmean=zeros(runs,1);
-                    for sess=1:runs
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:runs
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./runs;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:runs
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:runs
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= runs.*BMS./(nr_subj-1);
-                    WMS= WMS./(runs-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(runs-1);
-                    EMS= EMS./(runs-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC%s_con_par%d',str,ind_par);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_par%d',str,ind_par);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
-                    
-                    end;
-
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
-                                                       runs.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC%s_abs_par%d',str,ind_par);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_par%d',str,ind_par);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;                    
-                    end;   
+        
 end;
                     assignin('base','summary',summary);
                     assignin('base','cols',cols);
@@ -2375,7 +2289,6 @@ if runs > 1
                             target_img.fileprefix = file4;
                             target_img.img = z_ICC_abs_ROI;
                             save_nii(target_img,target_img.fileprefix);   
-            end;
                             
      % computing ROI ICC for each comparison
      if roi == 1 
@@ -2463,6 +2376,7 @@ if runs > 1
                     cols{1,end+1}=sprintf('z_ICC%s_abs_par%d_%d_%d',str,ind_para,ind_run,ind_run+ind_sec);
                     summary(1,end+1)=z_ICC_abs_ROI_total;
                     end;
+     end;
     end;
         end;
 
@@ -2605,10 +2519,10 @@ end;
      
 
      % computing ROI ICC
-if roi == 1
 disp('...computing ROI total ICC...')
 
 for ind_runs = 1:runs
+    if roi == 1
     if runs == 1
         ind_runs = single_run;
     end;
@@ -2618,7 +2532,15 @@ for ind_runs = 1:runs
             eval(sprintf('img%d_%d = img_%d_split%d (:,:,:,ind_subj);',ind_split,ind_subj,ind_run,ind_split));
             eval(sprintf('ROI_subj(ind_subj,ind_split) = mean(img%d_%d(r_roi_ind));',ind_split,ind_subj));
         end;
-    end;                
+    end;
+    else
+        for ind_subj = 1:nr_subj
+            for ind_split = 1:2
+                eval(sprintf('img%d_%d = img_%d_split%d (:,:,:,ind_subj);',ind_split,ind_subj,ind_run,ind_split));
+                eval(sprintf('ROI_subj(ind_subj,ind_split) = mean(img%d_%d(:));',ind_split,ind_subj));
+            end;
+        end;        
+    end;
                     %ICC
                     nsamples=nr_subj*2;
 
@@ -2697,7 +2619,6 @@ for ind_runs = 1:runs
                     end;
 
 
-end;
 end;
                     assignin('base','summary',summary);
                     assignin('base','cols',cols);
