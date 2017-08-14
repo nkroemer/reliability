@@ -315,8 +315,10 @@ if split == 0 && two_cons == 0
                 fprintf('...compare %d to %d...\n',k,k-ind);
                     count = 0;
                 for l = 1:eval(sprintf('nr_sig_%d',k))
-                   eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_%d,co_sig_%d(:,l))));',k-ind,k));
-                   count = count + length(idx);
+                   if ~isempty(eval(sprintf('co_sig_%d',k-ind)))
+                    eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_%d,co_sig_%d(:,l))));',k-ind,k));
+                    count = count + length(idx);
+                   end;
                 end;
                 
 
@@ -478,7 +480,7 @@ if nr_para>0
         print(f2,sprintf('results_overlap_subjectwise_par%d',ind_para),'-dpng','-r0');
 
 
-        eval(sprintf('save results_overlap_subjectwise_par%d.mat results_overlap_subj',ind_par));   
+        eval(sprintf('save results_overlap_subjectwise_par%d.mat results_overlap_subj',ind_para));   
     end;
 end;
     
