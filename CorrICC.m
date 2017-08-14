@@ -125,14 +125,6 @@ function abs_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of abs
 
-% --- Executes on button press in cons.
-function cons_Callback(hObject, eventdata, handles)
-% hObject    handle to cons (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of cons
-
 
 % --- Executes on button press in roi.
 function roi_Callback(hObject, eventdata, handles)
