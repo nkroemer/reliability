@@ -22,7 +22,7 @@ function varargout = Contrast_Def(varargin)
 
 % Edit the above text to modify the response to help Contrast_Def
 
-% Last Modified by GUIDE v2.5 26-Jul-2017 09:38:21
+% Last Modified by GUIDE v2.5 11-Sep-2017 15:46:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -293,8 +293,7 @@ f = filesep;
 
 
     if two_cons == 0
-        con=get(handles.con,'String');
-        reg_count = str2double(get(handles.con_count,'String'));
+        con=get(handles.con,'String');      
         file = [path f id{1} f stats_filled f con '*']; 
         con = dir(file);
         if size(con)>1
@@ -304,26 +303,33 @@ f = filesep;
             con = con(1).name;
             contrast_def.contrast = con;        
         end;
-        contrast_def.number_regressor = reg_count;    
+        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
+        load(spmmat);        
+        for i = 1:length(SPM.xCon)
+            if strcmp({SPM.xCon(i).Vcon.fname}, [con])==1
+                idx = i;
+            end;
+        end;
+        contrast_def.number_regressor = idx;    
         [pathstr,name,ext] = fileparts(con);
         contrast_def.contrast_number = str2double(regexp(con,'[\d]+','match'));
         contrast_def.contrast_format = ext;
         
         % info parametric modulators
-        spm_file = [path f id{1} f stats_filled f 'SPM.mat'];
-        load(spm_file);
-        if strcmp(SPM.Sess(1).U(reg_count).P(1).name,'none')
+        if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
             study_design.number_parametric = 0;
+            contrast_def.number_parametric = 0;
+
             nr_para = 0;
         else
             nr_para = size(SPM.Sess(1).U(reg_count).P,2);
             study_design.number_parametric = nr_para;
+            contrast_def.number_parametric = nr_para;            
         end;
         cd(dir_results)
         save(name_design,'study_design');
     else
         con1=get(handles.con1,'String');
-        reg1_count = str2double(get(handles.con1_count,'String'));
         file = [path f id{1} f stats_filled f con1 '*'];
         con1 = dir(file);
         if size(con1)>1
@@ -333,13 +339,19 @@ f = filesep;
             con = con1(1).name;
             contrast_def.contrast1 = con;        
         end;
-        contrast_def.number_regressor1 = reg1_count;
+        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
+        load(spmmat);        
+        for i = 1:length(SPM.xCon)
+            if strcmp({SPM.xCon(i).Vcon.fname}, [con '.nii'])==1
+                idx = i;
+            end;
+        end;
+        contrast_def.number_regressor1 = idx;         
         contrast_def.contrast1_number = str2double(regexp(con1,'[\d]+','match'));
 
         % info parametric modulators
-        spm_file = [path f id{1} f stats_filled f 'SPM.mat'];
-        load(spm_file);
-        if strcmp(SPM.Sess(1).U(reg1_count).P(1).name,'none')
+
+        if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
             study_design.number_parametric1 = 0;
             nr_para1 = 0;
         else
@@ -350,7 +362,6 @@ f = filesep;
         save(name_design,'study_design');
 
         con2=get(handles.con2,'String');
-        reg2_count = str2double(get(handles.con2_count,'String'));
         file = [path f id{1} f stats_filled f con2 '*'];
         con2 = dir(file);
         if size(con2)>1
@@ -360,19 +371,25 @@ f = filesep;
             con = con2(1).name;
             contrast_def.contrast2 = con;        
         end;
-        contrast_def.number_regressor2 = reg2_count;
+        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
+        load(spmmat);        
+        for i = 1:length(SPM.xCon)
+            if strcmp({SPM.xCon(i).Vcon.fname}, [con])==1
+                idx = i;
+            end;
+        end;       
+        
+        contrast_def.number_regressor2 = idx;
         [pathstr,name,ext] = fileparts(con2);
         contrast_def.contrast_format = ext;
         contrast_def.contrast2_number = str2double(regexp(con2,'[\d]+','match'));
 
         % info parametric modulators
-        spm_file = [path f id{1} f stats_filled f 'SPM.mat'];
-        load(spm_file);
-        if strcmp(SPM.Sess(1).U(reg2_count).P(1).name,'none')
+        if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
             study_design.number_parametric2 = 0;
             nr_para2 = 0;
         else
-            nr_para2 = size(SPM.Sess(1).U(reg2_count).P,2);
+            nr_para2 = size(SPM.Sess(1).U(idx).P,2);
             study_design.number_parametric2 = nr_para2;
         end;
         cd(dir_results);
