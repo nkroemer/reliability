@@ -145,7 +145,7 @@ cd('atlas');
 atlas_dir = pwd;
 atlas_name = 'atlas.nii';
 atlas_compl = [atlas_dir f atlas_name];
-    matlabbatch{1}.spm.spatial.coreg.write.ref = {[stats_path f id{1} f stats_filled f con ',1']};
+    matlabbatch{1}.spm.spatial.coreg.write.ref = {[stats_path f vp{1} f stats_filled f con ',1']};
     matlabbatch{1}.spm.spatial.coreg.write.source = {sprintf('%s,1',atlas_compl)};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;
     matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];

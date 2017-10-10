@@ -22,7 +22,7 @@ function varargout = CorrICC(varargin)
 
 % Edit the above text to modify the response to help CorrICC
 
-% Last Modified by GUIDE v2.5 26-Jul-2017 09:51:17
+% Last Modified by GUIDE v2.5 11-Sep-2017 15:46:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -277,144 +277,8 @@ if roi == 1
         r_roi_ind = r_roi.img==1;        
     end;
     cd(dir_results);
-
-    % load images and set voxels outside ROI = 0
-    disp('...loading images and mask with ROI...');
-    if split == 0 && two_cons == 0
-        for i = 1:runs
-            if runs == 1
-                i = single_run;
-            end;
-            img = load_nii(sprintf('4D_%d.nii',i));
-            eval(sprintf('img_%d = img;',i));
-            eval(sprintf('img_%d = img_%d.img;',i,i));
-            for count_subj = 1:nr_subj
-                eval(sprintf('img_temp = img_%d(:,:,:,count_subj);',i));
-                img_temp(~r_roi_ind) = 0;
-                eval(sprintf('img_%d(:,:,:,count_subj) = img_temp;',i));
-            end;
-        end;
-        disp('...loads image dimensions..');
-        stats_temp =sprintf(stats_dir,1);
-        temp_img = [stats_path f id{1} f stats_temp f con];
-        temp_img=load_nii(temp_img);
-        dim = size(temp_img.img);
-        x = dim(1);
-        y = dim(2);
-        z = dim(3);
-        if nr_para > 0 
-            for ind_para = 1:nr_para
-               for i = 1:runs
-                    if runs == 1
-                        i = single_run;
-                    end;
-                    img = load_nii(sprintf('4D_par%d_%d.nii',ind_para,i));
-                    eval(sprintf('img_%d_par = img;',i));
-                    eval(sprintf('img_%d_par = img_%d_par.img;',i,i));
-                    for count_subj = 1:nr_subj
-                        eval(sprintf('img_temp = img_%d_par(:,:,:,count_subj);',i));
-                        img_temp(~r_roi_ind) = 0;
-                        eval(sprintf('img_par%d_%d(:,:,:,count_subj) = img_temp;',ind_para,i));
-                    end;
-                end;
-            end;
-        end;
-
-    elseif split == 1
-
-        for i = 1:runs 
-            if runs == 1
-                i = single_run;
-            end;
-
-            img1 = load_nii(sprintf('4D_split1_%d.nii',i));
-            eval(sprintf('img_%d_split1 = img1;',i));
-            eval(sprintf('img_%d_split1 = img_%d_split1.img;',i,i));
-            for count_subj = 1:nr_subj
-                eval(sprintf('img_temp = img_%d_split1(:,:,:,count_subj);',i));
-                img_temp(~r_roi_ind) = 0;
-                eval(sprintf('img_%d_split1(:,:,:,count_subj) = img_temp;',i));
-            end;
-
-            img2 = load_nii(sprintf('4D_split2_%d.nii',i));
-            eval(sprintf('img_%d_split2 = img2;',i));
-            eval(sprintf('img_%d_split2 = img_%d_split2.img;',i,i));
-            for count_subj = 1:nr_subj
-                eval(sprintf('img_temp = img_%d_split2(:,:,:,count_subj);',i));
-                img_temp(~r_roi_ind) = 0;
-                eval(sprintf('img_%d_split2(:,:,:,count_subj) = img_temp;',i));
-            end;
-        end;
-
-        if nr_para > 0
-            for ind_para = 1:nr_para
-                   for i = 1:runs    
-                       if runs == 1
-                           i = single_run;
-                       end;
-                        nii = sprintf('4D_split1_par%d_%d.nii',ind_para,i);
-                        img1 = load_nii(nii);
-                        eval(sprintf('img_%d_par%d_split1 = img1;',i,ind_para));
-                        eval(sprintf('img_%d_par%d_split1 = img_%d_par%d_split1.img;',i,ind_para,i,ind_para));
-                        for count_subj = 1:nr_subj
-                            eval(sprintf('img_temp = img_%d_par%d_split1(:,:,:,count_subj);',i,ind_para));
-                            img_temp(~r_roi_ind) = 0;
-                            eval(sprintf('img_%d_par%d_split1(:,:,:,count_subj) = img_temp;',i,ind_para));
-                        end;                   
-
-                        nii2 = sprintf('4D_split2_par%d_%d.nii',ind_para,i);
-                        img2 = load_nii(nii2);
-                        eval(sprintf('img_%d_par%d_split2 = img2;',i,ind_para));
-                        eval(sprintf('img_%d_par%d_split2 = img_%d_par%d_split2.img;',i,ind_para,i,ind_para));
-                        for count_subj = 1:nr_subj
-                            eval(sprintf('img_temp = img_%d_par%d_split2(:,:,:,count_subj);',i,ind_para));
-                            img_temp(~r_roi_ind) = 0;
-                            eval(sprintf('img_%d_par%d_split2(:,:,:,count_subj) = img_temp;',i,ind_para));
-                        end;   
-                    end; 
-            end;
-        end;
-        disp('...loads image dimensions..');
-        stats_temp =sprintf(stats_dir,1);
-        temp_img = [stats_path f id{1} f stats_temp f con];
-        temp_img=load_nii(temp_img);
-        dim = size(temp_img.img);
-        x = dim(1);
-        y = dim(2);
-        z = dim(3);
-    elseif two_cons == 1
-        for i = 1:runs    
-            if runs == 1
-                i = single_run;
-            end;
-            img1 = load_nii(sprintf('4D_%s_%d.nii',con1,i));
-            eval(sprintf('img_%d_con1 = img1;',i));
-            eval(sprintf('img_%d_con1 = img_%d_con1.img;',i,i));
-            for count_subj = 1:nr_subj
-                eval(sprintf('img_temp = img_%d_con1(:,:,:,count_subj);',i));
-                img_temp(~r_roi_ind) = 0;
-                eval(sprintf('img_%d_con1(:,:,:,count_subj) = img_temp;',i));
-            end;
-
-            img2 = load_nii(sprintf('4D_%s_%d.nii',con2,i));
-            eval(sprintf('img_%d_con2 = img2;',i));
-            eval(sprintf('img_%d_con2 = img_%d_con2.img;',i,i));
-            for count_subj = 1:nr_subj
-                eval(sprintf('img_temp = img_%d_con2(:,:,:,count_subj);',i));
-                img_temp(~r_roi_ind) = 0;
-                eval(sprintf('img_%d_con2(:,:,:,count_subj) = img_temp;',i));
-            end;
-        end;
-        disp('...loads image dimensions..');
-        stats_temp =sprintf(stats,1);
-        temp_img = [path f id{1} f stats_temp f con1];
-        temp_img=load_nii(temp_img);
-        dim = size(temp_img.img);
-        x = dim(1);
-        y = dim(2);
-        z = dim(3);
-    end;    
-else
+    clear r_roi roi_ful;
+end;    
     % load 4D images whole-brain, without ROI
     disp('...loads image dimensions..');
     stats_temp =sprintf(stats_dir,1);
@@ -435,6 +299,7 @@ else
                 end;
             end;
         end;
+        clear img;
     elseif split == 1
         for i = 1:runs 
             if runs == 1
@@ -447,12 +312,13 @@ else
             if nr_para > 0
                 for ind_para = 1:nr_para
                     img1 = load_nii(sprintf('4D_split1_par%d_%d.nii',ind_para,i));
-                    img1 = load_nii(sprintf('4D_split2_par%d_%d.nii',ind_para,i));
+                    img2 = load_nii(sprintf('4D_split2_par%d_%d.nii',ind_para,i));
                     eval(sprintf('img_%d_par%d_split1 = img1.img;',i,ind_para));
                     eval(sprintf('img_%d_par%d_split2 = img2.img;',i,ind_para)); 
                 end;
             end;
-        end;                                    
+        end;     
+        clear img1 img2
     elseif two_cons == 1
         for i = 1:runs    
             if runs == 1
@@ -461,70 +327,93 @@ else
             img1 = load_nii(sprintf('4D_%s_%d.nii',con1,i));
             img2 = load_nii(sprintf('4D_%s_%d.nii',con2,i));
             eval(sprintf('img_%d_con1 = img1.img;',i));
-            eval(sprintf('img_%d_con2 = img2.img;',i));            
-        end;            
+            eval(sprintf('img_%d_con2 = img2.img;',i));     
+            if nr_para > 0
+                for ind_para = 1:nr_para
+                    img = load_nii(sprintf('4D_%s_par%d_%d.nii',con1,ind_para,i));
+                    eval(sprintf('img_con1_par%d_%d = img.img;',ind_para,i));
+                    img = load_nii(sprintf('4D_%s_par%d_%d.nii',con2,ind_para,i));
+                    eval(sprintf('img_con2_par%d_%d = img.img;',ind_para,i));                    
+                end;
+            end;
+        end; 
+        clear img1 img2 img
     end;
-end;
+nr_vox = x*y*z;
 
 %% create correlation maps 
 cd (dir_results); 
-            % for naming of outputs
-            if roi == 1
-                str = 'ROI';
-            else
-                str = '';
-            end;
+    % for naming of outputs
+    if roi == 1
+        str = 'ROI';
+    else
+        str = '';
+    end;
+
 if pear == 1 || spea == 1
 % initiate summary
 cols = {};
 summary = [];
 if split == 0 && two_cons == 0 && runs > 1    
     count_comp = 0;
+    % create data matrix with data for all voxels in cols, subjects in rows
+    % and runs in third dimension
+    data = zeros(nr_subj,nr_vox,runs);
+    for ind_runs = 1:runs
+        for ind_subj = 1:nr_subj
+            eval(sprintf('temp = img_%d(:,:,:,ind_subj);',ind_runs));
+            data(ind_subj,:,ind_runs)=temp(:);
+        end;
+    end;
+    clear temp;
+    
+    %correlations for each comparison
     for i_run = 1:runs
         for i_sec = 1:runs-i_run
             if i_run+i_sec <= runs
                 count_comp = count_comp +1;
                 fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                 %load 4D images
-                eval(sprintf('one=img_%d;',i_run));
-                one (~one) = nan;
-                eval(sprintf('second=img_%d;',i_run+i_sec));
-                second (~second) = nan;
-
-                % create correlation vectors 
-                r_vec_pear_1_2 = zeros(x,y,z);
-                r_vec_spea_1_2 = zeros(x,y,z);
-                z_r_vec_pear_1_2 = zeros(x,y,z);
-                z_r_vec_spea_1_2 = zeros(x,y,z);
-
-                for ind_x = 1:x
-                     fprintf('...voxel x = %d,...\n',ind_x) 
-                   for ind_y = 1:y
-                        for ind_z = 1:z
-                            first_voxel = one (ind_x, ind_y, ind_z, :);
-                            second_voxel = second (ind_x, ind_y, ind_z, :);
-                            % Pearson
-                            if pear==1
-                                r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                                if isnan (r(1,2))
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                else
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                                end;
+                eval(sprintf('one=data(:,:,%d);',i_run));
+                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                
+                r1 = zeros(nr_vox,1);
+                zr1 = zeros(nr_vox,1);
+                r2 = zeros(nr_vox,1);
+                zr2 = zeros(nr_vox,1);
+                for i_vox = 1:nr_vox
+                    if pear == 1 
+                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                            if isnan (r(1,2))
+                                r1(i_vox,1) = 0;
+                                zr1(i_vox,1) = 0;
+                            else
+                                r1(i_vox,1) = r(1,2);
+                                zr1(i_vox,1) = atanh(r(1,2));
                             end;
-                            %Spearman
-                            if spea==1
-                                first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                                second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                                r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                                r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                                z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-                            end;
-                        end;
+                    end
+                    if spea == 1
+                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r2(i_vox,1) = r;  
+                            zr2(i_vox,1) = atanh(r);  
                     end;
+                    
                 end;
+                clear one second
+                
+                % create correlation matrices for image 
+                if pear == 1
+                r_vec_pear_1_2 = reshape(r1,x,y,z);
+                z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+                clear r1 zr1
+                end;
+                
+                if spea == 1
+                r_vec_spea_1_2 = reshape(r2,x,y,z);
+                z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+                clear r2 zr2 
+                end;
+             
 
             % save correlation maps
             if pear == 1
@@ -532,13 +421,23 @@ if split == 0 && two_cons == 0 && runs > 1
 
             file = sprintf('CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = r_vec_pear_1_2;
+                if roi == 0
+                    target_img.img = r_vec_pear_1_2;
+                else
+                    r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = r_vec_pear_1_2;
+                end;
             save_nii(target_img,target_img.fileprefix);  
 
             target_img = temp_img;
             file = sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = z_r_vec_pear_1_2;
+                if roi == 0
+                    target_img.img = z_r_vec_pear_1_2;
+                else
+                    z_r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = z_r_vec_pear_1_2;
+                end;            
             save_nii(target_img,target_img.fileprefix);      
             end;
             
@@ -546,35 +445,48 @@ if split == 0 && two_cons == 0 && runs > 1
             target_img = temp_img;
             file = sprintf('CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = r_vec_spea_1_2;
+                if roi == 0
+                    target_img.img = r_vec_spea_1_2;
+                else
+                    r_vec_spea_1_2(~r_roi_ind)=0;
+                    target_img.img = r_vec_spea_1_2;
+                end;
             save_nii(target_img,target_img.fileprefix);
 
             target_img = temp_img;
             file = sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = z_r_vec_spea_1_2;
+                if roi == 0
+                    target_img.img = z_r_vec_spea_1_2;
+                else
+                    z_r_vec_spea_1_2(~r_roi_ind)=0;
+                    target_img.img = z_r_vec_spea_1_2;
+                end;               
             save_nii(target_img,target_img.fileprefix);                      
             end;
             
             %compute z mean and inverse Fisher's transformation
             if pear == 1
-            mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-            summary(1,end+1)=mean_r;
-            cols{1,end+1} = sprintf('mean_pear%s_%d_%d',str,i_run,i_run+i_sec);
+                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_pear%s_%d_%d',str,i_run,i_run+i_sec);
             end;
             if spea == 1
-            mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-            summary(1,end+1)=mean_r;
-            cols{1,end+1} = sprintf('mean_spea%s_%d_%d',str,i_run,i_run+i_sec);    
+                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_spea%s_%d_%d',str,i_run,i_run+i_sec);    
             end;
             end; 
         end;
     end;
+    clear r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2 data
+
     % calculate average correlation for all comparisons
-    avg_corr_4D_pear = zeros(x,y,z,count_comp);
-    avg_corr_4D_spea = zeros(x,y,z,count_comp);
+    disp('...creates average correlation maps ...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
     ind_comp = 0;
     for i_run = 1:runs
         for i_sec = 1:runs-i_run
@@ -582,31 +494,32 @@ if split == 0 && two_cons == 0 && runs > 1
                 ind_comp = ind_comp+1;
                 if pear == 1
                 map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec));
-                avg_corr_4D_pear(:,:,:,ind_comp) = map.img;
+                avg_corr_4D_pear(:,ind_comp) = map.img(:);
                 end;
                 if spea == 1
                 map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec));
-                avg_corr_4D_spea(:,:,:,ind_comp) = map.img;
+                avg_corr_4D_spea(:,ind_comp) = map.img(:);
                 end;                
             end; 
         end;
     end;
-    avg_pear = zeros(x,y,z);
-    avg_spea = zeros(x,y,z);
-    for ind_x = 1:x
-        for ind_y = 1:y
-            for ind_z = 1:z
-                if pear == 1
-                    avg_temp = mean(avg_corr_4D_pear(ind_x,ind_y,ind_z,:));
-                    avg_pear(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                end;
-                if spea == 1
-                    avg_temp = mean(avg_corr_4D_spea(ind_x,ind_y,ind_z,:));
-                    avg_spea(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                end;                
-            end;
-        end,
+    clear map
+    
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
     end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+
     if pear == 1
         target_img = temp_img;
         target_img.fileprefix = sprintf('CorrMaps%s_pear.nii',str);
@@ -619,2169 +532,1562 @@ if split == 0 && two_cons == 0 && runs > 1
         target_img.img = avg_spea;
         save_nii(target_img,target_img.fileprefix);        
     end;
+clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2 
 
 if nr_para > 0    
-    count_comp = 0;
-    for i_par = 1:nr_para
-        for i_run = 1:runs
-           for i_sec = 1:runs-i_run
-                if i_run+1 <= runs
-                count_comp = count_comp +1;
-                fprintf('...creates correlation maps for parametric modulator %d in session %d and session %d...\n',i_par,i_run,i_run+i_sec);
-                %load 4D images
-                eval(sprintf('one=img_par%d_%d;',i_par,i_run));
-                one (~one) = nan;
-                eval(sprintf('second=img_par%d_%d;',i_par,i_run+i_sec));
-                second (~second) = nan;
-
-                % create correlation vectors 
-                r_vec_pear_1_2 = zeros(x,y,z);
-                r_vec_spea_1_2 = zeros(x,y,z);
-                z_r_vec_pear_1_2 = zeros(x,y,z);
-                z_r_vec_spea_1_2 = zeros(x,y,z);
-
-                for ind_x = 1:x
-                    fprintf('...voxel x = %d,...\n',ind_x) 
-                    for ind_y = 1:y
-                        for ind_z = 1:z
-                            first_voxel = one (ind_x, ind_y, ind_z, :);
-                            second_voxel = second (ind_x, ind_y, ind_z, :);
-                            % Pearson
-                            if pear==1
-                                r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                                if isnan (r(1,2))
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                else
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                                end;
-                            end;
-                            %Spearman
-                            if spea==1
-                                first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                                second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                                r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                                r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                                z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-                            end;
-                        end;
-                    end;
-                end;
-
-                % save correlation maps
-                target_img = temp_img;
-                file = sprintf('CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
-                target_img.fileprefix = file;
-                target_img.img = r_vec_pear_1_2;
-                save_nii(target_img,target_img.fileprefix);  
-
-                target_img = temp_img;
-                file = sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
-                target_img.fileprefix = file;
-                target_img.img = z_r_vec_pear_1_2;
-                save_nii(target_img,target_img.fileprefix);                     
-
-                target_img = temp_img;
-                file = sprintf('CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
-                target_img.fileprefix = file;
-                target_img.img = r_vec_spea_1_2;
-                save_nii(target_img,target_img.fileprefix);
-
-                target_img = temp_img;
-                file = sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
-                target_img.fileprefix = file;
-                target_img.img = z_r_vec_spea_1_2;
-                save_nii(target_img,target_img.fileprefix);                      
-
-                %compute z mean and inverse Fisher's transformation
-                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-                summary(1,end+1)=mean_r;
-                cols{1,end+1} = sprintf('mean_pear%s_par%d_%d_%d',str,i_par,i_run,i_run+i_sec);
-
-                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-                summary(1,end+1)=mean_r;
-                cols{1,end+1} = sprintf('mean_spea%s_par%d_%d_%d',str,i_par,i_run,i_run+i_sec);    
-
-                end; 
+     count_comp = 0;
+     for i_par = 1:nr_para
+        data = zeros(nr_subj,nr_vox,runs);
+        for ind_runs = 1:runs
+            for ind_subj = 1:nr_subj
+                eval(sprintf('temp = img_par%d_%d(:,:,:,ind_subj);',i_par,ind_runs));
+                data(ind_subj,:,ind_runs)=temp(:);
             end;
         end;
-    end;
+        clear temp
     
-    % calculate average correlation for all comparisons
-    for i_par = 1:nr_para
-        avg_corr_4D_pear = zeros(x,y,z,count_comp);
-        avg_corr_4D_spea = zeros(x,y,z,count_comp);
-        ind_comp = 0;
-        for i_run = 1:runs
-            for i_sec = 1:runs-i_run
-                if i_run+i_sec <= runs
-                    ind_comp = ind_comp+1;
-                    if pear == 1
-                        map = load_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
-                        avg_corr_4D_pear(:,:,:,ind_comp) = map.img;
-                    end;
-                    if spea == 1
-                        map = load_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
-                        avg_corr_4D_spea(:,:,:,ind_comp) = map.img;
-                    end;                
-                end; 
-            end;
-        end;
-        avg_pear = zeros(x,y,z);
-        avg_spea = zeros(x,y,z);
-        for ind_x = 1:x
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    if pear == 1
-                        avg_temp = mean(avg_corr_4D_pear(ind_x,ind_y,ind_z,:));
-                        avg_pear(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;
-                    if spea == 1
-                        avg_temp = mean(avg_corr_4D_spea(ind_x,ind_y,ind_z,:));
-                        avg_spea(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;                
-                end;
-            end,
-        end;
-        if pear == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d.nii',str,i_par);
-            target_img.img = avg_pear;
-            save_nii(target_img,target_img.fileprefix); 
-        end;
-        if spea == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d.nii',str,i_par);
-            target_img.img = avg_spea;
-            save_nii(target_img,target_img.fileprefix);        
-        end;   
-    end;
-end;
-%% based on split half
-elseif split == 1
-    for i = 1:runs
-        if runs == 1
-            i = single_run;
-        end;
-        fprintf('...creates correlation maps for splitted session %d...\n',i);
-        
-        %load 4D images
-        eval(sprintf('one=img_%d_split1;',i));
-        one (~one) = nan;
-        eval(sprintf('second=img_%d_split2;',i));
-        second (~second) = nan;
-
-        % create correlation vectors 
-        r_vec_pear_1_2 = zeros(x,y,z);
-        r_vec_spea_1_2 = zeros(x,y,z);
-        z_r_vec_pear_1_2 = zeros(x,y,z);
-        z_r_vec_spea_1_2 = zeros(x,y,z);
-    
-        for ind_x = 1:x
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    first_voxel = one (ind_x, ind_y, ind_z, :);
-                    second_voxel = second (ind_x, ind_y, ind_z, :);
-                    % Pearson
-                    if pear==1
-                        r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                        if isnan (r(1,2))
-                            r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                            z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                        else
-                      % correction for understimation of reliability via
-                      % split-half
-                            r = (2.*r(1,2))./(1+r(1,2));
-                            r_vec_pear_1_2(ind_x, ind_y, ind_z) = r;
-                            z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r);
-                        end;
-                    end;
-                    %Spearman
-                    if spea==1
-                        first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                        second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                        r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                        % correction for understimation of reliability via
-                        % split-half
-                        r = (2.*r)./(1+r);
-                        r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                        z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);  
-                    end;
-                end;
-            end;
-        end;
-        
-        % save correlation map
-        target_img = temp_img;
-        file = sprintf('CorrMaps%s_pear_%d_split.nii',str,i);
-        target_img.fileprefix = file;
-        target_img.img = r_vec_pear_1_2;
-        save_nii(target_img,target_img.fileprefix);   
-
-        target_img = temp_img;
-        file = sprintf('CorrMaps%s_spea_%d_split.nii',str,i);
-        target_img.fileprefix = file;
-        target_img.img = r_vec_spea_1_2;
-        save_nii(target_img,target_img.fileprefix);
-
-        target_img = temp_img;
-        file = sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i);
-        target_img.fileprefix = file;
-        target_img.img = z_r_vec_pear_1_2;
-        save_nii(target_img,target_img.fileprefix);   
-
-        target_img = temp_img;
-        file = sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i);
-        target_img.fileprefix = file;
-        target_img.img = z_r_vec_spea_1_2;
-        save_nii(target_img,target_img.fileprefix);
-                    
-        %compute z mean and inverse Fisher's transformation
-        mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-        summary(1,end+1)=mean_r;
-        cols{1,end+1} = sprintf('mean_pear%s_split_%d',str,i);
-        mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-        summary(1,end+1)=mean_r;
-        cols{1,end+1} = sprintf('mean_spea%s_split_%d',str,i);  
-    end; 
-    
-    % calculate average correlation for all comparisons
-        avg_corr_4D_pear = zeros(x,y,z,runs);
-        avg_corr_4D_spea = zeros(x,y,z,runs);
-        for i_run = 1:runs
-            if pear == 1
-                map = load_nii(sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i_run));
-                avg_corr_4D_pear(:,:,:,i_run) = map.img;
-            end;
-            if spea == 1
-                map = load_nii(sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i_run));
-                avg_corr_4D_spea(:,:,:,i_run) = map.img;
-            end;                
-        end;
-        avg_pear = zeros(x,y,z);
-        avg_spea = zeros(x,y,z);
-        for ind_x = 1:x
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    if pear == 1
-                        avg_temp = mean(avg_corr_4D_pear(ind_x,ind_y,ind_z,:));
-                        avg_pear(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;
-                    if spea == 1
-                        avg_temp = mean(avg_corr_4D_spea(ind_x,ind_y,ind_z,:));
-                        avg_spea(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;                
-                end;
-            end;
-        end;
-        if pear == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_pear_split.nii',str);
-            target_img.img = avg_pear;
-            save_nii(target_img,target_img.fileprefix); 
-        end;
-        if spea == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_spea_split.nii',str);
-            target_img.img = avg_spea;
-            save_nii(target_img,target_img.fileprefix);        
-        end;   
-% comparison of splitted parametric regressor    
-    if nr_para > 0
-       for ind_para = 1:nr_para 
-           for i = 1:runs
-                if runs == 1
-                    i = single_run;
-                end;
-                fprintf('...creates correlation maps for parametric contrast in splitted session %d...\n',i);
-
-                %load 4D images
-                eval(sprintf('one=img_%d_par%d_split1;',i,ind_para));
-                one (~one) = nan;
-                eval(sprintf('second=img_%d_par%d_split2;',i,ind_para));
-                second (~second) = nan;
-
-                % create correlation vectors 
-                r_vec_pear_1_2 = zeros(x,y,z);
-                r_vec_spea_1_2 = zeros(x,y,z);
-                z_r_vec_pear_1_2 = zeros(x,y,z);
-                z_r_vec_spea_1_2 = zeros(x,y,z);
-    
-                for ind_x = 1:x
-                    for ind_y = 1:y
-                        for ind_z = 1:z
-                            first_voxel = one (ind_x, ind_y, ind_z, :);
-                            second_voxel = second (ind_x, ind_y, ind_z, :);
-                            % Pearson
-                            if pear==1
-                                r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                                if isnan (r(1,2))
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                else
-                              % correction for understimation of reliability via
-                              % split-half
-                                    r = (2.*r(1,2))./(1+r(1,2));
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = r;
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r);
-                                end;
-                            end;
-                            %Spearman
-                            if spea==1
-                                first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                                second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                                r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                                % correction for understimation of reliability via
-                                % split-half
-                                r = (2.*r)./(1+r);
-                                r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                                z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);  
-                            end;
-                        end;
-                    end;
-                end;
-        
-                % save correlation map
-                target_img = temp_img;
-                file = sprintf('CorrMaps%s_pear_par%d_%d_split.nii',str,ind_para,i);
-                target_img.fileprefix = file;
-                target_img.img = r_vec_pear_1_2;
-                save_nii(target_img,target_img.fileprefix);   
-
-                target_img = temp_img;
-                file = sprintf('CorrMaps%s_spea_par%d_%d_split.nii',str,ind_para,i);
-                target_img.fileprefix = file;
-                target_img.img = r_vec_spea_1_2;
-                save_nii(target_img,target_img.fileprefix);
-
-                target_img = temp_img;
-                file = sprintf('z_CorrMaps%s_pear_par%d_%d_split.nii',str,ind_para,i);
-                target_img.fileprefix = file;
-                target_img.img = z_r_vec_pear_1_2;
-                save_nii(target_img,target_img.fileprefix);   
-
-                target_img = temp_img;
-                file = sprintf('z_CorrMaps%s_spea_par%d_%d_split.nii',str,ind_para,i);
-                target_img.fileprefix = file;
-                target_img.img = z_r_vec_spea_1_2;
-                save_nii(target_img,target_img.fileprefix);
-
-                %compute z mean and inverse Fisher's transformation
-                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-                summary(1,end+1)=mean_r;
-                cols{1,end+1} = sprintf('mean_pear%s_par%d_split_%d',str,ind_para,i);
-                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-                summary(1,end+1)=mean_r;
-                cols{1,end+1} = sprintf('mean_spea%s_par%d_split_%d',str,ind_para,i);  
-            end; 
-    
-    % calculate average correlation for all comparisons
-        avg_corr_4D_pear = zeros(x,y,z,runs);
-        avg_corr_4D_spea = zeros(x,y,z,runs);
-        for i_run = 1:runs
-            if pear == 1
-                map = load_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_split.nii',str,ind_para,i_run));
-                avg_corr_4D_pear(:,:,:,i_run) = map.img;
-            end;
-            if spea == 1
-                map = load_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_split.nii',str,ind_para,i_run));
-                avg_corr_4D_spea(:,:,:,i_run) = map.img;
-            end;                
-        end;
-        avg_pear = zeros(x,y,z);
-        avg_spea = zeros(x,y,z);
-        for ind_x = 1:x
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    if pear == 1
-                        avg_temp = mean(avg_corr_4D_pear(ind_x,ind_y,ind_z,:));
-                        avg_pear(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;
-                    if spea == 1
-                        avg_temp = mean(avg_corr_4D_spea(ind_x,ind_y,ind_z,:));
-                        avg_spea(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;                
-                end;
-            end;
-        end;
-        if pear == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_split.nii',str,ind_para);
-            target_img.img = avg_pear;
-            save_nii(target_img,target_img.fileprefix); 
-        end;
-        if spea == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_split.nii',str,ind_para);
-            target_img.img = avg_spea;
-            save_nii(target_img,target_img.fileprefix);        
-        end;   
-        end;
-    end;
-%% two contrasts out of one statistic    
-elseif two_cons == 1
-    % compare contrasts within sessions
+    %correlations for each comparison
     for i_run = 1:runs
-        fprintf('...\n compare contrasts of session %d\n...',i_run)
-    
-        if runs == 1
-            i_run = single_run;
-        end;
-        eval(sprintf('one = img_%d_con1',i_run));
-        one = one.img;
-        one (~one) = nan;
-
-        eval(sprintf('second = img_%d_con2',i_run));
-        second = second.img;
-        second (~second) = nan;
-        
-        % create correlation vectors 
-        r_vec_pear_1_2 = zeros(x,y,z);
-        r_vec_spea_1_2 = zeros(x,y,z);
-        z_r_vec_pear_1_2 = zeros(x,y,z);
-        z_r_vec_spea_1_2 = zeros(x,y,z);
-
-        for ind_x = 1:x
-            fprintf('..correlations voxels x = %d\n',ind_x)
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    first_voxel = one (ind_x, ind_y, ind_z, :);
-                    second_voxel = second (ind_x, ind_y, ind_z, :);
-                    % Pearson
-                    if pear==1
-                        r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                        if isnan (r(1,2))
-                            r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                            z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                        else
-                            r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-                            z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                        end;
+        for i_sec = 1:runs-i_run
+            if i_run+i_sec <= runs
+                count_comp = count_comp +1;
+                fprintf('...creates correlation maps for parametric contrast in session %d and session %d...\n',i_run,i_run+i_sec);
+                %load 4D images
+                eval(sprintf('one=data(:,:,%d);',i_run));
+                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                
+                r1 = zeros(nr_vox,1);
+                zr1 = zeros(nr_vox,1);
+                r2 = zeros(nr_vox,1);
+                zr2 = zeros(nr_vox,1);
+                for i_vox = 1:nr_vox
+                    if pear == 1 
+                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                            if isnan (r(1,2))
+                                r1(i_vox,1) = 0;
+                                zr1(i_vox,1) = 0;
+                            else
+                                r1(i_vox,1) = r(1,2);
+                                zr1(i_vox,1) = atanh(r(1,2));
+                            end;
+                    end
+                    if spea == 1
+                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r2(i_vox,1) = r;  
+                            zr2(i_vox,1) = atanh(r);  
                     end;
-                    %Spearman
-                    if spea==1
-                        first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                        second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                        r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                        r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                        z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-                    end;
+                    
                 end;
-            end;
-        end;
-        
-            % save correlation map
-            fprintf('...saving maps...\n')
+                clear one second
+                
+                % create correlation matrices for image 
+                if pear == 1
+                    r_vec_pear_1_2 = reshape(r1,x,y,z);
+                    z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+                    clear r1 zr1
+                end;
+                if spea == 1
+                    r_vec_spea_1_2 = reshape(r2,x,y,z);
+                    z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+                    clear r2 zr2;
+                end;
+             
+
+            % save correlation maps
+            if pear == 1
             target_img = temp_img;
-            file = sprintf('CorrMaps%s_pear_%d_con1_con2.nii',str,i_run);
+
+            file = sprintf('CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = r_vec_pear_1_2;
+            if roi == 0
+                target_img.img = r_vec_pear_1_2;
+            else
+                r_vec_pear_1_2(~r_roi_ind)=0;
+                target_img.img = r_vec_pear_1_2;
+            end;
             save_nii(target_img,target_img.fileprefix);  
 
             target_img = temp_img;
-            file = sprintf('z_CorrMaps%s_pear_%d_con1_con2.nii',str,i_run);
+            file = sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = z_r_vec_pear_1_2;
-            save_nii(target_img,target_img.fileprefix);                     
-
+            if roi == 0
+                target_img.img = z_r_vec_pear_1_2;
+            else
+                z_r_vec_pear_1_2(~r_roi_ind)=0;
+                target_img.img = z_r_vec_pear_1_2;
+            end;            
+            save_nii(target_img,target_img.fileprefix);      
+            end;
+            
+            if spea == 1
             target_img = temp_img;
-            file = sprintf('CorrMaps%s_spea_%d_con1_con2.nii',str,i_run);
+            file = sprintf('CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = r_vec_spea_1_2;
+            if roi == 0
+                target_img.img = r_vec_spea_1_2;
+            else
+                r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = r_vec_spea_1_2;
+            end;
             save_nii(target_img,target_img.fileprefix);
 
             target_img = temp_img;
-            file = sprintf('z_CorrMaps%s_spea_%d_con1_con2.nii',str,i_run);
+            file = sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
             target_img.fileprefix = file;
-            target_img.img = z_r_vec_spea_1_2;
-            save_nii(target_img,target_img.fileprefix);  
-
+            if roi == 0
+                target_img.img = z_r_vec_spea_1_2;
+            else
+                z_r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = z_r_vec_spea_1_2;
+            end;               
+            save_nii(target_img,target_img.fileprefix);                      
+            end;
+            
             %compute z mean and inverse Fisher's transformation
+            if pear == 1
             mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
             mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
             summary(1,end+1)=mean_r;
-            cols{1,end+1} = sprintf('mean_pear%s_%d_con1_con2',str,i_run);
+            cols{1,end+1} = sprintf('mean_pear%s_par%d_%d_%d',str,i_par,i_run,i_run+i_sec);
+            end;
+            if spea == 1
             mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
             mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
             summary(1,end+1)=mean_r;
-            cols{1,end+1} = sprintf('mean_spea%s_%d_con1_con2',str,i_run);
-
+            cols{1,end+1} = sprintf('mean_spea%s_par%d_%d_%d',str,i_par,i_run,i_run+i_sec);    
+            end;
+            clear z_r_vec_spea_1_2 r_vec_spea_1_2 r_vec_pear_1_2 z_r_vec_pear_1_2
+            end; 
+        end;
     end;
-    
+    clear data 
     % calculate average correlation for all comparisons
-        avg_corr_4D_pear = zeros(x,y,z,runs);
-        avg_corr_4D_spea = zeros(x,y,z,runs);
-        for i_run = 1:runs
-            if pear == 1
-                map = load_nii(sprintf('z_CorrMaps%s_pear_%d_con1_con2.nii',str,i_run));
-                avg_corr_4D_pear(:,:,:,i_run) = map.img;
-            end;
-            if spea == 1
-                map = load_nii(sprintf('z_CorrMaps%s_spea_%d_con1_con2.nii',str,i_run));
-                avg_corr_4D_spea(:,:,:,i_run) = map.img;
-            end;                
-        end;
-        avg_pear = zeros(x,y,z);
-        avg_spea = zeros(x,y,z);
-        for ind_x = 1:x
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    if pear == 1
-                        avg_temp = mean(avg_corr_4D_pear(ind_x,ind_y,ind_z,:));
-                        avg_pear(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;
-                    if spea == 1
-                        avg_temp = mean(avg_corr_4D_spea(ind_x,ind_y,ind_z,:));
-                        avg_spea(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;                
-                end;
-            end;
-        end;
-        if pear == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_pear_con1_con2.nii',str);
-            target_img.img = avg_pear;
-            save_nii(target_img,target_img.fileprefix); 
-        end;
-        if spea == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_spea_con1_con2.nii',str);
-            target_img.img = avg_spea;
-            save_nii(target_img,target_img.fileprefix);        
-        end;   
-    
-    % compare contrasts between sessions
-    for i_con = 1:2
-        eval(sprintf('con=con%d;',i_con));
-        eval(sprintf('con_count = con%d_count;',i_con));
-        count_comp = 0;
+    disp('...creates average correlation maps for parametric contrast...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
     for i_run = 1:runs
-        for count = 1:runs-1
-            if i_run+count <= runs
-            if runs > 1
-                count_comp = count_comp+1;
-                fprintf('...\n compare contrast %s between sessions\n...',con)
-                eval(sprintf('one = img_%d_con1',i_run));
-                one = one.img;
-                one (~one) = nan;
-
-                eval(sprintf('second = img_%d_con1',i_run+count));
-                second = second.img;
-                second (~second) = nan;
-                % create correlation vectors 
-                r_vec_pear_1_2 = zeros(x,y,z);
-                r_vec_spea_1_2 = zeros(x,y,z);
-                z_r_vec_pear_1_2 = zeros(x,y,z);
-                z_r_vec_spea_1_2 = zeros(x,y,z);
-
-                for ind_x = 1:x
-                    fprintf('..correlations voxels x = %d\n',ind_x)
-                    for ind_y = 1:y
-                        for ind_z = 1:z
-                            first_voxel = one (ind_x, ind_y, ind_z, :);
-                            second_voxel = second (ind_x, ind_y, ind_z, :);
-                            % Pearson
-                            if pear==1
-                                r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-                                if isnan (r(1,2))
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-                                else
-                                    r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-                                    z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
-                                end;
-                            end;
-                            %Spearman
-                            if spea==1
-                                first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-                                second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-                                r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-                                r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-                                z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-                            end;
-                        end;
-                    end;
+        for i_sec = 1:runs-i_run
+            if i_run+i_sec <= runs
+                ind_comp = ind_comp+1;
+                if pear == 1
+                map = load_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
+                avg_corr_4D_pear(:,ind_comp) = map.img(:);
                 end;
-
-                % save correlation map
-                fprintf('...saving maps...\n')
-                target_img = temp_img;
-                file = sprintf('CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+count,con_count);
-                target_img.fileprefix = file;
-                target_img.img = r_vec_pear_1_2;
-                save_nii(target_img,target_img.fileprefix);  
-
-                target_img = temp_img;
-                file = sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+count,con_count);
-                target_img.fileprefix = file;
-                target_img.img = z_r_vec_pear_1_2;
-                save_nii(target_img,target_img.fileprefix);                     
-
-                target_img = temp_img;
-                file = sprintf('CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+count,con_count);
-                target_img.fileprefix = file;
-                target_img.img = r_vec_spea_1_2;
-                save_nii(target_img,target_img.fileprefix);
-
-                target_img = temp_img;
-                file = sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+count,con_count);
-                target_img.fileprefix = file;
-                target_img.img = z_r_vec_spea_1_2;
-                save_nii(target_img,target_img.fileprefix);  
-
-                %compute z mean and inverse Fisher's transformation
-                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-                summary(1,end+1)=mean_r;
-                cols{1,end+1} = sprintf('mean_pear%s_%d_%d_con%d',str,i_run,i_run+count,con_count);
-                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-                summary(1,end+1)=mean_r;
-                cols{1,end+1} = sprintf('mean_spea%s_%d_%d_con%d',str,i_run,i_run+count,con_count);
-            end;
-            end;
+                if spea == 1
+                map = load_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
+                avg_corr_4D_spea(:,ind_comp) = map.img(:);
+                end;                
+            end; 
         end;
     end;
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
     end;
- 
-    % calculate average correlation for all comparisons
-    for i_con = 1:2
-        eval(sprintf('con=con%d;',i_con));
-        eval(sprintf('con_count = con%d_count;',i_con));
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
 
-        avg_corr_4D_pear = zeros(x,y,z,count_comp);
-        avg_corr_4D_spea = zeros(x,y,z,count_comp);
-        ind_comp = 0;
-        for i_run = 1:runs
-            for i_sec = 1:runs-i_run
-                if i_run+i_sec <= runs
-                    ind_comp = ind_comp+1;
-                    if pear == 1
-                        map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
-                        avg_corr_4D_pear(:,:,:,ind_comp) = map.img;
-                    end;
-                    if spea == 1
-                        map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
-                        avg_corr_4D_spea(:,:,:,ind_comp) = map.img;
-                    end;                
-                end; 
-            end;
-        end;
-        avg_pear = zeros(x,y,z);
-        avg_spea = zeros(x,y,z);
-        for ind_x = 1:x
-            for ind_y = 1:y
-                for ind_z = 1:z
-                    if pear == 1
-                        avg_temp = mean(avg_corr_4D_pear(ind_x,ind_y,ind_z,:));
-                        avg_pear(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;
-                    if spea == 1
-                        avg_temp = mean(avg_corr_4D_spea(ind_x,ind_y,ind_z,:));
-                        avg_spea(ind_x,ind_y,ind_z) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
-                    end;                
-                end;
-            end,
-        end;
-        if pear == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_pear_con%d.nii',str,con_count);
-            target_img.img = avg_pear;
-            save_nii(target_img,target_img.fileprefix); 
-        end;
-        if spea == 1
-            target_img = temp_img;
-            target_img.fileprefix = sprintf('CorrMaps%s_spea_con%d.nii',str,con_count);
-            target_img.img = avg_spea;
-            save_nii(target_img,target_img.fileprefix);        
-        end;    
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d.nii',str,i_par);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
     end;
-    
-    
-    % parametric modulators in two contrasts not yet implemented
-%     for i_run = 1:runs
-%         fprintf('...\n compare parametric modulators for contrasts of session %d\n...',i_run)
-%                 eval(sprintf('one = img_%d_con1',i_run));
-%                 one = one.img;
-%                 one (~one) = nan;
-% 
-%                 eval(sprintf('second = img_%d_con1',i_run+count));
-%                 second = second.img;
-%                 second (~second) = nan;
-%         % create correlation vectors 
-%         r_vec_pear_1_2 = zeros(x,y,z);
-%         r_vec_spea_1_2 = zeros(x,y,z);
-%         z_r_vec_pear_1_2 = zeros(x,y,z);
-%         z_r_vec_spea_1_2 = zeros(x,y,z);
-% 
-%         for ind_x = 1:x
-%             fprintf('..correlations voxels x = %d\n',ind_x)
-%             for ind_y = 1:y
-%                 for ind_z = 1:z
-%                     first_voxel = one (ind_x, ind_y, ind_z, :);
-%                     second_voxel = second (ind_x, ind_y, ind_z, :);
-%                     % Pearson
-%                     if pear==1
-%                         r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-%                         if isnan (r(1,2))
-%                             r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-%                             z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-%                         else
-%                             r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-%                             z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
-%                         end;
-%                     end;
-%                     %Spearman
-%                     if spea==1
-%                         first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-%                         second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-%                         r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-%                         r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-%                         z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-%                     end;
-%                 end;
-%             end;
-%         end;
-%         
-%         if runs == 1
-%             % save correlation map
-%             fprintf('...saving maps...\n')
-%             target_img = temp_img;
-%             file = sprintf('%s_pear_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = r_vec_pear_1_2;
-%             save_nii(target_img,target_img.fileprefix);  
-% 
-%             target_img = temp_img;
-%             file = sprintf('z_%s_pear_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = z_r_vec_pear_1_2;
-%             save_nii(target_img,target_img.fileprefix);                     
-% 
-%             target_img = temp_img;
-%             file = sprintf('%s_spea_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = r_vec_spea_1_2;
-%             save_nii(target_img,target_img.fileprefix);
-% 
-%             target_img = temp_img;
-%             file = sprintf('z_%s_spea_%d_con%d_con%d.nii',name,single_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = z_r_vec_spea_1_2;
-%             save_nii(target_img,target_img.fileprefix);  
-% 
-%             %compute z mean and inverse Fisher's transformation
-%             mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-%             mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-%             summary(1,end+1)=mean_r;
-%             cols{1,end+1} = sprintf('mean_pear_%d_con%d_con%d',single_run,con1_count,con2_count);
-%             mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-%             mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-%             summary(1,end+1)=mean_r;
-%             cols{1,end+1} = sprintf('mean_spea_%d_con%d_con%d',single_run,con1_count,con2_count);
-%           
-%         else
-%             % save correlation map
-%             fprintf('...saving maps...\n')
-%             target_img = temp_img;
-%             file = sprintf('%s_pear_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = r_vec_pear_1_2;
-%             save_nii(target_img,target_img.fileprefix);  
-% 
-%             target_img = temp_img;
-%             file = sprintf('z_%s_pear_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = z_r_vec_pear_1_2;
-%             save_nii(target_img,target_img.fileprefix);                     
-% 
-%             target_img = temp_img;
-%             file = sprintf('%s_spea_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = r_vec_spea_1_2;
-%             save_nii(target_img,target_img.fileprefix);
-% 
-%             target_img = temp_img;
-%             file = sprintf('z_%s_spea_%d_con%d_con%d.nii',name,i_run,con1_count,con2_count);
-%             target_img.fileprefix = file;
-%             target_img.img = z_r_vec_spea_1_2;
-%             save_nii(target_img,target_img.fileprefix);  
-% 
-%             %compute z mean and inverse Fisher's transformation
-%             mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-%             mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-%             summary(1,end+1)=mean_r;
-%             cols{1,end+1} = sprintf('mean_pear_%d_con%d_con%d',i_run,con1_count,con2_count);
-%             mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-%             mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-%             summary(1,end+1)=mean_r;
-%             cols{1,end+1} = sprintf('mean_spea_%d_con%d_con%d',i_run,con1_count,con2_count);
-% 
-%         end;
-%     end;
-%     % compare contrasts between sessions
-%     for i_con = 1:2
-%         eval(sprintf('cons=cons%d;',i_con));
-%         eval(sprintf('con_count = cons%d_count;',i_con));
-%     for i_run = 1:runs
-%         for count = 1:runs-1
-%             if i_run+count <= runs
-%             if runs > 1
-%                 fprintf('...\n compare contrast %s between sessions\n...',cons)
-%                 eval(sprintf('one = img_%d_con1',i_run));
-%                 one = one.img;
-%                 one (~one) = nan;
-% 
-%                 eval(sprintf('second = img_%d_con1',i_run+count));
-%                 second = second.img;
-%                 second (~second) = nan;
-%                 % create correlation vectors 
-%                 r_vec_pear_1_2 = zeros(x,y,z);
-%                 r_vec_spea_1_2 = zeros(x,y,z);
-%                 z_r_vec_pear_1_2 = zeros(x,y,z);
-%                 z_r_vec_spea_1_2 = zeros(x,y,z);
-% 
-%                 for ind_x = 1:x
-%                     fprintf('..correlations voxels x = %d\n',ind_x)
-%                     for ind_y = 1:y
-%                         for ind_z = 1:z
-%                             first_voxel = one (ind_x, ind_y, ind_z, :);
-%                             second_voxel = second (ind_x, ind_y, ind_z, :);
-%                             % Pearson
-%                             if pear==1
-%                                 r = corrcoef(first_voxel,second_voxel, 'rows', 'pairwise');
-%                                 if isnan (r(1,2))
-%                                     r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-%                                     z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = 0;
-%                                 else
-%                                     r_vec_pear_1_2(ind_x, ind_y, ind_z) = r(1,2);
-%                                     z_r_vec_pear_1_2(ind_x, ind_y, ind_z) = atanh(r(1,2));
-%                                 end;
-%                             end;
-%                             %Spearman
-%                             if spea==1
-%                                 first_voxel = squeeze(one (ind_x, ind_y, ind_z, :));
-%                                 second_voxel = squeeze(second (ind_x, ind_y, ind_z, :));
-%                                 r = corr(first_voxel,second_voxel, 'Type','Spearman', 'rows', 'pairwise');
-%                                 r_vec_spea_1_2(ind_x, ind_y, ind_z) = r;  
-%                                 z_r_vec_spea_1_2(ind_x, ind_y, ind_z) = atanh(r);                    
-%                             end;
-%                         end;
-%                     end;
-%                 end;
-% 
-%                 % save correlation map
-%                 fprintf('...saving maps...\n')
-%                 target_img = temp_img;
-%                 file = sprintf('%s_pear_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
-%                 target_img.fileprefix = file;
-%                 target_img.img = r_vec_pear_1_2;
-%                 save_nii(target_img,target_img.fileprefix);  
-% 
-%                 target_img = temp_img;
-%                 file = sprintf('z_%s_pear_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
-%                 target_img.fileprefix = file;
-%                 target_img.img = z_r_vec_pear_1_2;
-%                 save_nii(target_img,target_img.fileprefix);                     
-% 
-%                 target_img = temp_img;
-%                 file = sprintf('%s_spea_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
-%                 target_img.fileprefix = file;
-%                 target_img.img = r_vec_spea_1_2;
-%                 save_nii(target_img,target_img.fileprefix);
-% 
-%                 target_img = temp_img;
-%                 file = sprintf('z_%s_spea_%d_%d_con%d.nii',name,i_run,i_run+count,con_count);
-%                 target_img.fileprefix = file;
-%                 target_img.img = z_r_vec_spea_1_2;
-%                 save_nii(target_img,target_img.fileprefix);  
-% 
-%                 %compute z mean and inverse Fisher's transformation
-%                 mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
-%                 mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-%                 summary(1,end+1)=mean_r;
-%                 cols{1,end+1} = sprintf('mean_pear_%d_%d_con%d',i_run,i_run+count,con_count);
-%                 mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
-%                 mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
-%                 summary(1,end+1)=mean_r;
-%                 cols{1,end+1} = sprintf('mean_spea_%d_%d_con%d',i_run,i_run+count,con_count);
-%             end;
-%             end;
-%         end;
-%     end;
-%     end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d.nii',str,i_par);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2 
+     end;
 end;
-
-
 results_corr=dataset({summary(1,:),cols{:}});
 assignin('base','results_corr',results_corr);
     
 cd(dir_results);             
-eval(sprintf('save results_corr%s.mat results_corr',str));            
-disp('...finished correlation maps')
-end;
-%% ICCs
-if cons == 1 || abs == 1
-data=zeros(nr_subj,runs);
-ICC_con_ROI=zeros(x,y,z);
-ICC_abs_ROI=zeros(x,y,z);
-z_ICC_con_ROI=zeros(x,y,z);
-z_ICC_abs_ROI=zeros(x,y,z);
-
-% initiating summary
-summary = [];
-cols = {};
-
-disp('...calculating ICCs...')
-if split == 0 && two_cons == 0
-    for ind_x = 1:x
-        fprintf('..scanning voxel x = %d ...\n',ind_x)
-        for ind_y = 1:y
-           for ind_z = 1:z
-                for ind_run = 1:runs
-                    if runs == 1
-                        ind_run = single_run;
-                    end;
-                    for ind_subj = 1:nr_subj
-                       eval(sprintf('img%d_voxel(ind_subj,1)= img_%d (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run));
-                    end;
-                    eval(sprintf('data(:,ind_run)=img%d_voxel;',ind_run));
-                end;
-                    %ICC
-                    nsamples=nr_subj*runs;
-
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:runs,
-                           grandmean= grandmean + data(sub,sess);
-                        end
-
-                    end;
-                    grandmean=grandmean./nsamples;
-
-                    sessionmean=zeros(runs,1);
-                    for sess=1:runs
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + data(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:runs
-                            subjmean(sub)=subjmean(sub) + data(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./runs;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:runs
-                            WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:runs
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= runs.*BMS./(nr_subj-1);
-                    WMS= WMS./(runs-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(runs-1);
-                    EMS= EMS./(runs-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
-                    ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                    z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    end;
-                    
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
-                                                       runs.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                    z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    end;
-           end; 
-        end;
-     end;
-disp('saving ICC images')
- % save ICC maps
-target_img = temp_img;
-target_img.fileprefix = sprintf('ICC_con%s.nii',str);
-target_img.img = ICC_con_ROI;
-save_nii(target_img,target_img.fileprefix); 
-
-clear target_img;
-target_img = temp_img;
-target_img.fileprefix = sprintf('ICC_abs%s.nii',str);
-target_img.img = ICC_abs_ROI;
-save_nii(target_img,target_img.fileprefix); 
-
-target_img = temp_img;
-target_img.fileprefix = sprintf('z_ICC_con%s.nii',str);
-target_img.img = z_ICC_con_ROI;
-save_nii(target_img,target_img.fileprefix); 
-
-clear target_img;
-target_img = temp_img;
-target_img.fileprefix = sprintf('z_ICC_abs%s.nii',str);
-target_img.img = z_ICC_abs_ROI;
-save_nii(target_img,target_img.fileprefix); 
-
-% computing average ICC
-disp('...computing total ICC...')
-ROI_subj = zeros(nr_subj,runs);
-for ind_subj = 1:nr_subj
-    for ind_run = 1:runs
-        if runs == 1
-            ind_run = single_run;
-        end;
-        eval(sprintf('img%d_%d = img_%d (:,:,:,ind_subj);',ind_run,ind_subj,ind_run));
-        eval(sprintf('ROI_subj(ind_subj,ind_run) = mean(img%d_%d(:));',ind_run,ind_subj));
-    end;
-end;                
-                    %ICC
-                    nsamples=nr_subj*runs;
-
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:runs,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
-                    end;
-                    grandmean=grandmean./nsamples;
-
-                    sessionmean=zeros(runs,1);
-                    for sess=1:runs
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:runs
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./runs;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:runs
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:runs
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= runs.*BMS./(nr_subj-1);
-                    WMS= WMS./(runs-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(runs-1);
-                    EMS= EMS./(runs-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC_con%s',str);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC_con%s',str);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
-                    
-                    end;
-
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
-                                                       runs.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC_abs%s',str);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC_abs%s',str);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;                    
-                    end;
-
-
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
-
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
-
-                    cd(dir_results);             
-                    eval(sprintf('save results_ICC%s.mat results_ICC',str));
-
-if nr_para > 0
-    for ind_par = 1:nr_para
-        for ind_x = 1:x
-            fprintf('..scanning voxel x = %d ...\n',ind_x)
-            for ind_y = 1:y
-               for ind_z = 1:z
-                    for ind_run = 1:runs
-                        if runs == 1
-                            ind_run = single_run;
-                        end;
-                        for ind_subj = 1:nr_subj
-                           estr = sprintf('img%d_par%d_voxel(ind_subj,1)= img_par%d_%d (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_par,ind_par,ind_run);
-                           eval(estr);
-                        end;
-                        estr = sprintf('data(:,ind_run)=img%d_par%d_voxel;',ind_run,ind_par);
-                        eval(estr);
-                    end;
-                        %ICC over all sessions
-                        nsamples=nr_subj*runs;
-
-                        grandmean=0;
-                        for sub=1:nr_subj,     
-                            for sess=1:runs,
-                               grandmean= grandmean + data(sub,sess);
-                            end
-
-                        end;
-                        grandmean=grandmean./nsamples;
-
-                        sessionmean=zeros(runs,1);
-                        for sess=1:runs
-                            for sub=1:nr_subj,  
-                                sessionmean(sess) = sessionmean(sess) + data(sub,sess);
-                            end
-                            sessionmean(sess)=sessionmean(sess)./nr_subj;
-                        end
-
-                        subjmean=zeros(nr_subj,1);
-                        for sub=1:nr_subj
-                            for sess=1:runs
-                                subjmean(sub)=subjmean(sub) + data(sub,sess);
-                            end
-                              subjmean(sub)=subjmean(sub)./runs;
-                        end
-
-                        % mean squares
-                        BMS=0; % between subject
-                        WMS=0; % within subject 
-                        EMS=0; % error
-                        JMS=0; % session
-
-                        for sub=1:nr_subj,    
-                            BMS = BMS + (subjmean(sub)-grandmean).^2;
-                            for sess=1:runs
-                                WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
-                                EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                            end
-                        end;
-
-                        for sess=1:runs
-                            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                        end;
-
-                        %define the true value of the mean square.
-                        BMS= runs.*BMS./(nr_subj-1);
-                        WMS= WMS./(runs-1)./nr_subj;
-                        JMS= nr_subj.*JMS./(runs-1);
-                        EMS= EMS./(runs-1)./(nr_subj-1); 
-
-                        %consistency agreement  
-                        if cons==1
-                        voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
-                        ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                        z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                        end;
-
-                        %absolute agreement 
-                        if abs==1
-                        voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
-                                                           runs.* (JMS-EMS)./nr_subj);
-                        ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                        z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                        end;
-               end; 
-            end;
-        end;
-        disp('saving ICC images')
-         % save ICC maps
-        target_img = temp_img;
-        target_img.fileprefix = sprintf('ICC%s_con_par%d.nii',str,ind_par);
-        target_img.img = ICC_con_ROI;
-        save_nii(target_img,target_img.fileprefix); 
-
-        clear target_img;
-        target_img = temp_img;
-        target_img.fileprefix = sprintf('ICC%s_abs_par%d.nii',str,ind_par);
-        target_img.img = ICC_abs_ROI;
-        save_nii(target_img,target_img.fileprefix); 
-
-        target_img = temp_img;
-        target_img.fileprefix = sprintf('z_ICC%s_con_par%d.nii',str,ind_par);
-        target_img.img = z_ICC_con_ROI;
-        save_nii(target_img,target_img.fileprefix); 
-
-        clear target_img;
-        target_img = temp_img;
-        target_img.fileprefix = sprintf('z_ICC%s_abs_par%d.nii',str,ind_par);
-        target_img.img = z_ICC_abs_ROI;
-        save_nii(target_img,target_img.fileprefix); 
-
-        % computing ROI ICC
-        if roi == 1
-        disp('...computing ROI total ICC...')
-        ROI_subj = zeros(nr_subj,runs);
-        for ind_subj = 1:nr_subj
-            for ind_run = 1:runs
-                if runs == 1
-                    ind_run = single_run;
-                end;
-                eval(sprintf('img%d_%d = img_par%d_%d (:,:,:,ind_subj);',ind_run,ind_subj,ind_par,ind_run));
-                eval(sprintf('ROI_subj(ind_subj,ind_run) = mean(img%d_%d(r_roi_ind));',ind_run,ind_subj));
-            end;
-        end;                
-                    %ICC
-                    nsamples=nr_subj*runs;
-
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:runs,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
-                    end;
-                    grandmean=grandmean./nsamples;
-
-                    sessionmean=zeros(runs,1);
-                    for sess=1:runs
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:runs
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./runs;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:runs
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:runs
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= runs.*BMS./(nr_subj-1);
-                    WMS= WMS./(runs-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(runs-1);
-                    EMS= EMS./(runs-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC%s_con_par%d',str,ind_par);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_par%d',str,ind_par);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
-                    
-                    end;
-
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
-                                                       runs.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC%s_abs_par%d',str,ind_par);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_par%d',str,ind_par);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;                    
-                    end;   
-
-        end;
-        
-end;
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
-
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
-
-                    cd(dir_results);             
-                    eval(sprintf('save results_ICC%s_par.mat results_ICC',str));
-end;
-%calculation ICC for each comparison
-if runs > 1
-    for ind_run = 1:runs
-        for ind_sec = 1:runs-1
-            if ind_run + ind_sec <= runs
-            for ind_x = 1:x
-                fprintf('...x = %d...',ind_x)
-                for ind_y = 1:y
-                    for ind_z = 1:z
-                        data = zeros(nr_subj,2);
-                    for ind_subj = 1:nr_subj
-                       eval(sprintf('img%d_voxel(ind_subj,1)= img_%d(ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run));
-                       eval(sprintf('img%d_voxel(ind_subj,1)= img_%d(ind_x, ind_y, ind_z, ind_subj);',ind_run+ind_sec,ind_run+ind_sec));                       
-                    end;
-                    eval(sprintf('data(:,1)=img%d_voxel;',ind_run,ind_run));
-                    eval(sprintf('data(:,2)=img%d_voxel;',ind_run+ind_sec,ind_run+ind_sec));                    
-                    %ICC
-    
-                        nsamples=nr_subj*runs;
-                        
-                        grandmean=0;
-                        for sub=1:nr_subj,     
-                            for sess=1:2,
-                               grandmean= grandmean + data(sub,sess);
-                            end
-                        end;
-                        grandmean=grandmean./nsamples;
-
-                        sessionmean=zeros(2,1);
-                        for sess=1:2
-                            for sub=1:nr_subj,  
-                                sessionmean(sess) = sessionmean(sess) + data(sub,sess);
-                            end
-                            sessionmean(sess)=sessionmean(sess)./nr_subj;
-                        end
-
-                        subjmean=zeros(nr_subj,1);
-                        for sub=1:nr_subj
-                            for sess=1:2
-                                subjmean(sub)=subjmean(sub) + data(sub,sess);
-                            end
-                              subjmean(sub)=subjmean(sub)./2;
-                        end
-
-                        % mean squares
-                        BMS=0; % between subject
-                        WMS=0; % within subject 
-                        EMS=0; % error
-                        JMS=0; % session
-
-                        for sub=1:nr_subj,    
-                            BMS = BMS + (subjmean(sub)-grandmean).^2;
-                            for sess=1:2
-                                WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
-                                EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                            end
-                        end;
-
-                        for sess=1:2
-                            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                        end;
-
-                        %define the true value of the mean square.
-                        BMS= 2.*BMS./(nr_subj-1);
-                        WMS= WMS./(2-1)./nr_subj;
-                        JMS= nr_subj.*JMS./(2-1);
-                        EMS= EMS./(2-1)./(nr_subj-1); 
-                        
-                        fprintf('...calculate voxel ICC x = %d, y = %d, z = %d...\n',ind_x,ind_y,ind_z)
-                        %consistency agreement  
-                        if cons==1
-                        voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                        ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                        z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                        end;
-
-                        %absolute agreement 
-                        if abs==1
-                        voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                           2.* (JMS-EMS)./nr_subj);
-                        ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                        z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                        end;
-
-                    end;
-                 end; 
-              end;
-                             disp('saving ICC images')
-                             % save ICC maps
-                            target_img = temp_img;
-                            file1 = sprintf('ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file1;
-                            target_img.img = ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            clear target_img;
-                            target_img = temp_img;
-                            file2 = sprintf('ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file2;
-                            target_img.img = ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            target_img = temp_img;
-                            file3 = sprintf('z_ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file3;
-                            target_img.img = z_ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            clear target_img;
-                            target_img = temp_img;
-                            file4 = sprintf('z_ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file4;
-                            target_img.img = z_ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);   
-                            
-     % computing ROI ICC for each comparison
-     if roi == 1 
-        disp('...computing ROI total ICC...')
-            ROI_subj = zeros(nr_subj,2);
-            for ind_subj = 1:nr_subj
-                eval(sprintf('temp = img_%d(:,:,:,ind_subj);',ind_run));
-                ROI_subj(ind_subj,1) = mean(temp(r_roi_ind));
-                eval(sprintf('temp1 = img_%d(:,:,:,ind_subj);',ind_run+ind_sec));
-                ROI_subj(ind_subj,2) = mean(temp1(r_roi_ind));
-            end;                
-                    %ICC
-                    nsamples=nr_subj*2;
-
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:2,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
-                    end;
-                    grandmean=grandmean./nsamples;
-
-                    sessionmean=zeros(2,1);
-                    for sess=1:2
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:2
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./2;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:2
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:2
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= 2.*BMS./(nr_subj-1);
-                    WMS= WMS./(2-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(2-1);
-                    EMS= EMS./(2-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC%s_con_%d_%d',str,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_%d_%d',str,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
-                    end;
-                    
-
-                    
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                       2.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC%s_abs_%d_%d',str,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_%d_%d',str,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;
-                    end;
-    end;
-            end;
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
-
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
-
-                    cd(dir_results);             
-                    eval(sprintf('save results_ICC%s_eachComp.mat results_ICC',str));
-     end;                            
-  end;
-end;
-
-if nr_para > 0
-    fprintf('...ICC parametric modulator...\n')
-    for ind_para = 1:nr_para
-%calculation ICC for each comparison
-if runs > 1
-    for ind_run = 1:runs
-        for ind_sec = 1:runs-1
-            if ind_run + ind_sec <= runs
-
-            for ind_x = 1:x
-                fprintf('...x = %d...',ind_x)
-                for ind_y = 1:y
-                    for ind_z = 1:z
-                        data = zeros(nr_subj,2);
-                    for ind_subj = 1:nr_subj
-                       eval(sprintf('img%d_voxel(ind_subj,1)= img_par%d_%d(ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_para,ind_run));
-                       eval(sprintf('img%d_voxel(ind_subj,1)= img_par%d_%d(ind_x, ind_y, ind_z, ind_subj);',ind_run+ind_sec,ind_para,ind_run+ind_sec));                       
-                    end;
-                    eval(sprintf('data(:,1)=img%d_voxel;',ind_run,ind_run));
-                    eval(sprintf('data(:,2)=img%d_voxel;',ind_run+ind_sec,ind_run+ind_sec));                    
-                    %ICC
-    
-                        nsamples=nr_subj*runs;
-                        
-                        grandmean=0;
-                        for sub=1:nr_subj,     
-                            for sess=1:2,
-                               grandmean= grandmean + data(sub,sess);
-                            end
-                        end;
-                        grandmean=grandmean./nsamples;
-
-                        sessionmean=zeros(2,1);
-                        for sess=1:2
-                            for sub=1:nr_subj,  
-                                sessionmean(sess) = sessionmean(sess) + data(sub,sess);
-                            end
-                            sessionmean(sess)=sessionmean(sess)./nr_subj;
-                        end
-
-                        subjmean=zeros(nr_subj,1);
-                        for sub=1:nr_subj
-                            for sess=1:2
-                                subjmean(sub)=subjmean(sub) + data(sub,sess);
-                            end
-                              subjmean(sub)=subjmean(sub)./2;
-                        end
-
-                        % mean squares
-                        BMS=0; % between subject
-                        WMS=0; % within subject 
-                        EMS=0; % error
-                        JMS=0; % session
-
-                        for sub=1:nr_subj,    
-                            BMS = BMS + (subjmean(sub)-grandmean).^2;
-                            for sess=1:2
-                                WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
-                                EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                            end
-                        end;
-
-                        for sess=1:2
-                            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                        end;
-
-                        %define the true value of the mean square.
-                        BMS= 2.*BMS./(nr_subj-1);
-                        WMS= WMS./(2-1)./nr_subj;
-                        JMS= nr_subj.*JMS./(2-1);
-                        EMS= EMS./(2-1)./(nr_subj-1); 
-                        
-                        fprintf('...calculate voxel ICC x = %d, y = %d, z = %d...\n',ind_x,ind_y,ind_z)
-                        %consistency agreement  
-                        if cons==1
-                        voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                        ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                        z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                        end;
-
-                        %absolute agreement 
-                        if abs==1
-                        voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                           2.* (JMS-EMS)./nr_subj);
-                        ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                        z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                        end;
-
-                    end;
-                 end; 
-              end;
-                             disp('saving ICC images')
-                             % save ICC maps
-                            target_img = temp_img;
-                            file1 = sprintf('ICC%s_con_par%d_%d_%d.nii',str,ind_para,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file1;
-                            target_img.img = ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            clear target_img;
-                            target_img = temp_img;
-                            file2 = sprintf('ICC%s_abs_par%d_%d_%d.nii',str,ind_para,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file2;
-                            target_img.img = ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            target_img = temp_img;
-                            file3 = sprintf('z_ICC%s_con_par%d_%d_%d.nii',str,ind_para,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file3;
-                            target_img.img = z_ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            clear target_img;
-                            target_img = temp_img;
-                            file4 = sprintf('z_ICC%s_abs_par%d_%d_%d.nii',str,ind_para,ind_run,ind_run+ind_sec);
-                            target_img.fileprefix = file4;
-                            target_img.img = z_ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);   
-                            
-     % computing ROI ICC for each comparison
-     if roi == 1 
-        disp('...computing ROI total ICC...')
-            ROI_subj = zeros(nr_subj,2);
-            for ind_subj = 1:nr_subj
-                eval(sprintf('temp = img_par%d_%d(:,:,:,ind_subj);',ind_para,ind_run));
-                ROI_subj(ind_subj,1) = mean(temp(r_roi_ind));
-                eval(sprintf('temp1 = img_par%d_%d(:,:,:,ind_subj);',ind_para,ind_run+ind_sec));
-                ROI_subj(ind_subj,2) = mean(temp1(r_roi_ind));
-            end;                
-                    %ICC
-                    nsamples=nr_subj*2;
-
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:2,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
-                    end;
-                    grandmean=grandmean./nsamples;
-
-                    sessionmean=zeros(2,1);
-                    for sess=1:2
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:2
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./2;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:2
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:2
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= 2.*BMS./(nr_subj-1);
-                    WMS= WMS./(2-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(2-1);
-                    EMS= EMS./(2-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC%s_con_par%d_%d_%d',str,ind_para,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_par%d_%d_%d',str,ind_para,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
-                    end;
-                    
-
-                    
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                       2.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC%s_abs_par%d_%d_%d',str,ind_para,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_par%d_%d_%d',str,ind_para,ind_run,ind_run+ind_sec);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;
-                    end;
-     end;
-    end;
-        end;
-
-     end;                            
-  end;
-end;
-end;
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
-
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
-
-                    cd(dir_results);             
-                    sprintf('save results_ICC%s_eachComp.mat results_ICC',str);
-%% based on split-half
+eval(sprintf('save results_corr%s.mat results_corr',str)); 
+%% based on split half
 elseif split == 1
-for ind = 1:runs
-     for ind_x = 1:x
-          fprintf('...x = %d...',ind_x)
-        for ind_y = 1:y
-           for ind_z = 1:z
-                    if runs == 1
-                        ind_run = single_run;
-                    else
-                        ind_run = ind;
-                    end;
-                    eval(sprintf('data_%d = zeros(nr_subj,2);',ind_run));
-                    for ind_subj = 1:nr_subj
-                       eval(sprintf('img%d_voxel_split1(ind_subj,1)= img_%d_split1 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run));
-                       eval(sprintf('img%d_voxel_split2(ind_subj,1)= img_%d_split2 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_run));                       
-                    end;
-                    eval(sprintf('data_%d(:,1)=img%d_voxel_split1;',ind_run,ind_run));
-                    eval(sprintf('data_%d(:,2)=img%d_voxel_split2;',ind_run,ind_run));                    
-                    %ICC
+    count_comp = 0;
+  for i = 1:runs
+        if runs == 1
+            i = single_run;
+        end;
+        % create data matrix with data for all voxels in cols, subjects in rows
+        % and 2 splits in third dimension
+        data = zeros(nr_subj,nr_vox,2);
+        for ind_split = 1:2
+            for ind_subj = 1:nr_subj
+                eval(sprintf('temp = img_%d_split%d(:,:,:,ind_subj);',i,ind_split));
+                data(ind_subj,:,ind_split)=temp(:);
+            end;
+        end;
+        clear temp
+        eval(sprintf('clear img_%d_split1 img_%d_split2;',i,i));
     
-                        nsamples=nr_subj*runs;
-                        
-                        grandmean=0;
-                        for sub=1:nr_subj,     
-                            for sess=1:2,
-                               eva=sprintf('grandmean= grandmean + data_%d(sub,sess);',ind);
-                               eval(eva);
-                            end
-                        end;
-                        grandmean=grandmean./nsamples;
+    %correlations for each split
+    count_comp = count_comp +1;
+    fprintf('...creates correlation maps for splitted session %d ...\n',i);
+    %load 4D images
+%     one=data(:,:,1);
+%     second=data(:,:,2);
 
-                        sessionmean=zeros(2,1);
-                        for sess=1:2
-                            for sub=1:nr_subj,  
-                                e = sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess);',ind);
-                                eval(e);
-                            end
-                            sessionmean(sess)=sessionmean(sess)./nr_subj;
-                        end
-
-                        subjmean=zeros(nr_subj,1);
-                        for sub=1:nr_subj
-                            for sess=1:2
-                                ev = sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess);',ind);
-                                eval(ev);
-                            end
-                              subjmean(sub)=subjmean(sub)./2;
-                        end
-
-                        % mean squares
-                        BMS=0; % between subject
-                        WMS=0; % within subject 
-                        EMS=0; % error
-                        JMS=0; % session
-
-                        for sub=1:nr_subj,    
-                            BMS = BMS + (subjmean(sub)-grandmean).^2;
-                            for sess=1:2
-                                evs = sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2;',ind);
-                                eval(evs);
-                                evst = sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;',ind);
-                                eval(evst);
-                            end
-                        end;
-
-                        for sess=1:2
-                            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                        end;
-
-                        %define the true value of the mean square.
-                        BMS= 2.*BMS./(nr_subj-1);
-                        WMS= WMS./(2-1)./nr_subj;
-                        JMS= nr_subj.*JMS./(2-1);
-                        EMS= EMS./(2-1)./(nr_subj-1); 
-                        
-                        fprintf('...calculate voxel ICC x = %d, y = %d, z = %d...\n',ind_x,ind_y,ind_z)
-                        %consistency agreement  
-                        if cons==1
-                        voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                        ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                        z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                        end;
-
-                        %absolute agreement 
-                        if abs==1
-                        voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                           2.* (JMS-EMS)./nr_subj);
-                        ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                        z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                        end;
-                                                
-            end;
-         end; 
-      end;
-                            disp('saving ICC images')
-                             % save ICC maps
-                            target_img = temp_img;
-                            file1 = sprintf('ICC%s_con_%d_split.nii',str,ind);
-                            target_img.fileprefix = file1;
-                            target_img.img = ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            clear target_img;
-                            target_img = temp_img;
-                            file2 = sprintf('ICC%s_abs_%d_split.nii',str,ind);
-                            target_img.fileprefix = file2;
-                            target_img.img = ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            target_img = temp_img;
-                            file3 = sprintf('z_ICC%s_con_%d_split.nii',str,ind);
-                            target_img.fileprefix = file3;
-                            target_img.img = z_ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
-
-                            clear target_img;
-                            target_img = temp_img;
-                            file4 = sprintf('z_ICC%s_abs_%d_split.nii',str,ind);
-                            target_img.fileprefix = file4;
-                            target_img.img = z_ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);              
-end;
-   
-     
-
-     % computing ROI ICC
-disp('...computing ROI total ICC...')
-
-for ind_runs = 1:runs
-    if roi == 1
-    if runs == 1
-        ind_runs = single_run;
-    end;
-    ROI_subj = zeros(nr_subj,2);
-    for ind_subj = 1:nr_subj
-        for ind_split = 1:2
-            eval(sprintf('img%d_%d = img_%d_split%d (:,:,:,ind_subj);',ind_split,ind_subj,ind_run,ind_split));
-            eval(sprintf('ROI_subj(ind_subj,ind_split) = mean(img%d_%d(r_roi_ind));',ind_split,ind_subj));
+    r1 = zeros(nr_vox,1);
+    zr1 = zeros(nr_vox,1);
+    r2 = zeros(nr_vox,1);
+    zr2 = zeros(nr_vox,1);
+    for i_vox = 1:nr_vox
+        if pear == 1 
+            r = corrcoef(data(:,i_vox,1),data(:,i_vox,2), 'rows', 'pairwise');
+                if isnan (r(1,2))
+                    r1(i_vox,1) = 0;
+                    zr1(i_vox,1) = 0;
+                else
+                    r1(i_vox,1) = r(1,2);
+                    zr1(i_vox,1) = atanh(r(1,2));
+                end;
+        end
+        if spea == 1
+                r = corr(data(:,i_vox,1),data(:,i_vox,2), 'Type','Spearman', 'rows', 'pairwise');
+                r2(i_vox,1) = r;  
+                zr2(i_vox,1) = atanh(r);  
         end;
     end;
+%     clear one second
+                
+    % create correlation matrices for image 
+    r_vec_pear_1_2 = reshape(r1,x,y,z);
+    r_vec_spea_1_2 = reshape(r2,x,y,z);
+    z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+    z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+    clear r1 zr1 r2 zr2;
+             
+    % save correlation maps
+    if pear == 1
+        target_img = temp_img;
+        file = sprintf('CorrMaps%s_pear_%d_split.nii',str,i);
+        target_img.fileprefix = file;
+        if roi == 0
+            target_img.img = r_vec_pear_1_2;
+        else
+            r_vec_pear_1_2(~r_roi_ind)=0;
+            target_img.img = r_vec_pear_1_2;
+        end;
+        save_nii(target_img,target_img.fileprefix);  
+
+        target_img = temp_img;
+        file = sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i);
+        target_img.fileprefix = file;
+        if roi == 0
+            target_img.img = z_r_vec_pear_1_2;
+        else
+            z_r_vec_pear_1_2(~r_roi_ind)=0;
+            target_img.img = z_r_vec_pear_1_2;
+        end;            
+        save_nii(target_img,target_img.fileprefix);      
+    end;
+
+    if spea == 1
+    target_img = temp_img;
+    file = sprintf('CorrMaps%s_spea_%d_split.nii',str,i);
+    target_img.fileprefix = file;
+    if roi == 0
+        target_img.img = r_vec_spea_1_2;
     else
-        for ind_subj = 1:nr_subj
-            for ind_split = 1:2
-                eval(sprintf('img%d_%d = img_%d_split%d (:,:,:,ind_subj);',ind_split,ind_subj,ind_run,ind_split));
-                eval(sprintf('ROI_subj(ind_subj,ind_split) = mean(img%d_%d(:));',ind_split,ind_subj));
-            end;
-        end;        
+        r_vec_spea_1_2(~r_roi_ind)=0;
+        target_img.img = r_vec_spea_1_2;
     end;
-                    %ICC
-                    nsamples=nr_subj*2;
+    save_nii(target_img,target_img.fileprefix);
 
-                    grandmean=0;
-                    for sub=1:nr_subj,     
-                        for sess=1:2,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
+    target_img = temp_img;
+    file = sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i);
+    target_img.fileprefix = file;
+    if roi == 0
+        target_img.img = z_r_vec_spea_1_2;
+    else
+        z_r_vec_spea_1_2(~r_roi_ind)=0;
+        target_img.img = z_r_vec_spea_1_2;
+    end;               
+    save_nii(target_img,target_img.fileprefix);                      
+    end;
 
-                    end;
-                    grandmean=grandmean./nsamples;
+    %compute z mean and inverse Fisher's transformation
+    if pear == 1
+        mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_pear%s_%d_split',str,i);
+    end;
+    if spea == 1
+        mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_spea%s_%d_split',str,i);    
+    end;
+    clear data
+  end; 
+clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
 
-                    sessionmean=zeros(2,1);
-                    for sess=1:2
-                        for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
-                        end
-                        sessionmean(sess)=sessionmean(sess)./nr_subj;
-                    end
-
-                    subjmean=zeros(nr_subj,1);
-                    for sub=1:nr_subj
-                        for sess=1:2
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
-                        end
-                          subjmean(sub)=subjmean(sub)./2;
-                    end
-
-                    % mean squares
-                    BMS=0; % between subject
-                    WMS=0; % within subject 
-                    EMS=0; % error
-                    JMS=0; % session
-                    
-                    for sub=1:nr_subj,    
-                        BMS = BMS + (subjmean(sub)-grandmean).^2;
-                        for sess=1:2
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
-                        end
-                    end;
-
-                    for sess=1:2
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                    end;
-
-                    %define the true value of the mean square.
-                    BMS= 2.*BMS./(nr_subj-1);
-                    WMS= WMS./(2-1)./nr_subj;
-                    JMS= nr_subj.*JMS./(2-1);
-                    EMS= EMS./(2-1)./(nr_subj-1); 
-
-                    %consistency agreement  
-                    if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC%s_con_ROI_split%d',str,ind_runs);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_ROI_split%d',str,ind_runs);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
-                    end;
-                    
-
-                    
-                    %absolute agreement 
-                    if abs==1
-                    voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                       2.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC%s_abs_ROI_split%d',str,ind_runs);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_ROI_split%d',str,ind_runs);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;
-                    end;
-
-
-end;
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
-
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
-
-                    cd(dir_results);             
-                    eval(sprintf('save results_ICC%s_split.mat results_ICC',str));
-if nr_para > 0
-    fprintf('...ICC parametric modulator for splitted sessions...\n')
-        for ind_para = 1:nr_para
-             for ind_run = 1:runs
-             if runs == 1
-                 ind_run = single_run;
-             end;
-             for ind_x = 1:x
-                for ind_y = 1:y
-                   for ind_z = 1:z
-                 fprintf('... x = %d, y = %d, z = %d ...\n',ind_x,ind_y,ind_z)
-
-                            eval(sprintf('data_%d = zeros(nr_subj,2);',ind_run));
-                            for ind_subj = 1:nr_subj
-                               eval(sprintf('img%d_par%d_voxel_split1(ind_subj,1)= img_%d_par%d_split1 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_para,ind_run,ind_para));
-                               eval(sprintf('img%d_par%d_voxel_split2(ind_subj,1)= img_%d_par%d_split2 (ind_x, ind_y, ind_z, ind_subj);',ind_run,ind_para,ind_run,ind_para));
-                            end;
-                            eval(sprintf('data_%d(:,1)=img%d_par%d_voxel_split1;',ind_run,ind_run,ind_para));
-                            eval(sprintf('data_%d(:,2)=img%d_par%d_voxel_split2;',ind_run,ind_run,ind_para));
-
-                  %ICC
-                                nsamples=nr_subj*2;
-
-                                grandmean=0;
-                                for sub=1:nr_subj,     
-                                    for sess=1:2,
-                                       eva=sprintf('grandmean= grandmean + data_%d(sub,sess);',ind_run);
-                                       eval(eva);
-                                    end
-                                end;
-                                grandmean=grandmean./nsamples;
-
-                                sessionmean=zeros(2,1);
-                                for sess=1:2
-                                    for sub=1:nr_subj,  
-                                        e = sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess);',ind_run);
-                                        eval(e);
-                                    end
-                                    sessionmean(sess)=sessionmean(sess)./nr_subj;
-                                end
-
-                                subjmean=zeros(nr_subj,1);
-                                for sub=1:nr_subj
-                                    for sess=1:2
-                                        ev = sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess);',ind_run);
-                                        eval(ev);
-                                    end
-                                      subjmean(sub)=subjmean(sub)./2;
-                                end
-
-                                % mean squares
-                                BMS=0; % between subject
-                                WMS=0; % within subject 
-                                EMS=0; % error
-                                JMS=0; % session
-
-                                for sub=1:nr_subj,    
-                                    BMS = BMS + (subjmean(sub)-grandmean).^2;
-                                    for sess=1:2
-                                        evs = sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2;',ind_run);
-                                        eval(evs);
-                                        evst = sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;',ind_run);
-                                        eval(evst);
-                                    end
-                                end;
-
-                                for sess=1:2
-                                    JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                                end;
-
-                                %define the true value of the mean square.
-                                BMS= 2.*BMS./(nr_subj-1);
-                                WMS= WMS./(2-1)./nr_subj;
-                                JMS= nr_subj.*JMS./(2-1);
-                                EMS= EMS./(2-1)./(nr_subj-1); 
-
-                                %consistency agreement  
-                                if cons==1
-                                voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                                ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                                z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                                end;
-
-                                %absolute agreement 
-                                if abs==1
-                                voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                                   2.* (JMS-EMS)./nr_subj);
-                                ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                                z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                                end;
-                    end;
-                end; 
-             end;
-
-                                             disp('saving ICC images')
-                                     % save ICC maps
-                                    target_img = temp_img;
-                                    file1 = sprintf('ICC%s_con_%d_split_par%d.nii',str,ind_run,ind_para);
-                                    target_img.fileprefix = file1;
-                                    target_img.img = ICC_con_ROI;
-                                    save_nii(target_img,target_img.fileprefix); 
-
-                                    clear target_img;
-                                    target_img = temp_img;
-                                    file2 = sprintf('ICC%s_abs_%d_split_par%d.nii',str,ind_run,ind_para);
-                                    target_img.fileprefix = file2;
-                                    target_img.img = ICC_abs_ROI;
-                                    save_nii(target_img,target_img.fileprefix); 
-
-                                    target_img = temp_img;
-                                    file3 = sprintf('z_ICC%s_con_%d_split_par%d.nii',str,ind_run,ind_para);
-                                    target_img.fileprefix = file3;
-                                    target_img.img = z_ICC_con_ROI;
-                                    save_nii(target_img,target_img.fileprefix); 
-
-                                    clear target_img;
-                                    target_img = temp_img;
-                                    file4 = sprintf('z_ICC%s_abs_%d_split_par%d.nii',str,ind_run,ind_para);
-                                    target_img.fileprefix = file4;
-                                    target_img.img = z_ICC_abs_ROI;
-                                    save_nii(target_img,target_img.fileprefix); 
+    % calculate average correlation for all comparisons
+    disp('...creates average correlation maps over all splits ...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
+    for i_run = 1:runs
+        ind_comp = ind_comp+1;
+        if pear == 1
+        map = load_nii(sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i));
+        avg_corr_4D_pear(:,ind_comp) = map.img(:);
+        clear map
         end;
-        end;   
-        
-if roi == 1        
-for ind_para = 1:nr_para
-
-for ind_runs = 1:runs
-    if runs == 1
-        ind_runs = single_run;
+        if spea == 1
+        map = load_nii(sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i));
+        avg_corr_4D_spea(:,ind_comp) = map.img(:);
+        clear map
+        end;                
     end;
-    ROI_subj = zeros(nr_subj,2);
-    for ind_subj = 1:nr_subj
-        for ind_split = 1:2
-            eval(sprintf('img%d_%d = img_%d_par%d_split%d (:,:,:,ind_subj);',ind_split,ind_subj,ind_runs,ind_para,ind_split));
-            eval(sprintf('ROI_subj(ind_subj,ind_split) = mean(img%d_%d(r_roi_ind));',ind_split,ind_subj));
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
         end;
     end;                
-                    %ICC
+    clear avg_corr_4D_pear avg_corr_4D_spea
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_split.nii',str);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_split.nii',str);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+    clear avg_spea avg_pear data
+%calculation for splitted parametric contrasts
+if nr_para > 0    
+     count_comp = 0;
+     for i_par = 1:nr_para
+        for i = 1:runs
+            if runs == 1
+                i = single_run;
+            end;
+            % create data matrix with data for all voxels in cols, subjects in rows
+            % and 2 splits in third dimension
+            data = zeros(nr_subj,nr_vox,2);
+            for ind_split = 1:2
+                for ind_subj = 1:nr_subj
+                    eval(sprintf('temp = img_%d_par%d_split%d(:,:,:,ind_subj);',i,i_par,ind_split));
+                    data(ind_subj,:,ind_split)=temp(:);
+                end;
+            end;
+            clear temp
+            eval(sprintf('clear img_%d_par%d_split1 img_%d_par%d_split2;',i,i_par,i,i_par));
+            %correlations for each split
+            count_comp = count_comp +1;
+            fprintf('...creates correlation maps for splitted session %d ...\n',i);
+            %load 4D images
+%             one=data(:,:,1);
+%             second=data(:,:,2);
+
+            r1 = zeros(nr_vox,1);
+            zr1 = zeros(nr_vox,1);
+            r2 = zeros(nr_vox,1);
+            zr2 = zeros(nr_vox,1);
+            for i_vox = 1:nr_vox
+                if pear == 1 
+                    r = corrcoef(data(:,i_vox,1),data(:,i_vox,2), 'rows', 'pairwise');
+                        if isnan (r(1,2))
+                            r1(i_vox,1) = 0;
+                            zr1(i_vox,1) = 0;
+                        else
+                            r1(i_vox,1) = r(1,2);
+                            zr1(i_vox,1) = atanh(r(1,2));
+                        end;
+                end
+                if spea == 1
+                        r = corr(data(:,i_vox,1),data(:,i_vox,2), 'Type','Spearman', 'rows', 'pairwise');
+                        r2(i_vox,1) = r;  
+                        zr2(i_vox,1) = atanh(r);  
+                end;
+            end;
+%             clear one second
+                
+            % create correlation matrices for image 
+            r_vec_pear_1_2 = reshape(r1,x,y,z);
+            r_vec_spea_1_2 = reshape(r2,x,y,z);
+            z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+            z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+            clear r1 zr1 r2 zr2;
+             
+            % save correlation maps
+            if pear == 1
+                target_img = temp_img;
+                file = sprintf('CorrMaps%s_pear_%d_par%d_split.nii',str,i,i_par);
+                target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = r_vec_pear_1_2;
+                else
+                    r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = r_vec_pear_1_2;
+                end;
+                save_nii(target_img,target_img.fileprefix);  
+
+                target_img = temp_img;
+                file = sprintf('z_CorrMaps%s_pear_%d_par%d_split.nii',str,i,i_par);
+                target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = z_r_vec_pear_1_2;
+                else
+                    z_r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = z_r_vec_pear_1_2;
+                end;            
+                save_nii(target_img,target_img.fileprefix);      
+            end;
+
+            if spea == 1
+            target_img = temp_img;
+            file = sprintf('CorrMaps%s_spea_%d_par%d_split.nii',str,i,i_par);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = r_vec_spea_1_2;
+            else
+                r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = r_vec_spea_1_2;
+            end;
+            save_nii(target_img,target_img.fileprefix);
+
+            target_img = temp_img;
+            file = sprintf('z_CorrMaps%s_spea_%d_par%d_split.nii',str,i,i_par);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = z_r_vec_spea_1_2;
+            else
+                z_r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = z_r_vec_spea_1_2;
+            end;               
+            save_nii(target_img,target_img.fileprefix);                      
+            end;
+
+            %compute z mean and inverse Fisher's transformation
+            if pear == 1
+                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_pear%s_%d_par%d_split',str,i,i_par);
+            end;
+            if spea == 1
+                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_spea%s_%d_par%d_split',str,i,i_par);    
+            end;
+        end; 
+        clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
+
+    % calculate average correlation for all comparisons
+    disp('...creates average correlation maps over all splits of parametric contrast...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
+    for i_run = 1:runs
+        ind_comp = ind_comp+1;
+        if pear == 1
+        map = load_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_split.nii',str,i,i_par));
+        avg_corr_4D_pear(:,ind_comp) = map.img(:);
+        clear map
+        end;
+        if spea == 1
+        map = load_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_split.nii',str,i,i_par));
+        avg_corr_4D_spea(:,ind_comp) = map.img(:);
+        clear map
+        end;                
+    end;
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+    clear avg_corr_4D_pear avg_corr_4D_spea
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_split.nii',str,i_par);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_split.nii',str,i_par);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+         
+  
+     end;
+end;  
+results_corr=dataset({summary(1,:),cols{:}});
+assignin('base','results_corr',results_corr);
+    
+cd(dir_results);             
+eval(sprintf('save results_corr%s_split.mat results_corr',str)); 
+%% two contrasts out of one statistic    
+elseif two_cons == 1
+     % compare contrasts within sessions
+        if runs == 1
+            i = single_run;
+        end;
+        % create data matrix with data for all voxels in cols, subjects in rows
+        % and 2 splits in third dimension
+        data = zeros(nr_subj,nr_vox,2);
+        for ind_split = 1:2
+            for ind_subj = 1:nr_subj
+                eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',i,ind_split));
+                data(ind_subj,:,ind_split)=temp(:);
+            end;
+        end;
+        clear temp
+    
+    %correlations for each split
+    count_comp = count_comp +1;
+    fprintf('...creates correlation maps for two contrasts in session %d ...\n',i);
+    %load 4D images
+    one=data(:,:,1);
+    second=data(:,:,2);
+
+    r1 = zeros(nr_vox,1);
+    zr1 = zeros(nr_vox,1);
+    r2 = zeros(nr_vox,1);
+    zr2 = zeros(nr_vox,1);
+    for i_vox = 1:nr_vox
+        if pear == 1 
+            r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                if isnan (r(1,2))
+                    r1(i_vox,1) = 0;
+                    zr1(i_vox,1) = 0;
+                else
+                    r1(i_vox,1) = r(1,2);
+                    zr1(i_vox,1) = atanh(r(1,2));
+                end;
+        end
+        if spea == 1
+                r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                r2(i_vox,1) = r;  
+                zr2(i_vox,1) = atanh(r);  
+        end;
+    end;
+    clear one second
+                
+    % create correlation matrices for image 
+    r_vec_pear_1_2 = reshape(r1,x,y,z);
+    r_vec_spea_1_2 = reshape(r2,x,y,z);
+    z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+    z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+    clear r1 zr1 r2 zr2;
+             
+    % save correlation maps
+    if pear == 1
+        target_img = temp_img;
+        file = sprintf('CorrMaps%s_pear_%d_between_contrasts.nii',str,i);
+        target_img.fileprefix = file;
+        if roi == 0
+            target_img.img = r_vec_pear_1_2;
+        else
+            r_vec_pear_1_2(~r_roi_ind)=0;
+            target_img.img = r_vec_pear_1_2;
+        end;
+        save_nii(target_img,target_img.fileprefix);  
+
+        target_img = temp_img;
+        file = sprintf('z_CorrMaps%s_pear_%d_between_contrasts.nii',str,i);
+        target_img.fileprefix = file;
+        if roi == 0
+            target_img.img = z_r_vec_pear_1_2;
+        else
+            z_r_vec_pear_1_2(~r_roi_ind)=0;
+            target_img.img = z_r_vec_pear_1_2;
+        end;            
+        save_nii(target_img,target_img.fileprefix);      
+    end;
+
+    if spea == 1
+    target_img = temp_img;
+    file = sprintf('CorrMaps%s_spea_%d_between_contrasts.nii',str,i);
+    target_img.fileprefix = file;
+    if roi == 0
+        target_img.img = r_vec_spea_1_2;
+    else
+        r_vec_spea_1_2(~r_roi_ind)=0;
+        target_img.img = r_vec_spea_1_2;
+    end;
+    save_nii(target_img,target_img.fileprefix);
+
+    target_img = temp_img;
+    file = sprintf('z_CorrMaps%s_spea_%d_between_contrasts.nii',str,i);
+    target_img.fileprefix = file;
+    if roi == 0
+        target_img.img = z_r_vec_spea_1_2;
+    else
+        z_r_vec_spea_1_2(~r_roi_ind)=0;
+        target_img.img = z_r_vec_spea_1_2;
+    end;               
+    save_nii(target_img,target_img.fileprefix);                      
+    end;
+
+    %compute z mean and inverse Fisher's transformation
+    if pear == 1
+        mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_pear%s_%d_between_contrasts',str,i);
+    end;
+    if spea == 1
+        mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_spea%s_%d_between_contrasts',str,i);    
+    end;
+clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
+
+    % calculate average correlation for all comparisons
+    disp('...creates average correlation maps over all between contrast correlations ...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
+    for i_run = 1:runs
+        ind_comp = ind_comp+1;
+        if pear == 1
+        map = load_nii(sprintf('z_CorrMaps%s_pear_%d_between_contrasts.nii',str,i));
+        avg_corr_4D_pear(:,ind_comp) = map.img(:);
+        clear map
+        end;
+        if spea == 1
+        map = load_nii(sprintf('z_CorrMaps%s_spea_%d_between_contrasts.nii',str,i));
+        avg_corr_4D_spea(:,ind_comp) = map.img(:);
+        clear map
+        end;                
+    end;
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+    clear avg_corr_4D_pear avg_corr_4D_spea
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_between_contrasts.nii',str);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_between_contrasts.nii',str);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+%calculation for parametric regressors of both contrasts
+if nr_para > 0    
+     count_comp = 0;
+     for i_par = 1:nr_para
+        for i = 1:runs
+            if runs == 1
+                i = single_run;
+            end;
+            % create data matrix with data for all voxels in cols, subjects in rows
+            % and 2 splits in third dimension
+            data = zeros(nr_subj,nr_vox,2);
+            for ind_split = 1:2
+                for ind_subj = 1:nr_subj
+                    eval(sprintf('temp = img_%d_par%d_con%d(:,:,:,ind_subj);',i,i_par,ind_split));
+                    data(ind_subj,:,ind_split)=temp(:);
+                end;
+            end;
+            clear temp
+    
+            %correlations for each split
+            count_comp = count_comp +1;
+            fprintf('...creates correlation maps for parametric regressors of both contrasts in session %d ...\n',i);
+            %load 4D images
+            one=data(:,:,1);
+            second=data(:,:,2);
+
+            r1 = zeros(nr_vox,1);
+            zr1 = zeros(nr_vox,1);
+            r2 = zeros(nr_vox,1);
+            zr2 = zeros(nr_vox,1);
+            for i_vox = 1:nr_vox
+                if pear == 1 
+                    r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        if isnan (r(1,2))
+                            r1(i_vox,1) = 0;
+                            zr1(i_vox,1) = 0;
+                        else
+                            r1(i_vox,1) = r(1,2);
+                            zr1(i_vox,1) = atanh(r(1,2));
+                        end;
+                end
+                if spea == 1
+                        r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                        r2(i_vox,1) = r;  
+                        zr2(i_vox,1) = atanh(r);  
+                end;
+            end;
+            clear one second
+                
+            % create correlation matrices for image 
+            r_vec_pear_1_2 = reshape(r1,x,y,z);
+            r_vec_spea_1_2 = reshape(r2,x,y,z);
+            z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+            z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+            clear r1 zr1 r2 zr2;
+             
+            % save correlation maps
+            if pear == 1
+                target_img = temp_img;
+                file = sprintf('CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i,i_par);
+                target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = r_vec_pear_1_2;
+                else
+                    r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = r_vec_pear_1_2;
+                end;
+                save_nii(target_img,target_img.fileprefix);  
+
+                target_img = temp_img;
+                file = sprintf('z_CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i,i_par);
+                target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = z_r_vec_pear_1_2;
+                else
+                    z_r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = z_r_vec_pear_1_2;
+                end;            
+                save_nii(target_img,target_img.fileprefix);      
+            end;
+
+            if spea == 1
+            target_img = temp_img;
+            file = sprintf('CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i,i_par);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = r_vec_spea_1_2;
+            else
+                r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = r_vec_spea_1_2;
+            end;
+            save_nii(target_img,target_img.fileprefix);
+
+            target_img = temp_img;
+            file = sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i,i_par);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = z_r_vec_spea_1_2;
+            else
+                z_r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = z_r_vec_spea_1_2;
+            end;               
+            save_nii(target_img,target_img.fileprefix);                      
+            end;
+
+            %compute z mean and inverse Fisher's transformation
+            if pear == 1
+                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_pear%s_%d_par%d_between_contrasts',str,i,i_par);
+            end;
+            if spea == 1
+                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_spea%s_%d_par%d_between_contrasts',str,i,i_par);    
+            end;
+        end; 
+        clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
+
+    % calculate average correlation for all comparisons
+    disp('...creates average correlation maps over all parametric regressors of both contrasts...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
+    for i_run = 1:runs
+        ind_comp = ind_comp+1;
+        if pear == 1
+        map = load_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i,i_par));
+        avg_corr_4D_pear(:,ind_comp) = map.img(:);
+        clear map
+        end;
+        if spea == 1
+        map = load_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i,i_par));
+        avg_corr_4D_spea(:,ind_comp) = map.img(:);
+        clear map
+        end;                
+    end;
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+    clear avg_corr_4D_pear avg_corr_4D_spea
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_between_contrasts.nii',str,i_par);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_between_contrasts.nii',str,i_par);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+         
+  
+     end;
+end;       
+
+% compare contrasts between sessions
+
+for i_con = 1:2
+    eval(sprintf('con=con%d;',i_con));
+    eval(sprintf('con_count = con%d_count;',i_con));
+    count_comp = 0;
+    % create data matrix with data for all voxels in cols, subjects in rows
+    % and runs in third dimension
+    data = zeros(nr_subj,nr_vox,runs);
+    for ind_runs = 1:runs
+        for ind_subj = 1:nr_subj
+            eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',ind_runs,i_con));
+            data(ind_subj,:,ind_runs)=temp(:);
+        end;
+    end;
+    clear temp;
+    
+    %correlations for each comparison
+    for i_run = 1:runs
+        for i_sec = 1:runs-i_run
+            if i_run+i_sec <= runs
+                count_comp = count_comp +1;
+                fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
+                %load 4D images
+                eval(sprintf('one=data(:,:,%d);',i_run));
+                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                
+                r1 = zeros(nr_vox,1);
+                zr1 = zeros(nr_vox,1);
+                r2 = zeros(nr_vox,1);
+                zr2 = zeros(nr_vox,1);
+                for i_vox = 1:nr_vox
+                    if pear == 1 
+                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                            if isnan (r(1,2))
+                                r1(i_vox,1) = 0;
+                                zr1(i_vox,1) = 0;
+                            else
+                                r1(i_vox,1) = r(1,2);
+                                zr1(i_vox,1) = atanh(r(1,2));
+                            end;
+                    end
+                    if spea == 1
+                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r2(i_vox,1) = r;  
+                            zr2(i_vox,1) = atanh(r);  
+                    end;
+                    
+                end;
+                clear one second
+                
+                % create correlation matrices for image 
+                if pear == 1
+                r_vec_pear_1_2 = reshape(r1,x,y,z);
+                z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+                clear r1 zr1
+                end;
+                
+                if spea == 1
+                r_vec_spea_1_2 = reshape(r2,x,y,z);
+                z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+                clear r2 zr2 
+                end;
+             
+
+            % save correlation maps
+            if pear == 1
+            target_img = temp_img;
+
+            file = sprintf('CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = r_vec_pear_1_2;
+                else
+                    r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = r_vec_pear_1_2;
+                end;
+            save_nii(target_img,target_img.fileprefix);  
+
+            target_img = temp_img;
+            file = sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = z_r_vec_pear_1_2;
+                else
+                    z_r_vec_pear_1_2(~r_roi_ind)=0;
+                    target_img.img = z_r_vec_pear_1_2;
+                end;            
+            save_nii(target_img,target_img.fileprefix);      
+            end;
+            
+            if spea == 1
+            target_img = temp_img;
+            file = sprintf('CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = r_vec_spea_1_2;
+                else
+                    r_vec_spea_1_2(~r_roi_ind)=0;
+                    target_img.img = r_vec_spea_1_2;
+                end;
+            save_nii(target_img,target_img.fileprefix);
+
+            target_img = temp_img;
+            file = sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+                if roi == 0
+                    target_img.img = z_r_vec_spea_1_2;
+                else
+                    z_r_vec_spea_1_2(~r_roi_ind)=0;
+                    target_img.img = z_r_vec_spea_1_2;
+                end;               
+            save_nii(target_img,target_img.fileprefix);                      
+            end;
+            
+            %compute z mean and inverse Fisher's transformation
+            if pear == 1
+                mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_pear%s_%d_%d_con%d',str,i_run,i_run+i_sec,con_count);
+            end;
+            if spea == 1
+                mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_spea%s_%d_%d_con%d',str,i_run,i_run+i_sec,count_count);    
+            end;
+            end; 
+        end;
+    end;
+    clear r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
+
+    % calculate average correlation for all comparisons
+    disp('...creates average correlation maps ...');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
+    for i_run = 1:runs
+        for i_sec = 1:runs-i_run
+            if i_run+i_sec <= runs
+                ind_comp = ind_comp+1;
+                if pear == 1
+                map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
+                avg_corr_4D_pear(:,ind_comp) = map.img(:);
+                end;
+                if spea == 1
+                map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
+                avg_corr_4D_spea(:,ind_comp) = map.img(:);
+                end;                
+            end; 
+        end;
+    end;
+    clear map
+    
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_con%d.nii',str,con_count);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_con%d.nii',str,con_count);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2 
+
+if nr_para > 0    
+     count_comp = 0;
+     for i_par = 1:nr_para
+        data = zeros(nr_subj,nr_vox,runs);
+        for ind_runs = 1:runs
+            for ind_subj = 1:nr_subj
+                eval(sprintf('temp = img_%s_par%d_%d(:,:,:,ind_subj);',con,i_par,ind_runs));
+                data(ind_subj,:,ind_runs)=temp(:);
+            end;
+        end;
+        clear temp
+    
+    %correlations for each comparison
+    for i_run = 1:runs
+        for i_sec = 1:runs-i_run
+            if i_run+i_sec <= runs
+                count_comp = count_comp +1;
+                fprintf('...creates correlation maps for parametric contrast in session %d and session %d...\n',i_run,i_run+i_sec);
+                %load 4D images
+                eval(sprintf('one=data(:,:,%d);',i_run));
+                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                
+                r1 = zeros(nr_vox,1);
+                zr1 = zeros(nr_vox,1);
+                r2 = zeros(nr_vox,1);
+                zr2 = zeros(nr_vox,1);
+                for i_vox = 1:nr_vox
+                    if pear == 1 
+                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                            if isnan (r(1,2))
+                                r1(i_vox,1) = 0;
+                                zr1(i_vox,1) = 0;
+                            else
+                                r1(i_vox,1) = r(1,2);
+                                zr1(i_vox,1) = atanh(r(1,2));
+                            end;
+                    end
+                    if spea == 1
+                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r2(i_vox,1) = r;  
+                            zr2(i_vox,1) = atanh(r);  
+                    end;
+                    
+                end;
+                clear one second
+                
+                % create correlation matrices for image 
+                if pear == 1
+                    r_vec_pear_1_2 = reshape(r1,x,y,z);
+                    r_vec_spea_1_2 = reshape(r2,x,y,z);
+                    clear r1 zr1
+                end;
+                if spea == 1
+                    z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+                    z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+                    clear r2 zr2;
+                end;
+             
+
+            % save correlation maps
+            if pear == 1
+            target_img = temp_img;
+
+            file = sprintf('CorrMaps%s_pear_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = r_vec_pear_1_2;
+            else
+                r_vec_pear_1_2(~r_roi_ind)=0;
+                target_img.img = r_vec_pear_1_2;
+            end;
+            save_nii(target_img,target_img.fileprefix);  
+
+            target_img = temp_img;
+            file = sprintf('z_CorrMaps%s_pear_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = z_r_vec_pear_1_2;
+            else
+                z_r_vec_pear_1_2(~r_roi_ind)=0;
+                target_img.img = z_r_vec_pear_1_2;
+            end;            
+            save_nii(target_img,target_img.fileprefix);      
+            end;
+            
+            if spea == 1
+            target_img = temp_img;
+            file = sprintf('CorrMaps%s_spea_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = r_vec_spea_1_2;
+            else
+                r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = r_vec_spea_1_2;
+            end;
+            save_nii(target_img,target_img.fileprefix);
+
+            target_img = temp_img;
+            file = sprintf('z_CorrMaps%s_spea_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count);
+            target_img.fileprefix = file;
+            if roi == 0
+                target_img.img = z_r_vec_spea_1_2;
+            else
+                z_r_vec_spea_1_2(~r_roi_ind)=0;
+                target_img.img = z_r_vec_spea_1_2;
+            end;               
+            save_nii(target_img,target_img.fileprefix);                      
+            end;
+            
+            %compute z mean and inverse Fisher's transformation
+            if pear == 1
+            mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+            summary(1,end+1)=mean_r;
+            cols{1,end+1} = sprintf('mean_pear%s_par%d_%d_%d_con%d',str,i_par,i_run,i_run+i_sec,con_count);
+            end;
+            if spea == 1
+            mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+            summary(1,end+1)=mean_r;
+            cols{1,end+1} = sprintf('mean_spea%s_par%d_%d_%d_con%d',str,i_par,i_run,i_run+i_sec,con_count);    
+            end;
+            clear z_r_vec_spea_1_2 r_vec_spea_1_2 r_vec_pear_1_2 z_r_vec_pear_1_2
+            end; 
+        end;
+    end;
+    
+    % calculate average correlation for all comparisons
+    disp('...creates average correlation maps for parametric contrast.../n');   
+    avg_corr_4D_pear = zeros(nr_vox,count_comp);
+    avg_corr_4D_spea = zeros(nr_vox,count_comp);
+    ind_comp = 0;
+    for i_run = 1:runs
+        for i_sec = 1:runs-i_run
+            if i_run+i_sec <= runs
+                ind_comp = ind_comp+1;
+                if pear == 1
+                map = load_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count));
+                avg_corr_4D_pear(:,ind_comp) = map.img(:);
+                end;
+                if spea == 1
+                map = load_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count));
+                avg_corr_4D_spea(:,ind_comp) = map.img(:);
+                end;                
+            end; 
+        end;
+    end;
+    avg_pear = zeros(nr_vox,1);
+    avg_spea = zeros(nr_vox,1);
+    if pear == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+            avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if spea == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+            avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+
+    if pear == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_con%d.nii',str,i_par,con_count);
+        target_img.img = avg_pear;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if spea == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_con%d.nii',str,i_par,con_count);
+        target_img.img = avg_spea;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+    clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2 
+     end;
+end; 
+results_corr=dataset({summary(1,:),cols{:}});
+assignin('base','results_corr',results_corr);
+    
+cd(dir_results);             
+eval(sprintf('save results_corr%s_2cons.mat results_corr',str)); 
+end;
+           
+end; 
+end;
+disp('...finished correlation maps')
+
+%% ICCs
+if cons == 1 || abs == 1
+    %initiating variables
+    ICC_con_ROI=zeros(nr_vox,1);
+    ICC_abs_ROI=zeros(nr_vox,1);
+    z_ICC_con_ROI=zeros(nr_vox,1);
+    z_ICC_abs_ROI=zeros(nr_vox,1);
+    summary = [];
+    cols = {};
+    disp('...calculating ICCs...')
+    
+    if split == 0 && two_cons == 0
+            %create data matrix
+            data=zeros(nr_vox,nr_subj,runs);  
+        for ind_runs = 1:runs
+             for ind_subj = 1:nr_subj
+                 eval(sprintf('temp = img_%d(:,:,:,ind_subj);',ind_runs));
+                 data(:,ind_subj,ind_runs)=temp(:);
+             end;
+        end;
+        clear temp
+        disp('...over all sessions...')
+        %calculate ICCs
+        for ind_voxel = 1:nr_vox
+            nsamples=nr_subj*runs;
+ 
+            grandmean=0;
+            for sub=1:nr_subj,     
+                for sess=1:runs,
+                    grandmean= grandmean + data(ind_voxel,sub,sess);
+                end
+            end;
+            grandmean=grandmean./nsamples;
+ 
+            sessionmean=zeros(runs,1);
+            for sess=1:runs
+                for sub=1:nr_subj,  
+                    sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+                end
+                sessionmean(sess)=sessionmean(sess)./nr_subj;
+            end
+ 
+            subjmean=zeros(nr_subj,1);
+            for sub=1:nr_subj
+                for sess=1:runs
+                    subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+                end
+                subjmean(sub)=subjmean(sub)./runs;
+            end
+            
+            % mean squares
+            BMS=0; % between subject
+            WMS=0; % within subject 
+            EMS=0; % error
+            JMS=0; % session
+                     
+            for sub=1:nr_subj,    
+                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                for sess=1:runs
+                    WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                    EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                end
+            end;
+ 
+            for sess=1:runs
+                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+            end;
+ 
+            %define the true value of the mean square.
+            BMS= runs.*BMS./(nr_subj-1);
+            WMS= WMS./(runs-1)./nr_subj;
+            JMS= nr_subj.*JMS./(runs-1);
+            EMS= EMS./(runs-1)./(nr_subj-1); 
+ 
+            %consistency agreement  
+            if cons==1
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                ICC_con_ROI(ind_voxel,1) = voxICC_con;
+                z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+            end;
+                     
+           %absolute agreement 
+           if abs==1
+               voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+               runs.* (JMS-EMS)./nr_subj);
+               ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+               z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+          end;
+       end;
+
+ disp('...saving ICC image over all sessions...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s.nii',str);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s.nii',str);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s.nii',str);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s.nii',str);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ disp('...computing average ICC over all sessions...')
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s',str);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s',str);    
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+if nr_para > 0
+    for i_par = 1:nr_para
+    %initiating variables
+    ICC_con_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    ICC_abs_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    z_ICC_con_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    z_ICC_abs_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    disp('...calculating ICCs for parametric contrast over all sessions...')
+    
+            %create data matrix
+            data=zeros(nr_vox,nr_subj,runs);  
+        for ind_runs = 1:runs
+             for ind_subj = 1:nr_subj
+                 eval(sprintf('temp = img_par%d_%d(:,:,:,ind_subj);',i_par,ind_runs));
+                 data(:,ind_subj,ind_runs)=temp(:);
+             end;
+        end;
+        clear temp
+        
+        %calculate ICCs
+        for ind_voxel = 1:nr_vox
+            nsamples=nr_subj*runs;
+ 
+            grandmean=0;
+            for sub=1:nr_subj,     
+                for sess=1:runs,
+                    grandmean= grandmean + data(ind_voxel,sub,sess);
+                end
+            end;
+            grandmean=grandmean./nsamples;
+ 
+            sessionmean=zeros(runs,1);
+            for sess=1:runs
+                for sub=1:nr_subj,  
+                    sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+                end
+                sessionmean(sess)=sessionmean(sess)./nr_subj;
+            end
+ 
+            subjmean=zeros(nr_subj,1);
+            for sub=1:nr_subj
+                for sess=1:runs
+                    subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+                end
+                subjmean(sub)=subjmean(sub)./runs;
+            end
+            
+            % mean squares
+            BMS=0; % between subject
+            WMS=0; % within subject 
+            EMS=0; % error
+            JMS=0; % session
+                     
+            for sub=1:nr_subj,    
+                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                for sess=1:runs
+                    WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                    EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                end
+            end;
+ 
+            for sess=1:runs
+                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+            end;
+ 
+            %define the true value of the mean square.
+            BMS= runs.*BMS./(nr_subj-1);
+            WMS= WMS./(runs-1)./nr_subj;
+            JMS= nr_subj.*JMS./(runs-1);
+            EMS= EMS./(runs-1)./(nr_subj-1); 
+ 
+            %consistency agreement  
+            if cons==1
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                ICC_con_ROI(ind_voxel,1) = voxICC_con;
+                z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+            end;
+                     
+           %absolute agreement 
+           if abs==1
+               voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+               runs.* (JMS-EMS)./nr_subj);
+               ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+               z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+          end;
+       end;
+
+ disp('...saving ICC images for parametric contrast over all sessions...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_par%d.nii',str,i_par);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_par%d.nii',str,i_par);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_par%d.nii',str,i_par);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_par%d.nii',str,i_par);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ disp('...computing average ICC for parametric contrast over all sessions...')
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_par%d',str,i_par);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_par%d',str,i_par);    
+    end;
+clear data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+    end;
+    end;
+
+%calculation ICC for each comparison
+ if runs > 1
+    %initiating variables
+    ICC_con_ROI=zeros(nr_vox,1);
+    ICC_abs_ROI=zeros(nr_vox,1);
+    z_ICC_con_ROI=zeros(nr_vox,1);
+    z_ICC_abs_ROI=zeros(nr_vox,1);
+   
+    %create data matrix
+    data1=zeros(nr_vox,nr_subj,runs);  
+    for ind_runs = 1:runs
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_%d(:,:,:,ind_subj);',ind_runs));
+             data1(:,ind_subj,ind_runs)=temp(:);
+         end;
+    end;
+    clear temp 
+    
+    for ind_run = 1:runs
+        for ind_sec = 1:runs-1
+             if ind_run + ind_sec <= runs
+                 fprintf('...calculate ICC for session %d and session %d...\n',ind_run,ind_run+ind_sec);
+                for ind_vox = 1:nr_vox
                     nsamples=nr_subj*2;
 
                     grandmean=0;
                     for sub=1:nr_subj,     
-                        for sess=1:2,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
+                        grandmean= grandmean + data1(ind_vox,sub,ind_run);
+                        grandmean= grandmean + data1(ind_vox,sub,ind_run+ind_sec);
                     end;
                     grandmean=grandmean./nsamples;
 
                     sessionmean=zeros(2,1);
                     for sess=1:2
+                        if sess == 1
+                            temp_ind = ind_run;
+                        else
+                            temp_ind = ind_run+ind_sec;
+                        end;
                         for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
+                            sessionmean(sess) = sessionmean(sess) + data1(ind_vox,sub,temp_ind);
                         end
                         sessionmean(sess)=sessionmean(sess)./nr_subj;
                     end
@@ -2789,7 +2095,12 @@ for ind_runs = 1:runs
                     subjmean=zeros(nr_subj,1);
                     for sub=1:nr_subj
                         for sess=1:2
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                            
+                            subjmean(sub)=subjmean(sub) + data1(ind_vox,sub,temp_ind);
                         end
                           subjmean(sub)=subjmean(sub)./2;
                     end
@@ -2800,15 +2111,26 @@ for ind_runs = 1:runs
                     EMS=0; % error
                     JMS=0; % session
                     
+                    
                     for sub=1:nr_subj,    
                         BMS = BMS + (subjmean(sub)-grandmean).^2;
                         for sess=1:2
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                             
+                            WMS = WMS + (data1(ind_vox,sub,temp_ind)-subjmean(sub)).^2;
+                            EMS = EMS + (data1(ind_vox,sub,temp_ind)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
                         end
                     end;
 
                     for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                     
                         JMS=  JMS + (sessionmean(sess)-grandmean).^2;
                     end;
 
@@ -2821,200 +2143,1242 @@ for ind_runs = 1:runs
                     %consistency agreement  
                     if cons==1
                     voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    
-                    cols{1,end+1}= sprintf('ICC%s_con_split%d_par%d',str,ind_runs,ind_para);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_split%d_par%d',str,ind_runs,ind_para);
-                    summary(1,end+1)=z_ICC_con_ROI_total;                    
+                    ICC_con_ROI(ind_vox,1) = voxICC_con;
+                    z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
                     end;
-                    
+
                     %absolute agreement 
                     if abs==1
                     voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
                                                        2.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    
-                    cols{1,end+1}= sprintf('ICC%s_abs_split%d_par%d',str,ind_runs,ind_para);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_split%d_par%d',str,ind_runs,ind_para);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;                     
+                    ICC_abs_ROI(ind_vox,1) = voxICC_abs;
+                    z_ICC_abs_ROI(ind_vox,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+                    end;                    
+                 end;
+                 
+         disp('...saving ICC images...')
+         ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+         ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+         z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+         z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+         if roi == 1
+             ICC_con_ROI(~r_roi_ind)=0;
+             z_ICC_con_ROI(~r_roi_ind)=0;
+             ICC_abs_ROI(~r_roi_ind)=0;
+             z_ICC_abs_ROI(~r_roi_ind)=0;
+         end;     
+
+         % save ICC maps
+         target_img = temp_img;
+         file1 = sprintf('ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
+         target_img.fileprefix = file1;
+         target_img.img = ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+         target_img = temp_img;
+         file2 = sprintf('ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
+         target_img.fileprefix = file2;
+         target_img.img = ICC_abs_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         target_img = temp_img;
+         file3 = sprintf('z_ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
+         target_img.fileprefix = file3;
+         target_img.img = z_ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+        target_img = temp_img;
+        file4 = sprintf('z_ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
+        target_img.fileprefix = file4;
+        target_img.img = z_ICC_abs_ROI;
+        save_nii(target_img,target_img.fileprefix);   
+                             
+        % computing average ICC
+                 fprintf('...calculate average ICC for session %d and session %d...\n',ind_run,ind_run+ind_sec);
+            %compute z mean and inverse Fisher's transformation
+            if abs == 1
+                mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCabs%s_%d_%d',str,ind_run,ind_run+ind_sec);
+            end;
+            if cons == 1
+                mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d',str,ind_run,ind_run+ind_sec);    
+            end;
+            clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+
+             end;
+        end;
+    end;
+clear data1;
+        
+if nr_para > 0
+     fprintf('...ICC parametric modulator for each comparison...\n')
+     for ind_para = 1:nr_para
+
+   
+    %create data matrix
+    data2=zeros(nr_vox,nr_subj,runs);  
+    for ind_runs = 1:runs
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_par%d_%d(:,:,:,ind_subj);',ind_para,ind_runs));
+             data2(:,ind_subj,ind_runs)=temp(:);
+         end;
+    end;
+    clear temp 
+    
+    for ind_run = 1:runs
+        for ind_sec = 1:runs-1
+             if ind_run + ind_sec <= runs
+              fprintf('...calculate ICC of parametric contrast for session %d and session %d...\n',ind_run,ind_run+ind_sec);
+            %initiating variables
+            ICC_con_ROI=zeros(nr_vox,1);
+            ICC_abs_ROI=zeros(nr_vox,1);
+            z_ICC_con_ROI=zeros(nr_vox,1);
+            z_ICC_abs_ROI=zeros(nr_vox,1);
+                for ind_vox = 1:nr_vox
+                    nsamples=nr_subj*2;
+
+                    grandmean=0;
+                    for sub=1:nr_subj,     
+                        grandmean= grandmean + data2(ind_vox,sub,ind_run);
+                        grandmean= grandmean + data2(ind_vox,sub,ind_run+ind_sec);
                     end;
-                    
-                  
-                    
-end;                  
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
+                    grandmean=grandmean./nsamples;
 
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
+                    sessionmean=zeros(2,1);
+                    for sess=1:2
+                        if sess == 1
+                            temp_ind = ind_run;
+                        else
+                            temp_ind = ind_run+ind_sec;
+                        end;
+                        for sub=1:nr_subj,  
+                            sessionmean(sess) = sessionmean(sess) + data2(ind_vox,sub,temp_ind);
+                        end
+                        sessionmean(sess)=sessionmean(sess)./nr_subj;
+                    end
 
-                    cd(dir_results);             
-                    sprintf('save results_ICC%s_split_par%d.mat results_ICC',str,ind_para);
+                    subjmean=zeros(nr_subj,1);
+                    for sub=1:nr_subj
+                        for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                            
+                            subjmean(sub)=subjmean(sub) + data2(ind_vox,sub,temp_ind);
+                        end
+                          subjmean(sub)=subjmean(sub)./2;
+                    end
+
+                    % mean squares
+                    BMS=0; % between subject
+                    WMS=0; % within subject 
+                    EMS=0; % error
+                    JMS=0; % session
+
+                    for sub=1:nr_subj,    
+                        BMS = BMS + (subjmean(sub)-grandmean).^2;
+                        for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                             
+                            WMS = WMS + (data2(ind_vox,sub,temp_ind)-subjmean(sub)).^2;
+                            EMS = EMS + (data2(ind_vox,sub,temp_ind)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                        end
+                    end;
+
+                    for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                     
+                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+                    end;
+
+                    %define the true value of the mean square.
+                    BMS= 2.*BMS./(nr_subj-1);
+                    WMS= WMS./(2-1)./nr_subj;
+                    JMS= nr_subj.*JMS./(2-1);
+                    EMS= EMS./(2-1)./(nr_subj-1); 
+
+                    %consistency agreement  
+                    if cons==1
+                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                    ICC_con_ROI(ind_vox,1) = voxICC_con;
+                    z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+                    end;
+
+                    %absolute agreement 
+                    if abs==1
+                    voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
+                                                       2.* (JMS-EMS)./nr_subj);
+                    ICC_abs_ROI(ind_vox,1) = voxICC_abs;
+                    z_ICC_abs_ROI(ind_vox,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+                    end;                    
+                 end;
+                 
+         disp('...saving ICC images...')
+         ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+         ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+         z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+         z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+         if roi == 1
+             ICC_con_ROI(~r_roi_ind)=0;
+             z_ICC_con_ROI(~r_roi_ind)=0;
+             ICC_abs_ROI(~r_roi_ind)=0;
+             z_ICC_abs_ROI(~r_roi_ind)=0;
+         end;     
+
+         % save ICC maps
+         target_img = temp_img;
+         file1 = sprintf('ICC%s_con_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
+         target_img.fileprefix = file1;
+         target_img.img = ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+         target_img = temp_img;
+         file2 = sprintf('ICC%s_abs_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
+         target_img.fileprefix = file2;
+         target_img.img = ICC_abs_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         target_img = temp_img;
+         file3 = sprintf('z_ICC%s_con_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
+         target_img.fileprefix = file3;
+         target_img.img = z_ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+        target_img = temp_img;
+        file4 = sprintf('z_ICC%s_abs_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
+        target_img.fileprefix = file4;
+        target_img.img = z_ICC_abs_ROI;
+        save_nii(target_img,target_img.fileprefix);   
+                             
+        % computing average ICC
+                 fprintf('...calculate average ICC for parametric contrast in session %d and session %d...\n',ind_run,ind_run+ind_sec);
+            %compute z mean and inverse Fisher's transformation
+            if abs == 1
+                mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCabs%s_%d_%d_par%d',str,ind_run,ind_run+ind_sec,ind_para);
+            end;
+            if cons == 1
+                mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_par%d',str,ind_run,ind_run+ind_sec,ind_para);    
+            end;
+            clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+             end;
+        end;
+    end;
+    clearvars data2 
+
 end;
 end;
 end;
+
+    assignin('base','summary',summary);
+    assignin('base','cols',cols);
+
+    results_ICC=dataset({summary(1,:),cols{:}});
+    assignin('base','results_ICC',results_ICC);
+
+    cd(dir_results);             
+    sprintf('save results_ICC%s.mat results_ICC',str);
+
+%% based on split-half
+elseif split == 1
+    %create data matrix
+    for ind_runs = 1:runs
+    data=zeros(nr_vox,nr_subj,2);  
+    for ind_split = 1:2
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_%d_split%d(:,:,:,ind_subj);',ind_runs,ind_split));
+             data(:,ind_subj,ind_split)=temp(:);
+         end;
+    end;
+    clear temp
+        
+    %calculate ICCs
+    fprintf('...calculate ICCs for splitted session %d...\n',ind_runs)
+    for ind_voxel = 1:nr_vox
+        nsamples=nr_subj*2;
+
+        grandmean=0;
+        for sub=1:nr_subj,     
+            for sess=1:2,
+                grandmean= grandmean + data(ind_voxel,sub,sess);
+            end
+        end;
+        grandmean=grandmean./nsamples;
+
+        sessionmean=zeros(2,1);
+        for sess=1:2
+            for sub=1:nr_subj,  
+                sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+            end
+            sessionmean(sess)=sessionmean(sess)./nr_subj;
+        end
+
+        subjmean=zeros(nr_subj,1);
+        for sub=1:nr_subj
+            for sess=1:2
+                subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+            end
+            subjmean(sub)=subjmean(sub)./2;
+        end
+
+        % mean squares
+        BMS=0; % between subject
+        WMS=0; % within subject 
+        EMS=0; % error
+        JMS=0; % session
+
+        for sub=1:nr_subj,    
+            BMS = BMS + (subjmean(sub)-grandmean).^2;
+            for sess=1:2
+                WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+            end
+        end;
+
+        for sess=1:2
+            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+        end;
+
+        %define the true value of the mean square.
+        BMS= 2.*BMS./(nr_subj-1);
+        WMS= WMS./(2-1)./nr_subj;
+        JMS= nr_subj.*JMS./(2-1);
+        EMS= EMS./(2-1)./(nr_subj-1); 
+
+        %consistency agreement  
+        if cons==1
+            voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+            ICC_con_ROI(ind_voxel,1) = voxICC_con;
+            z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+        end;
+
+       %absolute agreement 
+       if abs==1
+           voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
+           2.* (JMS-EMS)./nr_subj);
+           ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+           z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+      end;
+   end;
+
+ disp('...saving ICC images...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_%d_split.nii',str,ind_runs);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_%d_split.nii',str,ind_runs);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_%d_split.nii',str,ind_runs);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_%d_split.nii',str,ind_runs);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ disp('...computing average ICC for each split...')
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_%d_split',str,ind_runs);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_%d_split',str,ind_runs);    
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj target_img
+if nr_para > 0
+    for i_par = 1:nr_para
+    %initiating variables
+    ICC_con_ROI=zeros(nr_vox,1);
+    ICC_abs_ROI=zeros(nr_vox,1);
+    z_ICC_con_ROI=zeros(nr_vox,1);
+    z_ICC_abs_ROI=zeros(nr_vox,1);
+    fprintf('...calculating ICCs for splitted parametric regressor in session %d...\n',ind_runs)
+    
+    %create data matrix
+    data=zeros(nr_vox,nr_subj,2);  
+    for ind_split = 1:2
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_%d_par%d_split%d(:,:,:,ind_subj);',ind_runs,i_par,ind_split));
+             data(:,ind_subj,ind_split)=temp(:);
+         end;
+    end;
+        clear temp
+        
+        %calculate ICCs
+        for ind_voxel = 1:nr_vox
+            nsamples=nr_subj*2;
+
+            grandmean=0;
+            for sub=1:nr_subj,     
+                for sess=1:2,
+                    grandmean= grandmean + data(ind_voxel,sub,sess);
+                end
+            end;
+            grandmean=grandmean./nsamples;
+
+            sessionmean=zeros(2,1);
+            for sess=1:2
+                for sub=1:nr_subj,  
+                    sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+                end
+                sessionmean(sess)=sessionmean(sess)./nr_subj;
+            end
+
+            subjmean=zeros(nr_subj,1);
+            for sub=1:nr_subj
+                for sess=1:2
+                    subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+                end
+                subjmean(sub)=subjmean(sub)./2;
+            end
+
+            % mean squares
+            BMS=0; % between subject
+            WMS=0; % within subject 
+            EMS=0; % error
+            JMS=0; % session
+
+            for sub=1:nr_subj,    
+                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                for sess=1:2
+                    WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                    EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                end
+            end;
+
+            for sess=1:2
+                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+            end;
+
+            %define the true value of the mean square.
+            BMS= 2.*BMS./(nr_subj-1);
+            WMS= WMS./(2-1)./nr_subj;
+            JMS= nr_subj.*JMS./(2-1);
+            EMS= EMS./(2-1)./(nr_subj-1); 
+
+            %consistency agreement  
+            if cons==1
+                voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                ICC_con_ROI(ind_voxel,1) = voxICC_con;
+                z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+            end;
+
+           %absolute agreement 
+           if abs==1
+               voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
+               2.* (JMS-EMS)./nr_subj);
+               ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+               z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+          end;
+       end;
+
+ disp('...saving ICC images...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_par%d_%d_split.nii',str,i_par,ind_runs);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_par%d_%d_split.nii',str,i_par,ind_runs);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_par%d_%d_split.nii',str,i_par,ind_runs);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_par%d_%d_split.nii',str,i_par,ind_runs);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ fprintf('...computing average ICC for parametric regressor in session %d...',ind_runs)
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_par%d_%d_split',str,i_par,ind_runs);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_par%d_%d_split',str,i_par,ind_runs);    
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+    end;
+    end;    
+    end;
+    
+ % calculate voxelwise average ICC over all splits
+ disp('...creates average ICC maps over all splits ...');   
+    avg_ICC_4D_abs = zeros(nr_vox,runs);
+    avg_ICC_4D_con = zeros(nr_vox,runs);
+    for i_run = 1:runs
+        if abs == 1
+        map = load_nii(sprintf('z_ICC_abs%s_%d_split.nii',str,i_run));
+        avg_ICC_4D_abs(:,i_run) = map.img(:);
+        clear map
+        end;
+        if cons == 1
+        map = load_nii(sprintf('z_ICC_con%s_%d_split.nii',str,i_run));
+        avg_ICC_4D_con(:,i_run) = map.img(:);
+        clear map
+        end;                
+    end;
+    avg_abs = zeros(nr_vox,1);
+    avg_con = zeros(nr_vox,1);
+    if abs == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_ICC_4D_abs(ind_vox,:));
+            avg_abs(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if cons == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_ICC_4D_con(ind_vox,:));
+            avg_con(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+    clear avg_ICC_4D_abs avg_ICC_4D_con avg_temp
+    if abs == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('ICC_abs%s_split.nii',str);
+        target_img.img = avg_abs;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if cons == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('ICC_con%s_split.nii',str);
+        target_img.img = avg_con;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+    clear avg_abs avg_con 
+    
+    assignin('base','summary',summary);
+    assignin('base','cols',cols);
+
+    results_ICC=dataset({summary(1,:),cols{:}});
+    assignin('base','results_ICC',results_ICC);
+
+    cd(dir_results);             
+    eval(sprintf('save results_ICC%s_split.mat results_ICC',str));
 
 %% two contrasts out of one statistic
 elseif two_cons == 1
-for ind = 1:runs
-    
-    if runs == 1
-        ind = single_run;
+    %create data matrix
+    for ind_runs = 1:runs
+    data=zeros(nr_vox,nr_subj,2);  
+    for ind_con = 1:2
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',ind_runs,ind_con));
+             data(:,ind_subj,ind_con)=temp(:);
+         end;
     end;
-    disp('...comparison of two contrasts in session %d...', ind);
+    clear temp
+        
+    %calculate ICCs
+    fprintf('...calculate ICC betweens contrasts for session %d...',ind_runs);
+
+    for ind_voxel = 1:nr_vox
+        nsamples=nr_subj*2;
+
+        grandmean=0;
+        for sub=1:nr_subj,     
+            for sess=1:2,
+                grandmean= grandmean + data(ind_voxel,sub,sess);
+            end
+        end;
+        grandmean=grandmean./nsamples;
+
+        sessionmean=zeros(2,1);
+        for sess=1:2
+            for sub=1:nr_subj,  
+                sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+            end
+            sessionmean(sess)=sessionmean(sess)./nr_subj;
+        end
+
+        subjmean=zeros(nr_subj,1);
+        for sub=1:nr_subj
+            for sess=1:2
+                subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+            end
+            subjmean(sub)=subjmean(sub)./2;
+        end
+
+        % mean squares
+        BMS=0; % between subject
+        WMS=0; % within subject 
+        EMS=0; % error
+        JMS=0; % session
+
+        for sub=1:nr_subj,    
+            BMS = BMS + (subjmean(sub)-grandmean).^2;
+            for sess=1:2
+                WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+            end
+        end;
+
+        for sess=1:2
+            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+        end;
+
+        %define the true value of the mean square.
+        BMS= 2.*BMS./(nr_subj-1);
+        WMS= WMS./(2-1)./nr_subj;
+        JMS= nr_subj.*JMS./(2-1);
+        EMS= EMS./(2-1)./(nr_subj-1); 
+
+        %consistency agreement  
+        if cons==1
+            voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+            ICC_con_ROI(ind_voxel,1) = voxICC_con;
+            z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+        end;
+
+       %absolute agreement 
+       if abs==1
+           voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
+           2.* (JMS-EMS)./nr_subj);
+           ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+           z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+      end;
+   end;
+
+ disp('...saving ICC images...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
  
-     eval(sprintf('data_%d = zeros(nr_subj,2);',ind));
-    for ind_x = 1:x
-          fprintf('...x = %d...\n',ind_x)
-        for ind_y = 1:y
-            for ind_z = 1:z
-                    for ind_subj = 1:nr_subj
-                       eval(sprintf('img%d_voxel_con1(ind_subj,1)= img_%d_con1 (ind_x, ind_y, ind_z, ind_subj);',ind,ind));
-                       eval(sprintf('img%d_voxel_con2(ind_subj,1)= img_%d_con2 (ind_x, ind_y, ind_z, ind_subj);',ind,ind));
-                    end;
-                    eval(sprintf('data_%d(:,1)=img%d_voxel_con1;',ind,ind));
-                    eval(sprintf('data_%d(:,2)=img%d_voxel_con2;',ind,ind));
-                    %ICC
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_%d_between_contrasts.nii',str,ind_runs);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_%d_between_contrasts.nii',str,ind_runs);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_%d_between_contrasts.nii',str,ind_runs);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_%d_between_contrasts.nii',str,ind_runs);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ fprintf('...computing average ICC betweens contrasts in sessin %d...',ind_runs)
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_%d_between_contrasts',str,ind_runs);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_%d_between_contrasts',str,ind_runs);    
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+if nr_para > 0
+    for i_par = 1:nr_para
+    %initiating variables
+    ICC_con_ROI=zeros(nr_vox,1);
+    ICC_abs_ROI=zeros(nr_vox,1);
+    z_ICC_con_ROI=zeros(nr_vox,1);
+    z_ICC_abs_ROI=zeros(nr_vox,1);
+    fprintf('...calculating ICCs between parametric regressors of contrasts in session %d...',ind_runs)
     
-                        nsamples=nr_subj*runs;
-                        
-                        grandmean=0;
-                        for sub=1:nr_subj,     
-                            for sess=1:2,
-                               eva=sprintf('grandmean= grandmean + data_%d(sub,sess);',ind);
-                               eval(eva);
-                            end
-                        end;
-                        grandmean=grandmean./nsamples;
+    %create data matrix
+    data=zeros(nr_vox,nr_subj,2);  
+    for ind_con = 1:2
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_%d_par%d_con%d(:,:,:,ind_subj);',ind_runs,i_par,ind_con));
+             data(:,ind_subj,ind_runs)=temp(:);
+         end;
+    end;
+        clear temp
+        
+        %calculate ICCs
+        for ind_voxel = 1:nr_vox
+            nsamples=nr_subj*2;
 
-                        sessionmean=zeros(2,1);
-                        for sess=1:2
-                            for sub=1:nr_subj,  
-                                e = sprintf('sessionmean(sess) = sessionmean(sess) + data_%d(sub,sess);',ind);
-                                eval(e);
-                            end
-                            sessionmean(sess)=sessionmean(sess)./nr_subj;
-                        end
-
-                        subjmean=zeros(nr_subj,1);
-                        for sub=1:nr_subj
-                            for sess=1:2
-                                ev = sprintf('subjmean(sub)=subjmean(sub) + data_%d(sub,sess);',ind);
-                                eval(ev);
-                            end
-                              subjmean(sub)=subjmean(sub)./2;
-                        end
-
-                        % mean squares
-                        BMS=0; % between subject
-                        WMS=0; % within subject 
-                        EMS=0; % error
-                        JMS=0; % session
-
-                        for sub=1:nr_subj,    
-                            BMS = BMS + (subjmean(sub)-grandmean).^2;
-                            for sess=1:2
-                                evs = sprintf('WMS = WMS + (data_%d(sub,sess)-subjmean(sub)).^2;',ind);
-                                eval(evs);
-                                evst = sprintf('EMS = EMS + (data_%d(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;',ind);
-                                eval(evst);
-                            end
-                        end;
-
-                        for sess=1:2
-                            JMS=  JMS + (sessionmean(sess)-grandmean).^2;
-                        end;
-
-                        %define the true value of the mean square.
-                        BMS= 2.*BMS./(nr_subj-1);
-                        WMS= WMS./(2-1)./nr_subj;
-                        JMS= nr_subj.*JMS./(2-1);
-                        EMS= EMS./(2-1)./(nr_subj-1); 
-                        
-                        %consistency agreement  
-                        if cons==1
-                        voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                        ICC_con_ROI(ind_x, ind_y, ind_z) = voxICC_con;
-                        z_ICC_con_ROI(ind_x, ind_y, ind_z) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                        end;
-
-                        %absolute agreement 
-                        if abs==1
-                        voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
-                                                           2.* (JMS-EMS)./nr_subj);
-                        ICC_abs_ROI(ind_x, ind_y, ind_z) = voxICC_abs;
-                        z_ICC_abs_ROI(ind_x,ind_y,ind_z) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                        end;
-                                                
+            grandmean=0;
+            for sub=1:nr_subj,     
+                for sess=1:2,
+                    grandmean= grandmean + data(ind_voxel,sub,sess);
+                end
             end;
-        end; 
+            grandmean=grandmean./nsamples;
+
+            sessionmean=zeros(2,1);
+            for sess=1:2
+                for sub=1:nr_subj,  
+                    sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+                end
+                sessionmean(sess)=sessionmean(sess)./nr_subj;
+            end
+
+            subjmean=zeros(nr_subj,1);
+            for sub=1:nr_subj
+                for sess=1:2
+                    subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+                end
+                subjmean(sub)=subjmean(sub)./2;
+            end
+
+            % mean squares
+            BMS=0; % between subject
+            WMS=0; % within subject 
+            EMS=0; % error
+            JMS=0; % session
+
+            for sub=1:nr_subj,    
+                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                for sess=1:2
+                    WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                    EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                end
+            end;
+
+            for sess=1:2
+                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+            end;
+
+            %define the true value of the mean square.
+            BMS= 2.*BMS./(nr_subj-1);
+            WMS= WMS./(2-1)./nr_subj;
+            JMS= nr_subj.*JMS./(2-1);
+            EMS= EMS./(2-1)./(nr_subj-1); 
+
+            %consistency agreement  
+            if cons==1
+                voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                ICC_con_ROI(ind_voxel,1) = voxICC_con;
+                z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+            end;
+
+           %absolute agreement 
+           if abs==1
+               voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
+               2.* (JMS-EMS)./nr_subj);
+               ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+               z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+          end;
+       end;
+
+ disp('...saving ICC images...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ fprintf('...computing average ICC for parametric regressor between contrasts in session %d...',ind_runs)
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_par%d_%d_between_contrasts',str,i_par,ind_runs);
     end;
-                            disp('saving ICC images')
-                             % save ICC maps
-                            target_img = temp_img;
-                            file1 = sprintf('ICC%s_con_%d_2cons.nii',str,ind);
-                            target_img.fileprefix = file1;
-                            target_img.img = ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_par%d_%d_between_contrasts',str,i_par,ind_runs);    
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+    end;
+    end;    
+    end;
+    
+ % calculate voxelwise average ICC over all splits
+ disp('...creates average ICC maps over all contrast comparisons of parametric regressors...');   
+    avg_ICC_4D_abs = zeros(nr_vox,runs);
+    avg_ICC_4D_con = zeros(nr_vox,runs);
+    for i_run = 1:runs
+        if abs == 1
+        map = load_nii(sprintf('z_ICC_abs%s_%d_between_contrasts.nii',str,i_run));
+        avg_ICC_4D_abs(:,i_run) = map.img(:);
+        clear map
+        end;
+        if cons == 1
+        map = load_nii(sprintf('z_ICC_con%s_%d_between_contrasts.nii',str,i_run));
+        avg_ICC_4D_con(:,i_run) = map.img(:);
+        clear map
+        end;                
+    end;
+    avg_abs = zeros(nr_vox,1);
+    avg_con = zeros(nr_vox,1);
+    if abs == 1
+        for ind_vox = 1:nr_vox
+            avg_temp = mean(avg_ICC_4D_abs(ind_vox,:));
+            avg_abs(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;
+    if cons == 1
+        for ind_vox = 1:nr_vox      
+            avg_temp = mean(avg_ICC_4D_con(ind_vox,:));
+            avg_con(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+        end;
+    end;                
+    clear avg_ICC_4D_abs avg_ICC_4D_con avg_temp
+    if abs == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('ICC_abs%s_between_contrasts.nii',str);
+        target_img.img = avg_abs;
+        save_nii(target_img,target_img.fileprefix); 
+    end;
+    if cons == 1
+        target_img = temp_img;
+        target_img.fileprefix = sprintf('ICC_con%s_between_contrasts.nii',str);
+        target_img.img = avg_con;
+        save_nii(target_img,target_img.fileprefix);        
+    end;
+    clear avg_abs avg_con 
+    
+    % ICCs within contrast over sessions
+for ind_con = 1:2
+    fprintf('...calculating ICC within contrast %d over all sessions...',ind_con)
+    eval(sprintf('con=con%d;',ind_con));
+    eval(sprintf('con_count = con%d_count;',ind_con));
+    count_comp = 0;  
+%initiating variables
+    ICC_con_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    ICC_abs_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    z_ICC_con_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    z_ICC_abs_ROI=zeros(numel(img_1(:,:,:,1)),1);
 
-                            clear target_img;
-                            target_img = temp_img;
-                            file2 = sprintf('ICC%s_abs_%d_2cons.nii',str,ind);
-                            target_img.fileprefix = file2;
-                            target_img.img = ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
+    disp('...calculating ICCs...')
+    
+           %create data matrix
+            data=zeros(nr_vox,nr_subj,runs);  
+        for ind_runs = 1:runs
+             for ind_subj = 1:nr_subj
+                 eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',ind_runs,ind_con));
+                 data(:,ind_subj,ind_runs)=temp(:);
+             end;
+        end;
+        clear temp
+        
+        %calculate ICCs
+        for ind_voxel = 1:nr_vox
+            nsamples=nr_subj*runs;
+ 
+            grandmean=0;
+            for sub=1:nr_subj,     
+                for sess=1:runs,
+                    grandmean= grandmean + data(ind_voxel,sub,sess);
+                end
+            end;
+            grandmean=grandmean./nsamples;
+ 
+            sessionmean=zeros(runs,1);
+            for sess=1:runs
+                for sub=1:nr_subj,  
+                    sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+                end
+                sessionmean(sess)=sessionmean(sess)./nr_subj;
+            end
+ 
+            subjmean=zeros(nr_subj,1);
+            for sub=1:nr_subj
+                for sess=1:runs
+                    subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+                end
+                subjmean(sub)=subjmean(sub)./runs;
+            end
+            
+            % mean squares
+            BMS=0; % between subject
+            WMS=0; % within subject 
+            EMS=0; % error
+            JMS=0; % session
+                     
+            for sub=1:nr_subj,    
+                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                for sess=1:runs
+                    WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                    EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                end
+            end;
+ 
+            for sess=1:runs
+                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+            end;
+ 
+            %define the true value of the mean square.
+            BMS= runs.*BMS./(nr_subj-1);
+            WMS= WMS./(runs-1)./nr_subj;
+            JMS= nr_subj.*JMS./(runs-1);
+            EMS= EMS./(runs-1)./(nr_subj-1); 
+ 
+            %consistency agreement  
+            if cons==1
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                ICC_con_ROI(ind_voxel,1) = voxICC_con;
+                z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+            end;
+                     
+           %absolute agreement 
+           if abs==1
+               voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+               runs.* (JMS-EMS)./nr_subj);
+               ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+               z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+          end;
+       end;
 
-                            target_img = temp_img;
-                            file3 = sprintf('z_ICC%s_con_%d_2cons.nii',str,ind);
-                            target_img.fileprefix = file3;
-                            target_img.img = z_ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix); 
+ disp('...saving ICC images...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_con%d.nii',str,con_count);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_con%d.nii',str,con_count);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_con%d.nii',str,con_count);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_con%d.nii',str,con_count);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ disp('...computing average ICC...')
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_con%d',str,con_count);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_con%d',str,con_count);    
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+if nr_para > 0
+    fprintf('...calculating ICC for parametric regressor within contrast %d over all sessions...',ind_con)
 
-                            clear target_img;
-                            target_img = temp_img;
-                            file4 = sprintf('z_ICC%s_abs_%d_2cons.nii',str,ind);
-                            target_img.fileprefix = file4;
-                            target_img.img = z_ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);              
-end;
+    for i_par = 1:nr_para
+    %initiating variables
+    ICC_con_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    ICC_abs_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    z_ICC_con_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    z_ICC_abs_ROI=zeros(numel(img_1(:,:,:,1)),1);
+    disp('...calculating ICCs...')
+    
+            %create data matrix
+            data=zeros(nr_vox,nr_subj,runs);  
+        for ind_runs = 1:runs
+             for ind_subj = 1:nr_subj
+                 eval(sprintf('temp = img_con%d_par%d_%d(:,:,:,ind_subj);',ind_con,i_par,ind_runs));
+                 data(:,ind_subj,ind_runs)=temp(:);
+             end;
+        end;
+        clear temp
+        
+        %calculate ICCs
+        for ind_voxel = 1:nr_vox
+            nsamples=nr_subj*runs;
+ 
+            grandmean=0;
+            for sub=1:nr_subj,     
+                for sess=1:runs,
+                    grandmean= grandmean + data(ind_voxel,sub,sess);
+                end
+            end;
+            grandmean=grandmean./nsamples;
+ 
+            sessionmean=zeros(runs,1);
+            for sess=1:runs
+                for sub=1:nr_subj,  
+                    sessionmean(sess) = sessionmean(sess) + data(ind_voxel,sub,sess);
+                end
+                sessionmean(sess)=sessionmean(sess)./nr_subj;
+            end
+ 
+            subjmean=zeros(nr_subj,1);
+            for sub=1:nr_subj
+                for sess=1:runs
+                    subjmean(sub)=subjmean(sub) + data(ind_voxel,sub,sess);
+                end
+                subjmean(sub)=subjmean(sub)./runs;
+            end
+            
+            % mean squares
+            BMS=0; % between subject
+            WMS=0; % within subject 
+            EMS=0; % error
+            JMS=0; % session
+                     
+            for sub=1:nr_subj,    
+                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                for sess=1:runs
+                    WMS = WMS + (data(ind_voxel,sub,sess)-subjmean(sub)).^2;
+                    EMS = EMS + (data(ind_voxel,sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                end
+            end;
+ 
+            for sess=1:runs
+                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+            end;
+ 
+            %define the true value of the mean square.
+            BMS= runs.*BMS./(nr_subj-1);
+            WMS= WMS./(runs-1)./nr_subj;
+            JMS= nr_subj.*JMS./(runs-1);
+            EMS= EMS./(runs-1)./(nr_subj-1); 
+ 
+            %consistency agreement  
+            if cons==1
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                ICC_con_ROI(ind_voxel,1) = voxICC_con;
+                z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+            end;
+                     
+           %absolute agreement 
+           if abs==1
+               voxICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+               runs.* (JMS-EMS)./nr_subj);
+               ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
+               z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+          end;
+       end;
+
+ disp('...saving ICC images...')
+ ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+ ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+ z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+ z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+ if roi == 1
+     ICC_con_ROI(~r_roi_ind)=0;
+     z_ICC_con_ROI(~r_roi_ind)=0;
+     ICC_abs_ROI(~r_roi_ind)=0;
+     z_ICC_abs_ROI(~r_roi_ind)=0;
+ end;
+ 
+ % save ICC maps
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_con%s_par%d_con%d.nii',str,i_par,con_count);
+ target_img.img = ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('ICC_abs%s_par%d_con%d.nii',str,i_par,con_count);
+ target_img.img = ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_con%s_par%d_con%d.nii',str,i_par,con_count);
+ target_img.img = z_ICC_con_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+ clear target_img;
+ target_img = temp_img;
+ target_img.fileprefix = sprintf('z_ICC_abs%s_par%d_con%d.nii',str,i_par,con_count);
+ target_img.img = z_ICC_abs_ROI;
+ save_nii(target_img,target_img.fileprefix); 
+ 
+% computing average ICC
+ disp('...computing average ICC within parametric contrast...')
+    %compute z mean and inverse Fisher's transformation
+    if abs == 1
+        mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCabs%s_par%d_con%d',str,i_par,con_count);
+    end;
+    if cons == 1
+        mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+        mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+        summary(1,end+1)=mean_r;
+        cols{1,end+1} = sprintf('mean_ICCcon%s_par%d_con%d',str,i_par,con_count);
+    end;
+clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+    end;
+    end;
+
+%calculation ICC for each comparison
+ if runs > 1
+
+    %initiating variables
+    ICC_con_ROI=zeros(nr_vox,1);
+    ICC_abs_ROI=zeros(nr_vox,1);
+    z_ICC_con_ROI=zeros(nr_vox,1);
+    z_ICC_abs_ROI=zeros(nr_vox,1);
    
-     
-
-     % computing ROI ICC
-disp('...computing ROI total ICC...')
-
-if roi == 1
-for ind_runs = 1:runs
-    if runs == 1
-        ind_runs = single_run;
+    %create data matrix
+    data=zeros(nr_vox,nr_subj,runs);  
+    for ind_runs = 1:runs
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',ind_runs,ind_cons));
+             data(:,ind_subj,ind_runs)=temp(:);
+         end;
     end;
-    ROI_subj = zeros(nr_subj,2);
-  for ind_con = 1:2
-    for ind_subj = 1:nr_subj
-            eval(sprintf('img%d_%d = img_%d_con%d (:,:,:,ind_subj);',ind_con,ind_subj,ind_runs,ind_con));
-            eval(sprintf('ROI_subj(ind_subj,ind_con) = mean(img%d_%d(r_roi_ind));',ind_con,ind_subj));
-    end;
-  end;
-                    %ICC
+    clear temp 
+    
+    for ind_run = 1:runs
+        for ind_sec = 1:runs-1
+             if ind_run + ind_sec <= runs
+    fprintf('...calculating ICC within contrast %d between session %d and %d...',ind_con,ind_run, ind_run+ind_sec)
+                 
+                for ind_vox = 1:nr_vox
                     nsamples=nr_subj*2;
 
                     grandmean=0;
                     for sub=1:nr_subj,     
-                        for sess=1:2,
-                           grandmean= grandmean + ROI_subj(sub,sess);
-                        end
-
+                        grandmean= grandmean + data(ind_vox,sub,ind_run);
+                        grandmean= grandmean + data(ind_vox,sub,ind_run+ind_sec);
                     end;
                     grandmean=grandmean./nsamples;
 
                     sessionmean=zeros(2,1);
                     for sess=1:2
+                        if sess == 1
+                            temp_ind = ind_run;
+                        else
+                            temp_ind = ind_run+ind_sec;
+                        end;
                         for sub=1:nr_subj,  
-                            sessionmean(sess) = sessionmean(sess) + ROI_subj(sub,sess);
+                            sessionmean(sess) = sessionmean(sess) + data(ind_vox,sub,temp_ind);
                         end
                         sessionmean(sess)=sessionmean(sess)./nr_subj;
                     end
@@ -3022,7 +3386,12 @@ for ind_runs = 1:runs
                     subjmean=zeros(nr_subj,1);
                     for sub=1:nr_subj
                         for sess=1:2
-                            subjmean(sub)=subjmean(sub) + ROI_subj(sub,sess);
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                            
+                            subjmean(sub)=subjmean(sub) + data(ind_vox,sub,temp_ind);
                         end
                           subjmean(sub)=subjmean(sub)./2;
                     end
@@ -3032,17 +3401,27 @@ for ind_runs = 1:runs
                     WMS=0; % within subject 
                     EMS=0; % error
                     JMS=0; % session
-                    
+
                     for sub=1:nr_subj,    
                         BMS = BMS + (subjmean(sub)-grandmean).^2;
                         for sess=1:2
-                            WMS = WMS + (ROI_subj(sub,sess)-subjmean(sub)).^2;
-                            EMS = EMS + (ROI_subj(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                             
+                            WMS = WMS + (data(ind_vox,sub,temp_ind)-subjmean(sub)).^2;
+                            EMS = EMS + (data(ind_vox,sub,temp_ind)-subjmean(sub)-sessionmean(temp_ind)+grandmean).^2;
                         end
                     end;
 
                     for sess=1:2
-                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                     
+                        JMS=  JMS + (sessionmean(temp_ind)-grandmean).^2;
                     end;
 
                     %define the true value of the mean square.
@@ -3054,52 +3433,276 @@ for ind_runs = 1:runs
                     %consistency agreement  
                     if cons==1
                     voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
-                    ICC_con_ROI_total = voxICC_con;
-                    z_ICC_con_ROI_total = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    cols{1,end+1}= sprintf('ICC%s_con_ROI_%d',str,ind_runs);
-                    summary(1,end+1)=ICC_con_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_con_ROI_%d',str,ind_runs);
-                    summary(1,end+1)=z_ICC_con_ROI_total;
+                    ICC_con_ROI(ind_vox,1) = voxICC_con;
+                    z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
                     end;
-                    
 
-                    
                     %absolute agreement 
                     if abs==1
                     voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
                                                        2.* (JMS-EMS)./nr_subj);
-                    ICC_abs_ROI_total = voxICC_abs;
-                    z_ICC_abs_ROI_total = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    cols{1,end+1}= sprintf('ICC%s_abs_ROI_%d',str,ind_runs);
-                    summary(1,end+1)=ICC_abs_ROI_total;
-                    cols{1,end+1}=sprintf('z_ICC%s_abs_ROI_%d',str,ind_runs);
-                    summary(1,end+1)=z_ICC_abs_ROI_total;
-                    end;
-end;
-end;
-                    assignin('base','summary',summary);
-                    assignin('base','cols',cols);
+                    ICC_abs_ROI(ind_vox,1) = voxICC_abs;
+                    z_ICC_abs_ROI(ind_vox,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+                    end;                    
+                 end;
+                 
+         disp('...saving ICC images...')
+         ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+         ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+         z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+         z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+         if roi == 1
+             ICC_con_ROI(~r_roi_ind)=0;
+             z_ICC_con_ROI(~r_roi_ind)=0;
+             ICC_abs_ROI(~r_roi_ind)=0;
+             z_ICC_abs_ROI(~r_roi_ind)=0;
+         end;     
 
-                    results_ICC=dataset({summary(1,:),cols{:}});
-                    assignin('base','results_ICC',results_ICC);
+         % save ICC maps
+         target_img = temp_img;
+         file1 = sprintf('ICC%s_con_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
+         target_img.fileprefix = file1;
+         target_img.img = ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
 
-                    cd(dir_results);             
-                    eval(sprintf('save results_ICC%s_2cons.mat results_ICC',str));
+         clear target_img;
+         target_img = temp_img;
+         file2 = sprintf('ICC%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
+         target_img.fileprefix = file2;
+         target_img.img = ICC_abs_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         target_img = temp_img;
+         file3 = sprintf('z_ICC%s_con_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
+         target_img.fileprefix = file3;
+         target_img.img = z_ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+        target_img = temp_img;
+        file4 = sprintf('z_ICC%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
+        target_img.fileprefix = file4;
+        target_img.img = z_ICC_abs_ROI;
+        save_nii(target_img,target_img.fileprefix);   
+                             
+        % computing average ICC
+         disp('...computing average ICC...')
+            %compute z mean and inverse Fisher's transformation
+            if abs == 1
+                mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCabs%s_%d_%d_con%d',str,ind_run,ind_run+ind_sec,con_count);
+            end;
+            if cons == 1
+                mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_con%d',str,ind_run,ind_run+ind_sec,con_count);
+            end;
+        clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+             end;
+        end;
+    end;
+        
+if nr_para > 0
+     fprintf('...ICC parametric modulator for contrast %d between session %d and %d...\n',ind_con,ind_run, ind_run+ind_sec)
+     for ind_para = 1:nr_para
+%initiating variables
+    ICC_con_ROI=zeros(nr_vox,1);
+    ICC_abs_ROI=zeros(nr_vox,1);
+    z_ICC_con_ROI=zeros(nr_vox,1);
+    z_ICC_abs_ROI=zeros(nr_vox,1);
    
+    %create data matrix
+    data=zeros(nr_vox,nr_subj,runs);  
+    for ind_runs = 1:runs
+         for ind_subj = 1:nr_subj
+             eval(sprintf('temp = img_con%d_par%d_%d(:,:,:,ind_subj);',ind_con,ind_para,ind_runs));
+             data(:,ind_subj,ind_runs)=temp(:);
+         end;
+    end;
+    clear temp 
+    
+    for ind_run = 1:runs
+        for ind_sec = 1:runs-1
+             if ind_run + ind_sec <= runs
+                for ind_vox = 1:nr_vox
+                    nsamples=nr_subj*2;
+
+                    grandmean=0;
+                    for sub=1:nr_subj,     
+                        grandmean= grandmean + data(ind_vox,sub,ind_run);
+                        grandmean= grandmean + data(ind_vox,sub,ind_run+ind_sec);
+                    end;
+                    grandmean=grandmean./nsamples;
+
+                    sessionmean=zeros(2,1);
+                    for sess=1:2
+                        if sess == 1
+                            temp_ind = ind_run;
+                        else
+                            temp_ind = ind_run+ind_sec;
+                        end;
+                        for sub=1:nr_subj,  
+                            sessionmean(sess) = sessionmean(sess) + data(ind_vox,sub,temp_ind);
+                        end
+                        sessionmean(sess)=sessionmean(sess)./nr_subj;
+                    end
+
+                    subjmean=zeros(nr_subj,1);
+                    for sub=1:nr_subj
+                        for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                            
+                            subjmean(sub)=subjmean(sub) + data(ind_vox,sub,temp_ind);
+                        end
+                          subjmean(sub)=subjmean(sub)./2;
+                    end
+
+                    % mean squares
+                    BMS=0; % between subject
+                    WMS=0; % within subject 
+                    EMS=0; % error
+                    JMS=0; % session
+
+                    for sub=1:nr_subj,    
+                        BMS = BMS + (subjmean(sub)-grandmean).^2;
+                        for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                             
+                            WMS = WMS + (data(ind_vox,sub,temp_ind)-subjmean(sub)).^2;
+                            EMS = EMS + (data(ind_vox,sub,temp_ind)-subjmean(sub)-sessionmean(temp_ind)+grandmean).^2;
+                        end
+                    end;
+
+                    for sess=1:2
+                            if sess == 1
+                                temp_ind = ind_run;
+                            else
+                                temp_ind = ind_run+ind_sec;
+                            end;                     
+                        JMS=  JMS + (sessionmean(temp_ind)-grandmean).^2;
+                    end;
+
+                    %define the true value of the mean square.
+                    BMS= 2.*BMS./(nr_subj-1);
+                    WMS= WMS./(2-1)./nr_subj;
+                    JMS= nr_subj.*JMS./(2-1);
+                    EMS= EMS./(2-1)./(nr_subj-1); 
+
+                    %consistency agreement  
+                    if cons==1
+                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                    ICC_con_ROI(ind_vox,1) = voxICC_con;
+                    z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
+                    end;
+
+                    %absolute agreement 
+                    if abs==1
+                    voxICC_abs=(BMS-EMS)./(BMS+(2-1).*EMS + ...
+                                                       2.* (JMS-EMS)./nr_subj);
+                    ICC_abs_ROI(ind_vox,1) = voxICC_abs;
+                    z_ICC_abs_ROI(ind_vox,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
+                    end;                    
+                 end;
+                 
+         disp('...saving ICC images...')
+         ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
+         ICC_abs_ROI = reshape(ICC_abs_ROI,x,y,z);
+         z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
+         z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
+         if roi == 1
+             ICC_con_ROI(~r_roi_ind)=0;
+             z_ICC_con_ROI(~r_roi_ind)=0;
+             ICC_abs_ROI(~r_roi_ind)=0;
+             z_ICC_abs_ROI(~r_roi_ind)=0;
+         end;     
+
+         % save ICC maps
+         target_img = temp_img;
+         file1 = sprintf('ICC%s_con_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
+         target_img.fileprefix = file1;
+         target_img.img = ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+         target_img = temp_img;
+         file2 = sprintf('ICC%s_abs_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
+         target_img.fileprefix = file2;
+         target_img.img = ICC_abs_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         target_img = temp_img;
+         file3 = sprintf('z_ICC%s_con_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
+         target_img.fileprefix = file3;
+         target_img.img = z_ICC_con_ROI;
+         save_nii(target_img,target_img.fileprefix); 
+
+         clear target_img;
+        target_img = temp_img;
+        file4 = sprintf('z_ICC%s_abs_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
+        target_img.fileprefix = file4;
+        target_img.img = z_ICC_abs_ROI;
+        save_nii(target_img,target_img.fileprefix);   
+                             
+        % computing average ICC
+         disp('...computing average ICC...')
+            %compute z mean and inverse Fisher's transformation
+            if abs == 1
+                mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCabs%s_%d_%d_par%d_con%d',str,ind_run,ind_run+ind_sec,ind_para,con_count);
+            end;
+            if cons == 1
+                mean_z = mean(z_ICC_con_ROI(~isinf(z_ICC_con_ROI)),'omitnan');
+                mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                summary(1,end+1)=mean_r;
+                cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_par%d_con%d',str,ind_run,ind_run+ind_sec,ind_para,con_count);
+            end;
+        clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+             end;
+        end;
+    end;
+end;
+end;
+end;
+    assignin('base','summary',summary);
+    assignin('base','cols',cols);
+
+    results_ICC=dataset({summary(1,:),cols{:}});
+    assignin('base','results_ICC',results_ICC);
+
+    cd(dir_results);             
+    eval(sprintf('save results_ICC%s_2cons.mat results_ICC',str));    
+end;
+    
+    
+
+
+end;
 
 disp('finished ICC calculation')
 end;
-end;
+
+
 cd(box);    
 disp('DONE');
+ 
 
-
-% --- Executes during object creation, after setting all properties.
+% % --- Executes during object creation, after setting all properties.
 function axes1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to axes1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: place code in OpeningFcn to populate axes1
+% % hObject    handle to axes1 (see GCBO)
+% % eventdata  reserved - to be defined in a future version of MATLAB
+% % handles    empty - handles not created until after all CreateFcns called
+% 
+% % Hint: place code in OpeningFcn to populate axes1
 axes(hObject);
 imshow('logo.png');

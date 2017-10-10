@@ -22,7 +22,7 @@ function varargout = design(varargin)
 
 % Edit the above text to modify the response to help design
 
-% Last Modified by GUIDE v2.5 26-Jul-2017 09:16:33
+% Last Modified by GUIDE v2.5 10-Oct-2017 15:55:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -440,12 +440,13 @@ cd(box);
     
 
 
+
 % --- Executes during object creation, after setting all properties.
-function axes2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to axes2 (see GCBO)
+function axes1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-% Hint: place code in OpeningFcn to populate axes2
+% Hint: place code in OpeningFcn to populate axes1
 axes(hObject);
 imshow('logo.png');

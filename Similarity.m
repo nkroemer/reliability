@@ -291,8 +291,8 @@ elseif two_cons == 1
         end;
         eval(sprintf('mean_FourD%d_%d = mean_FourD%d_%d(~isnan(mean_FourD%d_%d));',ind_run,con1_count,ind_run,con1_count,ind_run,con1_count));
 
-        fprintf('...load 4D image for run %d and contrast %s...',ind_run,con2);
-        file1 = [results_dir f '4D_' con2 '_' num2str(ind_run) '.nii'];
+        fprintf('...load 4D image for run %d and contrast %s...\n',ind_run,con2);
+        file2 = [results_dir f '4D_' con2 '_' num2str(ind_run) '.nii'];
         eval(sprintf('FourD%d = file2;',ind_run));
         eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
         eval(sprintf('FourD%d_%d = FourD%d.img;',ind_run,con2_count,ind_run));
@@ -407,7 +407,7 @@ if nr_para > 0
                 file1 = [results_dir f '4D_split1_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];               
                 eval(sprintf('FourD%d = file1;',ind_run));
                 eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
-                eval(sprintf('FourD%d_split1_par%d = FourD%d.img;',ind_run,ind_run,ind_para));
+                eval(sprintf('FourD%d_split1_par%d = FourD%d.img;',ind_run,ind_para,ind_run));
                 eval(sprintf('dims = size(FourD%d_split1_par%d(:,:,:,1));',ind_run,ind_para));
                 x = dims(1);
                 y = dims(2);
@@ -427,7 +427,7 @@ if nr_para > 0
                 file2 = [results_dir f '4D_split2_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file2;',ind_run));
                 eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
-                eval(sprintf('FourD%d_split2_par%d = FourD%d.img;',ind_run,ind_run,ind_para));
+                eval(sprintf('FourD%d_split2_par%d = FourD%d.img;',ind_run,ind_para,ind_run));
                 eval(sprintf('dims = size(FourD%d_split2_par%d(:,:,:,1));',ind_run,ind_para));
                 x = dims(1);
                 y = dims(2);
@@ -481,9 +481,9 @@ for ind_run = 1:runs
         roi_name=get(handles.name_roi,'String');
 
         if use_roi == 1
-            eval(sprintf('save similarity_%s_%d-%d.mat out',roi_name,ind_run, ind_run+count));           
+            eval(sprintf('save similarity_%s_%s-%d-%d.mat out',roi_name,strtok(strtok(strtok(contrast_def.contrast,'.'),'.'),'.'),ind_run, ind_run+count));           
         else
-            eval(sprintf('save similarity_%d-%d.mat out',ind_run, ind_run+count));
+            eval(sprintf('save similarity_%s-%d-%d.mat out',strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count));
         end;
         
         % color matrix    
@@ -492,13 +492,14 @@ for ind_run = 1:runs
         subplot(2,2,1:2);
         colormap('jet');
         imagesc(out.r_mat);
+        caxis([-1,1]);
         colorbar;
         xlabel(sprintf('subjects session %d (last column: similarity to mean image)',ind_run+count));
         ylabel(sprintf('subjects session %d',ind_run));
         if use_roi == 1
-            name1=sprintf('similarity-%s-%d-%d',roi_name,ind_run, ind_run+count);
+            name1=sprintf('similarity-%s-%s-%d-%d',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
         else
-            name1=sprintf('similarity%d-%d',ind_run,ind_run+count);
+            name1=sprintf('similarity-%s-%d-%d',strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run,ind_run+count);
         end;
         title(name1);
         % histograms
@@ -515,22 +516,33 @@ for ind_run = 1:runs
         xlabel('similarity');
         ylabel('frequency in percentage');
         if use_roi == 1
-            name2=sprintf('histogram-%s-%d-%d',roi_name,ind_run, ind_run+count);
+            name2=sprintf('histogram-%s-%s-%d-%d',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
         else
-            name2=sprintf('histogram%d-%d',ind_run, ind_run+count);
+            name2=sprintf('histogram-%s-%d-%d',strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
         end;
         title(name2);
                 
         % ecdf - densitiy plots
         subplot(2,2,4);
-        ecdf(diag(out.r_mat),'bounds','on');
+        [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
         hold on;
-        ecdf(vec_off_diag_r_mat,'bounds','on');
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
         hold off;
         if use_roi == 1
-            name3=sprintf('cumulative-density-%s-%d-%d',roi_name,ind_run, ind_run+count);
+            name3=sprintf('cumulative-density-%s-%s-%d-%d',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
         else
-            name3=sprintf('cumulative-density-%d-%d',ind_run, ind_run+count);
+            name3=sprintf('cumulative-density-%s-%d-%d',strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
         end;    
         title(name3);
         
@@ -577,9 +589,9 @@ if nr_para > 0
                 roi_name=get(handles.name_roi,'String');
 
                 if use_roi == 1
-                    eval(sprintf('save similarity-par%d-%s-%d-%d.mat out',ind_para,roi_name,ind_run, ind_run+count));           
+                    eval(sprintf('save similarity-par%d-%s-%s-%d-%d.mat out',ind_para,roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count));           
                 else
-                    eval(sprintf('save similarity-par%d-%d-%d.mat out',ind_para,ind_run, ind_run+count));
+                    eval(sprintf('save similarity-par%d-%s-%d-%d.mat out',ind_para,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count));
                 end;
 
                 % color matrix    
@@ -588,13 +600,14 @@ if nr_para > 0
                 subplot(2,2,1:2);
                 colormap('jet');
                 imagesc(out.r_mat);
+                caxis([-1,1]);
                 colorbar;
                 xlabel(sprintf('subjects session %d (last column: similarity to mean image)',ind_run+count));
                 ylabel(sprintf('subjects session %d',ind_run));
                 if use_roi == 1
-                    name1=sprintf('similarity-par%d-%s-%d-%d',ind_para,roi_name,ind_run, ind_run+count);
+                    name1=sprintf('similarity-par%d-%s-%s-%d-%d',ind_para,strtok(strtok(contrast_def.contrast,'.'),'.'),roi_name,ind_run, ind_run+count);
                 else
-                    name1=sprintf('similarity-par%d-%d-%d',ind_para,ind_run,ind_run+count);
+                    name1=sprintf('similarity-par%d-%s-%d-%d',ind_para,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run,ind_run+count);
                 end;
                 title(name1);
                 % histograms
@@ -611,22 +624,33 @@ if nr_para > 0
                 xlabel('similarity');
                 ylabel('frequency in percentage');
                 if use_roi == 1
-                    name2=sprintf('histogram-%s-%d-%d',roi_name,ind_run, ind_run+count);
+                    name2=sprintf('histogram-%s-%s-%d-%d',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
                 else
-                    name2=sprintf('histogram%d-%d',ind_run, ind_run+count);
+                    name2=sprintf('histogram-%s%d-%d',strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
                 end;
                 title(name2);
 
                 % ecdf - densitiy plots
                 subplot(2,2,4);
-                ecdf(diag(out.r_mat),'bounds','on');
-                hold on;
-                ecdf(vec_off_diag_r_mat,'bounds','on');
-                hold off;
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on;
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+        hold off;
                 if use_roi == 1
-                    name3=sprintf('cumulative-density-%s-%d-%d',roi_name,ind_run, ind_run+count);
+                    name3=sprintf('cumulative-density-%s-%s-%d-%d',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
                 else
-                    name3=sprintf('cumulative-density-%d-%d',ind_run, ind_run+count);
+                    name3=sprintf('cumulative-density-%s-%d-%d',strtok(strtok(contrast_def.contrast,'.'),'.'),ind_run, ind_run+count);
                 end;    
                 title(name3);
 
@@ -685,8 +709,9 @@ elseif two_cons == 1
         subplot(2,2,1:2);
         colormap('jet');
         imagesc(out.r_mat);
-        colorbar;
-        xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
+                caxis([-1,1]);
+                colorbar;
+                xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
         ylabel(sprintf('subject session %d',ind_run));
             if use_roi == 1
                 name1=sprintf('similarity-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
@@ -716,10 +741,21 @@ elseif two_cons == 1
         title(name2);
 
             % ecdf - densitiy plots
-        subplot(2,2,4);
-        ecdf(diag(out.r_mat),'bounds','on');
+            subplot(2,2,4);
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
         hold on;
-        ecdf(vec_off_diag_r_mat,'bounds','on');
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
         hold off;
             if use_roi == 1
                 name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
@@ -772,8 +808,9 @@ elseif two_cons == 1
         subplot(2,2,1:2);
         colormap('jet');
         imagesc(out.r_mat);
-        colorbar;
-        xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
+                caxis([-1,1]);
+                colorbar;
+                xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
         ylabel(sprintf('subject session %d',ind_run));
 
             if use_roi == 1
@@ -804,10 +841,21 @@ elseif two_cons == 1
         title(name2);
 
             % ecdf - densitiy plots
-        subplot(2,2,4);
-        ecdf(diag(out.r_mat),'bounds','on');
+            subplot(2,2,4);
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
         hold on;
-        ecdf(vec_off_diag_r_mat,'bounds','on');
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
         hold off;
             if use_roi == 1
                 name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con2_count);
@@ -871,8 +919,9 @@ elseif two_cons == 1
         subplot(2,2,1:2);
         colormap('jet');
         imagesc(out.r_mat);
-        colorbar;
-        xlabel(sprintf('subject session %d (last column: similarity to mean image)',i_run));
+                caxis([-1,1]);
+                colorbar;
+                xlabel(sprintf('subject session %d (last column: similarity to mean image)',i_run));
         ylabel(sprintf('subject session %d',i_run));
 
             if use_roi == 1
@@ -903,9 +952,20 @@ elseif two_cons == 1
                 
         % ecdf - densitiy plots
         subplot(2,2,4);
-        ecdf(diag(out.r_mat),'bounds','on');
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
         hold on;
-        ecdf(vec_off_diag_r_mat,'bounds','on');
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
         hold off;
             if use_roi == 1
                 name3=sprintf('density-%s-%d-con%d-con%d',roi_name,i_run,con1_count,con2_count);
@@ -965,6 +1025,7 @@ if nr_para > 0
                 subplot(2,2,1:2);
                 colormap('jet');
                 imagesc(out.r_mat);
+                caxis([-1,1]);
                 colorbar;
                 xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
                 ylabel(sprintf('subject session %d',ind_run));
@@ -997,10 +1058,21 @@ if nr_para > 0
 
                     % ecdf - densitiy plots
                 subplot(2,2,4);
-                ecdf(diag(out.r_mat),'bounds','on');
-                hold on;
-                ecdf(vec_off_diag_r_mat,'bounds','on');
-                hold off;
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on;
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+        hold off;
                     if use_roi == 1
                         name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
                     else
@@ -1052,6 +1124,7 @@ if nr_para > 0
                 subplot(2,2,1:2);
                 colormap('jet');
                 imagesc(out.r_mat);
+                caxis([-1,1]);
                 colorbar;
                 xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
                 ylabel(sprintf('subject session %d',ind_run));
@@ -1085,10 +1158,21 @@ if nr_para > 0
 
                     % ecdf - densitiy plots
                 subplot(2,2,4);
-                ecdf(diag(out.r_mat),'bounds','on');
-                hold on;
-                ecdf(vec_off_diag_r_mat,'bounds','on');
-                hold off;
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on;
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+        hold off;
                     if use_roi == 1
                         name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con2_count);
                     else
@@ -1151,6 +1235,7 @@ if nr_para > 0
                 subplot(2,2,1:2);
                 colormap('jet');
                 imagesc(out.r_mat);
+                caxis([-1,1]);
                 colorbar;
                 xlabel(sprintf('subject session %d (last column: similarity to mean image)',i_run));
                 ylabel(sprintf('subject session %d',i_run));
@@ -1183,10 +1268,21 @@ if nr_para > 0
 
                 % ecdf - densitiy plots
                 subplot(2,2,4);
-                ecdf(diag(out.r_mat),'bounds','on');
-                hold on;
-                ecdf(vec_off_diag_r_mat,'bounds','on');
-                hold off;
+ [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on;
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+        hold off;
                     if use_roi == 1
                         name3=sprintf('density-%s-%d-con%d-con%d',roi_name,i_run,con1_count,con2_count);
                     else
@@ -1221,12 +1317,12 @@ elseif split == 1
                 [out.r, out.p] = corrcoef([temp_1,temp_2]);
                 out.r_mat(i,j) = out.r(1,2);
                 out.p_mat(i,j) = out.p(1,2);
-                eval(sprintf('mean_temp = mean_FourD%d_split1;',i_run)); 
+                eval(sprintf('mean_temp = mean_FourD%d_split1(:);',i_run)); 
                [out.r, out.p] = corrcoef([temp_2,mean_temp]); 
                out.r_mat(j,nr_subj+2) = out.r(1,2);
                out.p_mat(j,nr_subj+2) = out.p(1,2); 
             end;
-               eval(sprintf('mean_temp = mean_FourD%d_split2;',i_run)); 
+               eval(sprintf('mean_temp = mean_FourD%d_split2(:);',i_run)); 
                [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
                out.r_mat(i,j+1) = out.r(1,2);
                out.p_mat(i,j+1) = out.p(1,2);   
@@ -1237,9 +1333,9 @@ elseif split == 1
             roi_name=get(handles.name_roi,'String');
 
             if use_roi == 1
-                eval(sprintf('save similarity_%s_%d_split.mat out',roi_name,i_run));           
+                eval(sprintf('save similarity_%s_%s_%d_split.mat out',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),i_run));           
             else
-                eval(sprintf('save similarity_%d_split.mat out',i_run));
+                eval(sprintf('save similarity_%s_%d_split.mat out',strtok(strtok(contrast_def.contrast,'.'),'.'),i_run));
             end;
 
             % color matrix    
@@ -1248,13 +1344,14 @@ elseif split == 1
         subplot(2,2,1:2);
         colormap('jet');
         imagesc(out.r_mat);
-        colorbar;
-        xlabel(sprintf('subjects split 1 session %d (last column: similarity to mean image)',i_run));
+                caxis([-1,1]);
+                colorbar;
+                xlabel(sprintf('subjects split 1 session %d (last column: similarity to mean image)',i_run));
         ylabel(sprintf('subjects split 2 session %d',i_run));
             if use_roi == 1
-                name1=sprintf('similarity-%s-%d-split',roi_name,i_run);
+                name1=sprintf('similarity-%s-%s-%d-split',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),i_run);
             else
-                name1=sprintf('similarity-%d-split',i_run);
+                name1=sprintf('similarity-%s-%d-split',strtok(strtok(contrast_def.contrast,'.'),'.'),i_run);
             end;
            title(name1);
         % histograms
@@ -1271,22 +1368,33 @@ elseif split == 1
         xlabel('similarity');
         ylabel('frequency in percentage');
             if use_roi == 1
-                name2=sprintf('histograms-%s-%d-split',roi_name,i_run);
+                name2=sprintf('histograms-%s-%s-%d-split',roi_name,strtok(strtok(contrast_def.contrast,'.'),'.'),i_run);
             else
-                name2=sprintf('histograms-%d-split',i_run);
+                name2=sprintf('histograms-%s-%d-split',strtok(contrast_def.contrast,'.'),i_run);
             end;
         title(name2);
                 
         % ecdf - densitiy plots
         subplot(2,2,4);
-        ecdf(diag(out.r_mat),'bounds','on');
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
         hold on;
-        ecdf(vec_off_diag_r_mat,'bounds','on');
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
         hold off;
             if use_roi == 1
-                name3=sprintf('density-%s-%d-split',roi_name,i_run);
+                name3=sprintf('density-%s-%s-%d-split',roi_name,strtok(contrast_def.contrast,'.'),i_run);
             else
-                name3=sprintf('density-%d-split',i_run);
+                name3=sprintf('density-%s-%d-split',strtok(contrast_def.contrast,'.'),i_run);
             end;            
          title(name3);
          fig = gcf;
@@ -1331,9 +1439,9 @@ if nr_para > 0
                 roi_name=get(handles.name_roi,'String');
 
                 if use_roi == 1
-                    eval(sprintf('save similarity-par%d_%s_%d_split.mat out',ind_para,roi_name,i_run));           
+                    eval(sprintf('save similarity-par%d_%s_%s_%d_split.mat out',ind_para,roi_name,strtok(contrast_def.contrast,'.'),i_run));           
                 else
-                    eval(sprintf('save similarity-par%d_%d_split.mat out',ind_para,i_run));
+                    eval(sprintf('save similarity-par%d_%s_%d_split.mat out',ind_para,strtok(contrast_def.contrast,'.'),i_run));
                 end;
 
                 % color matrix    
@@ -1342,13 +1450,14 @@ if nr_para > 0
             subplot(2,2,1:2);
             colormap('jet');
             imagesc(out.r_mat);
-            colorbar;
-            xlabel(sprintf('subjects split 1 session %d (last column: similarity to mean image)',i_run));
+                caxis([-1,1]);
+                colorbar;
+                xlabel(sprintf('subjects split 1 session %d (last column: similarity to mean image)',i_run));
             ylabel(sprintf('subjects split 2 session %d',i_run));
                 if use_roi == 1
-                    name1=sprintf('similarity-par%d-%s-%d-split',ind_para,roi_name,i_run);
+                    name1=sprintf('similarity-par%d-%s-%s-%d-split',ind_para,roi_name,strtok(contrast_def.contrast,'.'),i_run);
                 else
-                    name1=sprintf('similarity-par%d-%d-split',ind_para,i_run);
+                    name1=sprintf('similarity-par%d-%s-%d-split',ind_para,strtok(contrast_def.contrast,'.'),i_run);
                 end;
                title(name1);
             % histograms
@@ -1365,22 +1474,33 @@ if nr_para > 0
             xlabel('similarity');
             ylabel('frequency in percentage');
                 if use_roi == 1
-                    name2=sprintf('histograms-%s-%d-split',roi_name,i_run);
+                    name2=sprintf('histograms-%s-%s-%d-split',roi_name,strtok(contrast_def.contrast,'.'),i_run);
                 else
-                    name2=sprintf('histograms-%d-split',i_run);
+                    name2=sprintf('histograms-%d-%s-split',i_run,strtok(contrast_def.contrast,'.'));
                 end;
             title(name2);
 
             % ecdf - densitiy plots
             subplot(2,2,4);
-            ecdf(diag(out.r_mat),'bounds','on');
-            hold on;
-            ecdf(vec_off_diag_r_mat,'bounds','on');
-            hold off;
+[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','blue')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+        hold on;
+        clear x f flo fup
+        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+        plot(x,f,'LineWidth',2,'Color','red')
+        hold on
+        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+        hold on
+        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+        hold off;
                 if use_roi == 1
-                    name3=sprintf('density-%s-%d-split',roi_name,i_run);
+                    name3=sprintf('density-%s-%s-%d-split',roi_name,strtok(contrast_def.contrast,'.'),i_run);
                 else
-                    name3=sprintf('density-%d-split',i_run);
+                    name3=sprintf('density-%s-%d-split',strtok(contrast_def.contrast,'.'),i_run);
                 end;            
              title(name3);
              fig = gcf;
