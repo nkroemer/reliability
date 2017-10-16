@@ -294,7 +294,7 @@ f = filesep;
 
     if two_cons == 0
         con=get(handles.con,'String');      
-        file = [path f id{1} f stats_filled f con '*']; 
+        file = [path f vp{1} f stats_filled f con '*']; 
         con = dir(file);
         if size(con)>1
             con = con(2).name;
@@ -303,7 +303,7 @@ f = filesep;
             con = con(1).name;
             contrast_def.contrast = con;        
         end;
-        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
+        spmmat = [path f vp{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
             if strcmp({SPM.xCon(i).Vcon.fname}, [con])==1
@@ -330,75 +330,66 @@ f = filesep;
         save(name_design,'study_design');
     else
         con1=get(handles.con1,'String');
-        file = [path f id{1} f stats_filled f con1 '*'];
-        con1 = dir(file);
-        if size(con1)>1
-            con = con1(2).name;
-            contrast_def.contrast1 = con;
-        else
-            con = con1(1).name;
-            contrast_def.contrast1 = con;        
-        end;
-        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
+        contrast_def.contrast1 = con1;        
+        con=con1;
+        spmmat = [path f vp{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
             if strcmp({SPM.xCon(i).Vcon.fname}, [con '.nii'])==1
                 idx = i;
+                ext = '.nii';
+            elseif strcmp({SPM.xCon(i).Vcon.fname}, [con '.img'])==1
+                idx = i;
+                ext = '.img';
             end;
         end;
-        contrast_def.number_regressor1 = idx;         
+        contrast_def.number_regressor1 = idx;
+        contrast_def.contrast_format = ext;
         contrast_def.contrast1_number = str2double(regexp(con1,'[\d]+','match'));
 
-        % info parametric modulators
-
-        if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
-            study_design.number_parametric1 = 0;
-            nr_para1 = 0;
-        else
-            nr_para1 = size(SPM.Sess(1).U(reg1_count).P,2);
-            study_design.number_parametric1 = nr_para1;
-        end;
+        % info parametric modulators - not yet implemented
+% 
+%         if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
+%             study_design.number_parametric1 = 0;
+%             nr_para1 = 0;
+%         else
+%             nr_para1 = size(SPM.Sess(1).U(reg1_count).P,2);
+%             study_design.number_parametric1 = nr_para1;
+%         end;
         cd(dir_results);
         save(name_design,'study_design');
 
         con2=get(handles.con2,'String');
-        file = [path f id{1} f stats_filled f con2 '*'];
-        con2 = dir(file);
-        if size(con2)>1
-            con = con2(2).name;
-            contrast_def.contrast2 = con;
-        else
-            con = con2(1).name;
-            contrast_def.contrast2 = con;        
-        end;
-        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
+        contrast_def.contrast2 = con2;        
+        con=con2;
+        spmmat = [path f vp{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
-            if strcmp({SPM.xCon(i).Vcon.fname}, [con])==1
+            if strcmp({SPM.xCon(i).Vcon.fname}, [con '.nii'])==1
+                idx = i;
+            elseif strcmp({SPM.xCon(i).Vcon.fname}, [con '.img'])==1
                 idx = i;
             end;
         end;       
         
         contrast_def.number_regressor2 = idx;
-        [pathstr,name,ext] = fileparts(con2);
-        contrast_def.contrast_format = ext;
         contrast_def.contrast2_number = str2double(regexp(con2,'[\d]+','match'));
 
-        % info parametric modulators
-        if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
-            study_design.number_parametric2 = 0;
-            nr_para2 = 0;
-        else
-            nr_para2 = size(SPM.Sess(1).U(idx).P,2);
-            study_design.number_parametric2 = nr_para2;
-        end;
+        % info parametric modulators - not yet implemented
+%         if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
+%             study_design.number_parametric2 = 0;
+%             nr_para2 = 0;
+%         else
+%             nr_para2 = size(SPM.Sess(1).U(idx).P,2);
+%             study_design.number_parametric2 = nr_para2;
+%         end;
         cd(dir_results);
         save(name_design,'study_design');    
     end;
 
 %% 3D to 4D conversion
 cd(box_path);
-load('template_3D-4D.mat'); % template for 3D to 4D conversion
+load('scripts_templates\template_3D-4D.mat'); % template for 3D to 4D conversion
 
 if two_cons == 0
     % list contrast_def images
@@ -407,7 +398,7 @@ if two_cons == 0
         cd(path);
         con_list=cell(nr_subj,1);
         for j = 1:nr_subj
-            cd (sprintf('%s',id{j}));
+            cd (sprintf('%s',vp{j}));
             cd (sprintf(stats,single_run));
             con_list{j,1}=[pwd f con];
             cd(path);
@@ -419,7 +410,7 @@ if two_cons == 0
                 cd(path)
                 con_list=cell(nr_subj,1);
                 for j = 1:nr_subj
-                    cd (sprintf('%s',id{j}));
+                    cd (sprintf('%s',vp{j}));
                     cd (sprintf(stats,single_run));
                     con_list{j,1}=[pwd f 'con_' num2str(contrast_def.contrast_number+i_par,'%04d') '.nii,1'];
                     cd (path);
@@ -433,7 +424,7 @@ if two_cons == 0
             cd(path)
             con_list=cell(nr_subj,1);
             for j = 1:nr_subj
-                cd(sprintf('%s',id{j}));
+                cd(sprintf('%s',vp{j}));
                 cd(sprintf(stats,i));
                 con_list{j,1}=[pwd f con];
                 cd(path);
@@ -447,7 +438,7 @@ if two_cons == 0
                     cd(path)
                     con_list=cell(nr_subj,1);
                     for j = 1:nr_subj
-                        cd (sprintf('%s',id{j}));
+                        cd (sprintf('%s',vp{j}));
                         cd (sprintf(stats,i));
                         con_list{j,1}=[pwd f 'con_' num2str(contrast_def.contrast_number+i_par,'%04d') '.nii,1'];
                         cd(path);
@@ -511,7 +502,7 @@ if two_cons == 0
     % move files
     if runs == 1
         stats=sprintf(study_design.stats_directory,single_run);
-        first=[study_design.stats_path f id{1} f stats];
+        first=[study_design.stats_path f vp{1} f stats];
         file1 = [first f '4D_' single_run '.nii'];
         file2 = [first f '4D_' single_run '.mat'];
         movefile (file1,dir_results,'f');
@@ -519,7 +510,7 @@ if two_cons == 0
          if nr_para > 0
             for i_par = 1:nr_para
                 stats=sprintf(study_design.stats_directory,single_run);
-                first=[study_design.stats_path f id{1} f stats];
+                first=[study_design.stats_path f vp{1} f stats];
                 file1 = [first f '4D_par' i_par '_' single_run '.nii'];
                 file2 = [first f '4D_par' i_par '_' single_run '.mat'];
                 movefile (file1,dir_results,'f');
@@ -529,7 +520,7 @@ if two_cons == 0
     else
         for k = 1:runs
             stats=sprintf(study_design.stats_directory,k);
-            first=[study_design.stats_path f id{1} f stats];
+            first=[study_design.stats_path f vp{1} f stats];
             file1 = [first f '4D_' num2str(k) '.nii'];
             file2 = [first f '4D_' num2str(k) '.mat'];
             movefile (file1,dir_results,'f');
@@ -537,7 +528,7 @@ if two_cons == 0
             if nr_para > 0
                 for i_par = 1:nr_para
                     stats=sprintf(study_design.stats_directory,k);
-                    first=[study_design.stats_path f id{1} f stats];
+                    first=[study_design.stats_path f vp{1} f stats];
                     file1 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.nii'];
                     file2 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.mat'];
                     movefile (file1,dir_results,'f');
@@ -556,14 +547,14 @@ else
     for ind_con = 1:2
     eval(sprintf('con=contrast_def.contrast%d;',ind_con));
     eval(sprintf('con_count=contrast_def.contrast%d_number;',ind_con));
-    eval(sprintf('nr_para = nr_para%d;',ind_con));
+%    eval(sprintf('nr_para = nr_para%d;',ind_con));
         if runs == 1
             cd(path)
             con_list=cell(nr_subj,1);
             for j = 1:nr_subj
-                cd(sprintf('%s',id{j}));
+                cd(sprintf('%s',vp{j}));
                 cd(sprintf(stats,single_run));
-                con_list{j,1}=[pwd f con];
+                con_list{j,1}=[pwd f con ext];
                 cd(path);
             end;
             eval(sprintf('con_img_%d = con_list;',single_run));
@@ -572,7 +563,7 @@ else
                     cd (path)
                     con_list=cell(nr_subj,1);
                     for j = 1:nr_subj
-                        cd(sprintf('%s',id{j}));
+                        cd(sprintf('%s',vp{j}));
                         cd(sprintf(stats,single_run));
                         con_list{j,1}=[pwd f 'con_' con_count+i_par '.nii,1'];
                         cd(path);
@@ -585,28 +576,28 @@ else
                 cd(path)
                 con_list=cell(nr_subj,1);
                 for j = 1:nr_subj
-                    cd (sprintf('%s',id{j}));
+                    cd (sprintf('%s',vp{j}));
                     cd (sprintf(stats,i));
-                    con_list{j,1}=[pwd f con];
+                    con_list{j,1}=[pwd f con ext ',1'];
                     cd (path);
                  end;
             eval(sprintf('con_img_%d = con_list;',i));
             end;
-       if nr_para > 0
-            for i_par = 1:nr_para
-                for i = 1:runs
-                    cd (path)
-                    con_list=cell(nr_subj,1);
-                    for j = 1:nr_subj
-                        cd (sprintf('%s',id{j}));
-                        cd (sprintf(stats,i));
-                        con_list{j,1}=[pwd f 'con_' con_count+i_par '.nii,1'];
-                        cd (path);
-                    end;
-                    eval(sprintf('con_img_%d_par%d = con_list;',i,i_par));
-                end;
-            end;
-        end;       
+%        if nr_para > 0
+%             for i_par = 1:nr_para
+%                 for i = 1:runs
+%                     cd (path)
+%                     con_list=cell(nr_subj,1);
+%                     for j = 1:nr_subj
+%                         cd (sprintf('%s',vp{j}));
+%                         cd (sprintf(stats,i));
+%                         con_list{j,1}=[pwd f 'con_' con_count+i_par '.nii,1'];
+%                         cd (path);
+%                     end;
+%                     eval(sprintf('con_img_%d_par%d = con_list;',i,i_par));
+%                 end;
+%             end;
+%         end;       
             
         end;
                 
@@ -632,21 +623,23 @@ else
                     eval(sprintf('matlabbatch{i}.spm.util.cat.vols = con_img_%d;',i));
                     matlabbatch{i}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
                 end;
-                  if nr_para > 0
-                    for i_par = 1:nr_para
-                        idx=runs+1;
-                        for j = 1:runs
-                            img_name = sprintf('4D_%s_par%d_%d.nii',con,i_par,i);
-                            matlabbatch{idx}.spm.util.cat.name = img_name;
-                            eval(sprintf('matlabbatch{idx}.spm.util.cat.vols = con_img_par%d_%d;',i_par,j));
-                            matlabbatch{idx}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
-                            idx=idx+1;
-                        end;
-                    end;
-                 end;               
+%                   if nr_para > 0
+%                     for i_par = 1:nr_para
+%                         idx=runs+1;
+%                         for j = 1:runs
+%                             img_name = sprintf('4D_%s_par%d_%d.nii',con,i_par,i);
+%                             matlabbatch{idx}.spm.util.cat.name = img_name;
+%                             eval(sprintf('matlabbatch{idx}.spm.util.cat.vols = con_img_par%d_%d;',i_par,j));
+%                             matlabbatch{idx}.spm.util.cat.dtype = 4; % default for data type (INT16 - signed short) ; 0 : same data type as input images
+%                             idx=idx+1;
+%                         end;
+%                     end;
+%                  end;               
             end;
             
             % save batch
+            cd (dir_results);
+            
             save('batch_3D-4D.mat','matlabbatch');
 
             % run batch
@@ -659,16 +652,16 @@ else
             disp('...moves 4D files to results folder...');
             % move files
             if runs == 1
-                stats=sprintf(study_design.stats_directory,single_run);
-                first=[study_design.stats_path f id{1} f stats];
+                stats1=sprintf(study_design.stats_directory,single_run);
+                first=[study_design.stats_path f vp{1} f stats1];
                 file1 = [first f '4D_' con '_' num2str(single_run) '.nii'];
                 file2 = [first f '4D_' con '_' num2str(single_run) '.mat'];
                 movefile (file1,dir_results,'f');
                 movefile (file2,dir_results,'f');
                   if nr_para > 0
                     for i_par = 1:nr_para
-                        stats=sprintf(study_design.stats_directory,single_run);
-                        first=[study_design.stats_path f id{1} f stats];
+                        stats1=sprintf(study_design.stats_directory,single_run);
+                        first=[study_design.stats_path f vp{1} f stats1];
                         file1 = [first f '4D_' num2str(i_par) '_' num2str(single_run) '.nii'];
                         file2 = [first f '4D_' num2str(i_par) '_' num2str(single_run) '.mat'];
                         movefile (file1,dir_results,'f');
@@ -677,25 +670,25 @@ else
                  end;               
             else
                 for k = 1:runs
-                    stats=sprintf(study_design.stats_directory,k);
-                    first=[study_design.stats_path f id{1} f stats];
+                    stats1=sprintf(study_design.stats_directory,k);
+                    first=[study_design.stats_path f vp{1} f stats1];
                     file1 = [first f '4D_' con '_' num2str(k) '.nii'];
                     file2 = [first f '4D_' con '_' num2str(k) '.mat'];
                     movefile (file1,dir_results,'f');
                     movefile (file2,dir_results,'f');
-                    if nr_para > 0
-                        for i_par = 1:nr_para
-                            stats=sprintf(study_design.stats_directory,k);
-                            first=[study_design.stats_path f id{1} f stats];
-                            file1 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.nii'];
-                            file2 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.mat'];
-                            movefile (file1,dir_results,'f');
-                            movefile (file2,dir_results,'f');
-                        end;
-                    end;
+%                     if nr_para > 0
+%                         for i_par = 1:nr_para
+%                             stats=sprintf(study_design.stats_directory,k);
+%                             first=[study_design.stats_path f vp{1} f stats];
+%                             file1 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.nii'];
+%                             file2 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.mat'];
+%                             movefile (file1,dir_results,'f');
+%                             movefile (file2,dir_results,'f');
+%                         end;
+%                     end;
                 end;
             end;
-   
+    clear file1 file2 con_list con_img_1 con_img_2 matlabbatch
     end;
 
 

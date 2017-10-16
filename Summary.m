@@ -128,7 +128,8 @@ load(study_design.subject_list); % loads id list
 stats_filled = sprintf(study_design.stats_directory,1);
 two_cons = contrast_def.two_contrasts;
 if two_cons == 1
-    con = contrast_def.contrast1;
+    con = [contrast_def.contrast1 contrast_def.contrast_format];
+    
 else
     con = contrast_def.contrast;
 end;
@@ -146,7 +147,7 @@ atlas_dir = pwd;
 atlas_name = 'atlas.nii';
 atlas_compl = [atlas_dir f atlas_name];
     matlabbatch{1}.spm.spatial.coreg.write.ref = {[stats_path f vp{1} f stats_filled f con ',1']};
-    matlabbatch{1}.spm.spatial.coreg.write.source = {sprintf('%s,1',atlas_compl)};
+    matlabbatch{1}.spm.spatial.coreg.write.source = {[atlas_compl ',1']};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;
     matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
     matlabbatch{1}.spm.spatial.coreg.write.roptions.mask = 0;

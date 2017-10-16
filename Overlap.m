@@ -207,7 +207,6 @@ results_dir = study_design.results_directory;
 if split == 1
     split_dir = study_design.split_directory;
 end;
-nr_para = study_design.number_parametric;
 box_path = pwd; 
 if runs == 1
     single_run = str2double(study_design.identifier_session);
@@ -219,11 +218,17 @@ two_cons = contrast_def.two_contrasts;
 if two_cons == 0
     con=contrast_def.contrast;
     con_count=contrast_def.number_regressor;
+    nr_para = study_design.number_parametric;
+
 else
     con1=contrast_def.contrast1;
     con2=contrast_def.contrast2;
     con1_count=contrast_def.number_regressor1;
     con2_count=contrast_def.number_regressor2;
+   
+%    nr_para1 = study_design.number_parametric1;
+%    nr_para2 = study_design.number_parametric2;
+
 end;
 
 
@@ -790,7 +795,7 @@ end;
 disp('DONE');
 cd(box_path);  
 elseif two_cons == 1
-    for i = 1:length(id)
+    for i = 1:length(vp)
         eval(sprintf('results_%d = [];',i));
         % load xSPM and extract suprathresholded voxels
         for j = 1:runs
@@ -800,9 +805,9 @@ elseif two_cons == 1
         %con1
             co_temp=[];
             stats_dir_filled = sprintf(stats_dir,j);
-            SPM_path = [stats_path f id{i} f stats_dir_filled];
+            SPM_path = [stats_path f vp{i} f stats_dir_filled];
             cd(box_path);
-            fprintf('... create xSPM for %s con 1 in session %d...\n',id{i},j)
+            fprintf('... create xSPM for %s con 1 in session %d...\n',vp{i},j)
 
             xSPM = create_xSPM(SPM_path,box_path,p,con1_count);
             evalstr1 = sprintf('co_sig%d = xSPM.XYZ;',j);
@@ -828,9 +833,9 @@ elseif two_cons == 1
       %con2
             co_temp=[];
             stats_dir_filled = sprintf(stats_dir,j);
-            SPM_path = [stats_path f id{i} f stats_dir_filled];
+            SPM_path = [stats_path f vp{i} f stats_dir_filled];
             cd(box_path);
-            fprintf('... create xSPM for %s con 2 in session %d...\n',id{i},j)
+            fprintf('... create xSPM for %s con 2 in session %d...\n',vp{i},j)
 
             xSPM = create_xSPM(SPM_path,box_path,p,con2_count);
             evalstr1 = sprintf('co_sig%d = xSPM.XYZ;',j);
@@ -856,7 +861,7 @@ elseif two_cons == 1
             clear co_temp;  
         end;
 
-        % compare suprathresholded voxels
+        % compare suprathresholded voxels betweens cons in one session
         for k = 1:runs
             if runs == 1
                 k = single_run;
@@ -881,29 +886,85 @@ elseif two_cons == 1
                 eval(sprintf('results_%d(1,end+1)=[dice_%d];',i,k));
                 eval(sprintf('results_%d(1,end+1)=[jaccard_%d];',i,k));
         end;
+        for ind_con = 1:2
+            eval(sprintf('con = con%d;',ind_con));
+            eval(sprintf('con_count = con%d_count;',ind_con));
+        for k = runs:-1:2
+                for ind = 1:k-1
+                    fprintf('...compare %d to %d...\n',k,k-ind);
+                        count = 0;
+                    for l = 1:eval(sprintf('nr_sig_con%d_%d',ind_con,k))
+                       eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_con%d_%d,co_sig_con%d_%d(:,l))));',ind_con,k-ind,ind_con,k));
+                       count = count + length(idx);
+                    end;
+
+
+                    eval(sprintf('%s_overlap_%d_%d = count;',con,k-ind,k));
+                    if eval(sprintf('%s_overlap_%d_%d',con,k-ind,k)) == 0
+                        eval(sprintf('%s_dice_%d_%d = 0;',con,k-ind,k));
+                        eval(sprintf('%s_jaccard_%d_%d = 0;',con,k-ind,k));
+                    else
+                        eval(sprintf('%s_dice_%d_%d = (2.*%s_overlap_%d_%d)./(nr_sig_con%d_%d+nr_sig_con%d_%d);',con,k-ind,k,con,k-ind,k,ind_con,k-ind,ind_con,k));
+                        eval(sprintf('%s_jaccard_%d_%d = %s_overlap_%d_%d./(nr_sig_con%d_%d+nr_sig_con%d_%d-%s_overlap_%d_%d);',con,k-ind,k,con,k-ind,k,ind_con,k-ind,ind_con,k,con,k-ind,k));
+                    end;
+
+
+                end;
+
+        end;
+        end;
+        for ind_con = 1:2
+            eval(sprintf('con = con%d;',ind_con));
+            for k1 = runs:-1:2
+                for ind1 = 1:k1-1 
+                    % subject result table
+                    eval(sprintf('results_%d(1,end+1)=[%s_dice_%d_%d];',i,con,k1-ind1,k1));
+                    eval(sprintf('results_%d(1,end+1)=[%s_jaccard_%d_%d];',i,con,k1-ind1,k1));
+                end;
+            end;
+        end;
+            
+            
         eval(sprintf('results(i,:)=results_%d;',i));
         eval(sprintf('clear results_%d',i)); 
            end;
 
 
  %create results table with names
-    %generate column names
+    %vp in rows
      row = {};   
-     row = id;
+     row = vp;
     cols = {};
     for k = 1:runs
         if runs == 1
             k = single_run;
         end;
-           cols{1,end+1}=(sprintf('dice_%d;',k));
-           cols{1,end+1}=(sprintf('jaccard_%d;',k));
+           cols{1,end+1}=(sprintf('dice_betweenCons_%d;',k));
+           cols{1,end+1}=(sprintf('jaccard_betweenCons_%d;',k));
     end;
+       for ind_con = 1:2
+            eval(sprintf('con = con%d;',ind_con));          
+            for k1 = runs:-1:2
+                for ind1 = 1:k1-1 
+                    cols{1,end+1}=(sprintf('dice_%s_%d_%d;',con,k1,ind1));
+                    cols{1,end+1}=(sprintf('jaccard_%s_%d_%d;',con,k1,ind1));    
+                end;
+            end;
+        end;
+    
 
+    
 end;
+    cd(results_dir);  
+    results_overlap=dataset({results,cols{:}},'obsnames', row);
+    save results_overlap_subjectwise.mat results_overlap
+    
+    disp('DONE');
+    cd(box_path);
 
 else
     disp('...calculate overlap on group level...');
-
+    if two_cons == 0 && split == 0
     for j = 1:runs
         co_temp=[];
         cd(results_dir)
@@ -1075,7 +1136,7 @@ else
         end;
     end;
     
-    if split == 1
+    elseif split == 1
        for j = 1:runs
            for ind_split = 1:2
         co_temp=[];
@@ -1235,9 +1296,134 @@ else
         
         end;
     end; 
+    elseif two_cons == 1
+        for j = 1:runs
+            for ind_con = 1:2
+                eval(sprintf('con_temp = con%d;',ind_con));
+                co_temp=[];
+                cd(results_dir)
+                % calculate T statistics via 4D images
+                tmp = load_nii(sprintf('4D_%s_%d.nii',con_temp,j));
+                tmp = tmp.img;
+                % Get standard error of beta maps
+                    Beta_sd = std(tmp,0,4);  
+                    Beta_se = Beta_sd / sqrt(nr_subj);
+                % Get mean over subjects of contrast beta maps
+                    Beta_mean = mean(tmp,4);
+                % Get new T map
+                    Tmap = Beta_mean ./ Beta_se;
+                % Get p-values
+                    Pmap = 1-tcdf(Tmap,nr_subj-1);
+                [x,y,z] = ind2sub([size(Pmap,1),size(Pmap,2),size(Pmap,3)],find(Pmap<=p)); 
+                x = x';y=y';z=z';
+        eval(sprintf('co_sig%d_split%d = [x;y;z];',j,ind_con));
+        % apply ROI
+        if use_roi == 1
+                    fprintf('...apply ROI...\n')
+
+        for count_roi = 1:length(roi_xyz)
+            fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
+            for count_sig = 1:length(eval(sprintf('co_sig%d_split%d(1,:)',j,ind_con)))
+                if isequal(eval(sprintf('co_sig%d_split%d(:,count_sig)',j,ind_con)),roi_xyz(:,count_roi))
+                    eval(sprintf('co_temp(:,end+1)=co_sig%d_split%d(:,count_sig);',j,ind_con));
+                    fprintf('...significant...\n');
+                end;
+            end;
+        end;
+        eval(sprintf('co_sig%d_split%d= co_temp;',j,ind_con));
+        end;
+        eval(sprintf('nr_sig%d_split%d = size(co_sig%d_split%d,2);',j,ind_con,j,ind_con));
+        clear co_temp;        
+            end;
+       end;
+    
+    % compare suprathresholded voxels
+    for k = 1:runs
+            fprintf('...compare contrasts in session %d ...\n',k);
+            count = 0;
+                    for l = 1:eval(sprintf('nr_sig%d_split1',k))
+                           eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d_split1(:,l),co_sig%d_split2)));',k,k));
+                           count = count + length(idx);
+                    end;
+            eval(sprintf('overlap_between_%d = count;',k));
+            if eval(sprintf('overlap_between_%d',k)) == 0
+                eval(sprintf('dice_between_%d = 0;',k));
+                eval(sprintf('jaccard_between_%d = 0;',k));
+            else
+                eval(sprintf('dice_between_%d = (2.*overlap_between_%d)./(nr_sig%d_split1+nr_sig%d_split2);',k,k,k,k));
+                eval(sprintf('jaccard_between_%d = overlap_between_%d./(nr_sig%d_split1+nr_sig%d_split2-overlap_between_%d);',k,k,k,k,k));
+            end;
     end;
-    disp('DONE');
+    
+    %create results table
+    results_overlap = [];
+    for k1 = 1:runs
+            eval(sprintf('results_overlap(1,end+1)=[dice_between_%d];',k1));
+            eval(sprintf('results_overlap(1,end+1)=[jaccard_between_%d];',k1));
+    end;
+    %generate column names
+    cols = {};
+    for k2 = 1:runs
+            
+            % subject result table
+                cols{1,end+1}=(sprintf('dice_between_%d;',k2));
+                cols{1,end+1}=(sprintf('jaccard_between_%d;',k2));
+    end;   
+    
+     % compare suprathresholded voxels between sessions same contrast
+     for ind_con = 1:2
+            eval(sprintf('con_temp = con%d;',ind_con));
+         
+            for k = runs:-1:2
+                for ind = 1:k-1
+                    fprintf('...compare %d to %d...\n',k,k-ind);
+                    count = 0;
+                    for l = 1:eval(sprintf('nr_sig%d_split%d',k,ind_con))
+                           eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d_split%d(:,l),co_sig%d_split%d)));',k,ind_con,k-ind,ind_con));
+                           count = count + length(idx);
+                    end;
+                    eval(sprintf('overlap_%d_%d_%s = count;',k-ind,k,con_temp));
+                    if eval(sprintf('overlap_%d_%d_%s',k-ind,k,con_temp)) == 0
+                        eval(sprintf('dice_%d_%d_%s = 0;',k-ind,k,con_temp));
+                        eval(sprintf('jaccard_%d_%d_%s = 0;',k-ind,k,con_temp));
+                    else
+                        eval(sprintf('dice_%d_%d_%s = (2.*overlap_%d_%d_%s)./(nr_sig%d_split%d+nr_sig%d_split%d);',k-ind,k,con_temp,k-ind,k,con_temp,k-ind,ind_con,k,ind_con));
+                        eval(sprintf('jaccard_%d_%d_%s = overlap_%d_%d_%s./(nr_sig%d_split%d+nr_sig%d_split%d-overlap_%d_%d_%s);',k-ind,k,con_temp,k-ind,k,con_temp,k-ind,ind_con,k,ind_con,k-ind,k,con_temp));
+                    end;
+
+
+                end;
+
+
+            end;
+
+            %create results table
+            for k1 = runs:-1:2
+                for ind1 = 1:k1-1 
+                    eval(sprintf('results_overlap(1,end+1)=[dice_%d_%d_%s];',k1-ind1,k1,con_temp));
+                    eval(sprintf('results_overlap(1,end+1)=[jaccard_%d_%d_%s];',k1-ind1,k1,con_temp));
+                end;
+            end;
+            %generate column names
+            for k2 = runs:-1:2
+                    for ind2 = 1:k2-1 
+                    % subject result table
+                        cols{1,end+1}=(sprintf('dice_%d_%d_%s;',k2-ind2,k2,con_temp));
+                        cols{1,end+1}=(sprintf('jaccard_%d_%d_%s;',k2-ind2,k2,con_temp));
+                    end;
+            end;   
+    
+     end;
+   
+    
+    results_overlap_group=dataset({results_overlap,cols{:}});
+    cd(results_dir);             
+    save results_overlap_grouplevel.mat results_overlap_group 
+    
+    end;
+        disp('DONE');
     cd(box_path);
+
 end;
 
 

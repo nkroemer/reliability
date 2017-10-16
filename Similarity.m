@@ -160,7 +160,6 @@ load(study_design.subject_list);
 stats=study_design.stats_directory;
 path=study_design.stats_path;
 box_path = pwd;
-nr_para = study_design.number_parametric;
 
 %% get GUI input
 split = get(handles.split,'Value');
@@ -170,11 +169,16 @@ use_roi = get(handles.use_roi,'Value');
 two_cons = contrast_def.two_contrasts;
 if two_cons == 0
     con=contrast_def.contrast;
+    nr_para = study_design.number_parametric;
+
 else
     con1=contrast_def.contrast1;
     con2=contrast_def.contrast2;
-    con1_count=contrast_def.number_contrast1;
-    con2_count=contrast_def.number_contrast2;
+    con1_count=contrast_def.contrast1_number;
+    con2_count=contrast_def.contrast2_number;
+    %nr_para1 = study_design.number_parametric1;
+    %nr_para2 = study_design.number_parametric2;
+    
 end;
 
 %% load and reslice ROI
@@ -312,52 +316,57 @@ elseif two_cons == 1
         eval(sprintf('mean_FourD%d_%d = mean_FourD%d_%d(~isnan(mean_FourD%d_%d));',ind_run,con2_count,ind_run,con2_count,ind_run,con2_count));
         
     end;
-    if nr_para > 0
-        for ind_para = 1:nr_para
-            for ind_run = 1:runs
-                fprintf('...load 4D image parametric for run %d and contrast %s...\n',ind_run,con1);
-                file1 = [results_dir f '4D_' con1 '_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
-                eval(sprintf('FourD%d = file1;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
-                eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con1_count,ind_para,ind_run));
-                eval(sprintf('dims = size(FourD%d_%d_par%d(:,:,:,1));',ind_run,con1_count,ind_para));
-                x = dims(1);
-                y = dims(2);
-                z = dims(3);
-                eval(sprintf('mean_FourD%d_%d = zeros(x,y,z);',ind_run,con1_count));
-                fprintf('...generate mean activation per voxel for run %d and contrast %s...\n',ind_run,con1); 
-                for ind_x = 1:x
-                    for ind_y = 1:y
-                        for ind_z = 1:z 
-                            eval(sprintf('mean_FourD%d_%d(ind_x,ind_y,ind_z) = mean(FourD%d_%d_par%d(ind_x,ind_y,ind_z,:));',ind_run,con1_count,ind_run,con1_count,ind_para));
-                        end;
-                    end;
-                end;
-                eval(sprintf('mean_FourD%d_%d_par%d = mean_FourD%d_%d(~isnan(mean_FourD%d_%d));',ind_run,con1_count,ind_para,ind_run,con1_count,ind_run,con1_count));
-
-                fprintf('...load 4D image parametric for run %d and contrast %s...',ind_run,con2);
-                file2 = [results_dir f '4D_' con2 '_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
-                eval(sprintf('FourD%d = file2;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
-                eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con2_count,ind_para,ind_run));
-                eval(sprintf('dims = size(FourD%d_%d_par%d(:,:,:,1));',ind_run,con2_count,ind_para));
-                x = dims(1);
-                y = dims(2);
-                z = dims(3);
-                fprintf('...generate mean activation per voxel for run %d and contrast %s...\n',ind_run,con2); 
-                eval(sprintf('mean_FourD%d_%d = zeros(x,y,z);',ind_run,con2_count));
-                for ind_x = 1:x
-                    for ind_y = 1:y
-                        for ind_z = 1:z 
-                            eval(sprintf('mean_FourD%d_%d(ind_x,ind_y,ind_z) = mean(FourD%d_%d_par%d(ind_x,ind_y,ind_z,:));',ind_run,con2_count,ind_run,con2_count,ind_para));
-                        end;
-                    end;
-                end;
-                eval(sprintf('mean_FourD%d_%d_par%d = mean_FourD%d_%d(~isnan(mean_FourD%d_%d));',ind_run,con2_count,ind_para,ind_run,con2_count,ind_run,con2_count));
-
-            end;
-        end;
-    end;
+%     if nr_para1 > 0
+%         for ind_para = 1:nr_para1
+%             for ind_run = 1:runs
+%                 fprintf('...load 4D image parametric for run %d and contrast %s...\n',ind_run,con1);
+%                 file1 = [results_dir f '4D_' con1 '_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
+%                 eval(sprintf('FourD%d = file1;',ind_run));
+%                 eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+%                 eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con1_count,ind_para,ind_run));
+%                 eval(sprintf('dims = size(FourD%d_%d_par%d(:,:,:,1));',ind_run,con1_count,ind_para));
+%                 x = dims(1);
+%                 y = dims(2);
+%                 z = dims(3);
+%                 eval(sprintf('mean_FourD%d_%d = zeros(x,y,z);',ind_run,con1_count));
+%                 fprintf('...generate mean activation per voxel for run %d and contrast %s...\n',ind_run,con1); 
+%                 for ind_x = 1:x
+%                     for ind_y = 1:y
+%                         for ind_z = 1:z 
+%                             eval(sprintf('mean_FourD%d_%d(ind_x,ind_y,ind_z) = mean(FourD%d_%d_par%d(ind_x,ind_y,ind_z,:));',ind_run,con1_count,ind_run,con1_count,ind_para));
+%                         end;
+%                     end;
+%                 end;
+%                 eval(sprintf('mean_FourD%d_%d_par%d = mean_FourD%d_%d(~isnan(mean_FourD%d_%d));',ind_run,con1_count,ind_para,ind_run,con1_count,ind_run,con1_count));
+%             end;
+%         end;
+%     end;
+%     if nr_para2 > 0
+%         for ind_para = 1:nr_para2
+%             for ind_run = 1:runs    
+%                 fprintf('...load 4D image parametric for run %d and contrast %s...',ind_run,con2);
+%                 file2 = [results_dir f '4D_' con2 '_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
+%                 eval(sprintf('FourD%d = file2;',ind_run));
+%                 eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+%                 eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con2_count,ind_para,ind_run));
+%                 eval(sprintf('dims = size(FourD%d_%d_par%d(:,:,:,1));',ind_run,con2_count,ind_para));
+%                 x = dims(1);
+%                 y = dims(2);
+%                 z = dims(3);
+%                 fprintf('...generate mean activation per voxel for run %d and contrast %s...\n',ind_run,con2); 
+%                 eval(sprintf('mean_FourD%d_%d = zeros(x,y,z);',ind_run,con2_count));
+%                 for ind_x = 1:x
+%                     for ind_y = 1:y
+%                         for ind_z = 1:z 
+%                             eval(sprintf('mean_FourD%d_%d(ind_x,ind_y,ind_z) = mean(FourD%d_%d_par%d(ind_x,ind_y,ind_z,:));',ind_run,con2_count,ind_run,con2_count,ind_para));
+%                         end;
+%                     end;
+%                 end;
+%                 eval(sprintf('mean_FourD%d_%d_par%d = mean_FourD%d_%d(~isnan(mean_FourD%d_%d));',ind_run,con2_count,ind_para,ind_run,con2_count,ind_run,con2_count));
+% 
+%             end;
+%         end;
+%     end;
 elseif split == 1
 for ind_run = 1:runs
         fprintf('...load 4D image for run %d and split 1...\n',ind_run);
@@ -980,324 +989,324 @@ elseif two_cons == 1
 
         clearvars out f1;      
     end;
-if nr_para > 0   
-    for ind_para = 1:nr_para
-            for ind_run = 1:runs
-                for count = 0:runs-1
-                    if ind_run+count <= runs
-                        %con1
-                            fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con1_count);
-                        for i = 1:nr_subj
-                            for j = 1:nr_subj
-                                temp_nii_1 = [];
-                                temp_nii_2 = [];
-                                eval(sprintf('temp_nii_1 = FourD%d_%d_par%d(:,:,:,i);',ind_run,con1_count,ind_para));
-                                eval(sprintf('temp_nii_2 = FourD%d_%d_par%d(:,:,:,j);',ind_run+count,con1_count,ind_para));
-                                if use_roi == 1
-                                    temp_nii_1(~r_roi_ind) = 0;
-                                    temp_nii_2(~r_roi_ind) = 0;
-                                end;
-                                temp_1 = temp_nii_1(~isnan(temp_nii_1));
-                                temp_2 = temp_nii_2(~isnan(temp_nii_2));
-
-                                [out.r, out.p] = corrcoef([temp_1,temp_2]);
-                                out.r_mat(i,j) = out.r(1,2);
-                                out.p_mat(i,j) = out.p(1,2);   
-                            end;
-                       eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',ind_run+count,con1_count,ind_para)); 
-                       [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
-                       out.r_mat(i,j+1) = out.r(1,2);
-                       out.p_mat(i,j+1) = out.p(1,2);  
-                        end;
-
-                    cd(results_dir);
-                    roi_name=get(handles.name_roi,'String');
-
-                    if use_roi == 1
-                        eval(sprintf('save similarity-par%d_%s_%d-%d_con%d.mat out',ind_para,roi_name,ind_run, ind_run+count,con1_count));           
-                    else
-                        eval(sprintf('save similarity-par%d_%d-%d_con%d.mat out',ind_para,ind_run, ind_run+count,con1_count));
-                    end;
-
-                    % color matrix    
-                f1 = figure;
-                set(gcf,'units','normalized','position',[0.25 0 0.50 1]);
-                subplot(2,2,1:2);
-                colormap('jet');
-                imagesc(out.r_mat);
-                caxis([-1,1]);
-                colorbar;
-                xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
-                ylabel(sprintf('subject session %d',ind_run));
-                    if use_roi == 1
-                        name1=sprintf('similarity-par%d-%s-%d-%d-con%d',ind_para,roi_name,ind_run, ind_run+count,con1_count);
-                    else
-                        name1=sprintf('similarity-par%d-%d-%d-con%d',ind_para,ind_run, ind_run+count,con1_count);
-                    end;
-                title(name1);
-
-                    % histograms
-                subplot(2,2,3);
-                triu_r_mat = triu(out.r_mat,1);
-                vec_off_diag_r_mat = triu_r_mat(triu_r_mat~=0);
-                h1 = histogram(diag(out.r_mat));
-                hold on;
-                h2 = histogram(vec_off_diag_r_mat);
-                h1.Normalization = 'probability';
-                h1.BinWidth = 0.1;
-                h2.Normalization = 'probability';
-                h2.BinWidth = 0.1;
-                xlabel('similarity');
-                ylabel('frequency in percentage');
-                    if use_roi == 1
-                        name2=sprintf('histograms-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
-                    else
-                        name2=sprintf('histograms-%d-%d-con%d',ind_run, ind_run+count,con1_count);
-                    end;
-                title(name2);
-
-                    % ecdf - densitiy plots
-                subplot(2,2,4);
-[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
-        plot(x,f,'LineWidth',2,'Color','blue')
-        hold on
-        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
-        hold on
-        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
-        hold on;
-        clear x f flo fup
-        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
-        plot(x,f,'LineWidth',2,'Color','red')
-        hold on
-        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
-        hold on
-        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
-        hold off;
-                    if use_roi == 1
-                        name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
-                    else
-                        name3=sprintf('density-%d-%d-con%d',ind_run, ind_run+count,con1_count);
-                    end;     
-                    title(name3);
-                fig = gcf;
-                fig.PaperPositionMode = 'auto';
-                print(fig,name1,'-dpng','-r0')
-                close(f1);
-                clearvars out f1;
-                    %con2
-                           fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con2_count);
-                        for i = 1:nr_subj
-                            for j = 1:nr_subj
-                                temp_nii_1 = [];
-                                temp_nii_2 = [];
-                                eval(sprintf('temp_nii_1 = FourD%d_%d_par%d(:,:,:,i);',ind_run,con2_count,ind_para));
-                                eval(sprintf('temp_nii_2 = FourD%d_%d_par%d(:,:,:,j);',ind_run+count,con2_count,ind_para));
-                                if use_roi == 1
-                                    temp_nii_1(~r_roi_ind) = 0;
-                                    temp_nii_2(~r_roi_ind) = 0;
-                                end;
-                                temp_1 = temp_nii_1(~isnan(temp_nii_1));
-                                temp_2 = temp_nii_2(~isnan(temp_nii_2));
-
-                                [out.r, out.p] = corrcoef([temp_1,temp_2]);
-                                out.r_mat(i,j) = out.r(1,2);
-                                out.p_mat(i,j) = out.p(1,2);   
-                            end;
-                       eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',ind_run+count,con2_count,ind_para)); 
-                       [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
-                       out.r_mat(i,j+1) = out.r(1,2);
-                       out.p_mat(i,j+1) = out.p(1,2);                      
-                        end;
-
-                    cd(results_dir);
-                    roi_name=get(handles.name_roi,'String');
-
-                    if use_roi == 1
-                        eval(sprintf('save similarity-par%d_%s_%d-%d-con%d.mat out',ind_para,roi_name,ind_run, ind_run+count,con2_count));           
-                    else
-                        eval(sprintf('save similarity-par%d_%d-%d-con%d.mat out',ind_para,ind_run, ind_run+count,con2_count));
-                    end;
-
-                    % color matrix    
-                f1 = figure;
-                set(gcf,'units','normalized','position',[0.25 0 0.50 1]);
-                subplot(2,2,1:2);
-                colormap('jet');
-                imagesc(out.r_mat);
-                caxis([-1,1]);
-                colorbar;
-                xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
-                ylabel(sprintf('subject session %d',ind_run));
-
-                    if use_roi == 1
-                        name1=sprintf('similarity-par%d-%s-%d-%d-con%d',ind_para,roi_name,ind_run, ind_run+count,con2_count);
-                    else
-                        name1=sprintf('similarity-par%d-%d-%d-con%d',ind_para,ind_run, ind_run+count,con2_count);
-                    end;
-                title(name1);
-
-                    % histograms
-                subplot(2,2,3);
-                triu_r_mat = triu(out.r_mat,1);
-                vec_off_diag_r_mat = triu_r_mat(triu_r_mat~=0);
-                h1 = histogram(diag(out.r_mat));
-                hold on;
-                h2 = histogram(vec_off_diag_r_mat);
-                h1.Normalization = 'probability';
-                h1.BinWidth = 0.1;
-                h2.Normalization = 'probability';
-                h2.BinWidth = 0.1;
-                xlabel('similarity');
-                ylabel('frequency in percentage');
-                    if use_roi == 1
-                        name2=sprintf('histograms-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con2_count);
-                    else
-                        name2=sprintf('histograms-%d-%d-con%d',ind_run, ind_run+count,con2_count);
-                    end;
-                title(name2);
-
-                    % ecdf - densitiy plots
-                subplot(2,2,4);
-[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
-        plot(x,f,'LineWidth',2,'Color','blue')
-        hold on
-        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
-        hold on
-        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
-        hold on;
-        clear x f flo fup
-        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
-        plot(x,f,'LineWidth',2,'Color','red')
-        hold on
-        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
-        hold on
-        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
-        hold off;
-                    if use_roi == 1
-                        name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con2_count);
-                    else
-                        name3=sprintf('density-%d-%d-con%d',ind_run, ind_run+count,con2_count);
-                    end;     
-                    title(name3);
-
-                fig = gcf;
-                fig.PaperPositionMode = 'auto';
-                print(fig,name1,'-dpng','-r0')
-                close(fig);  
-                clearvars out f1;
-                    end;
-
-                end;
-            end;
-            % compares two contrasts within one session
-            for  i_run = 1:runs
-                fprintf('...compare session %d in contrast %d and %d...\n',i_run,con1_count,con2_count);
-                for i = 1:nr_subj
-                    for j = 1:nr_subj
-                        temp_nii_1 = [];
-                        temp_nii_2 = [];
-                        eval(sprintf('temp_nii_1 = FourD%d_%d_par%d(:,:,:,i);',i_run,con1_count,ind_para));
-                        eval(sprintf('temp_nii_2 = FourD%d_%d_par%d(:,:,:,j);',i_run,con2_count,ind_para));
-                        if use_roi == 1
-                            temp_nii_1(~r_roi_ind) = 0;
-                            temp_nii_2(~r_roi_ind) = 0;
-                        end;
-                        temp_1 = temp_nii_1(~isnan(temp_nii_1));
-                        temp_2 = temp_nii_2(~isnan(temp_nii_2));
-
-                        [out.r, out.p] = corrcoef([temp_1,temp_2]);
-                        out.r_mat(i,j) = out.r(1,2);
-                        out.p_mat(i,j) = out.p(1,2);
-                        eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',i_run,con1_count,ind_para)); 
-                       [out.r, out.p] = corrcoef([temp_2,mean_temp]); 
-                       out.r_mat(j,nr_subj+2) = out.r(1,2);
-                       out.p_mat(j,nr_subj+2) = out.p(1,2); 
-                    end;
-                       eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',i_run,con2_count,ind_para)); 
-                       [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
-                       out.r_mat(i,j+1) = out.r(1,2);
-                       out.p_mat(i,j+1) = out.p(1,2);   
-
-                end;
-
-                    cd(results_dir);
-                    roi_name=get(handles.name_roi,'String');
-
-                    if use_roi == 1
-                        eval(sprintf('save similarity-par%d_%s_%d-con%d-con%d.mat out',ind_para,roi_name,i_run,con1_count,con2_count));           
-                    else
-                        eval(sprintf('save similarity-par%d_%d-con%d-con%d.mat out',ind_para,i_run,con1_count,con2_count));
-                    end;
-
-                    % color matrix    
-                f1 = figure;
-                set(gcf,'units','normalized','position',[0.25 0 0.50 1]);
-                subplot(2,2,1:2);
-                colormap('jet');
-                imagesc(out.r_mat);
-                caxis([-1,1]);
-                colorbar;
-                xlabel(sprintf('subject session %d (last column: similarity to mean image)',i_run));
-                ylabel(sprintf('subject session %d',i_run));
-
-                    if use_roi == 1
-                        name1=sprintf('similarity-par%d-%s-%d-con%d-con%d',ind_para,roi_name,i_run,con1_count,con2_count);
-                    else
-                        name1=sprintf('similarity-par%d-%d-con%d-con%d',ind_para,i_run,con1_count,con2_count);
-                    end;
-                   title(name1);
-                % histograms
-                subplot(2,2,3);
-                triu_r_mat = triu(out.r_mat,1);
-                vec_off_diag_r_mat = triu_r_mat(triu_r_mat~=0);
-                h1 = histogram(diag(out.r_mat));
-                hold on;
-                h2 = histogram(vec_off_diag_r_mat);
-                h1.Normalization = 'probability';
-                h1.BinWidth = 0.1;
-                h2.Normalization = 'probability';
-                h2.BinWidth = 0.1;
-                xlabel('similarity');
-                ylabel('frequency in percentage');
-                    if use_roi == 1
-                        name2=sprintf('histograms-%s-%d-con%d-con%d',roi_name,i_run,con1_count,con2_count);
-                    else
-                        name2=sprintf('histograms-%d-con%d-con%d',i_run,con1_count,con2_count);
-                    end;
-                    title(name2);
-
-                % ecdf - densitiy plots
-                subplot(2,2,4);
- [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
-        plot(x,f,'LineWidth',2,'Color','blue')
-        hold on
-        plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
-        hold on
-        plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
-        hold on;
-        clear x f flo fup
-        [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
-        plot(x,f,'LineWidth',2,'Color','red')
-        hold on
-        plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
-        hold on
-        plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
-        hold off;
-                    if use_roi == 1
-                        name3=sprintf('density-%s-%d-con%d-con%d',roi_name,i_run,con1_count,con2_count);
-                    else
-                        name3=sprintf('density-%d-con%d-con%d',i_run,con1_count,con2_count);
-                    end;            
-                title(name3);
-                fig = gcf;
-                fig.PaperPositionMode = 'auto';
-                print(fig,name1,'-dpng','-r0')
-                close(fig);
-
-                clearvars out f1;      
-            end;
-    end;
-end;
+% if nr_para1 > 0   
+%     for ind_para = 1:nr_para1
+%             for ind_run = 1:runs
+%                 for count = 0:runs-1
+%                     if ind_run+count <= runs
+%                         %con1
+%                             fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con1_count);
+%                         for i = 1:nr_subj
+%                             for j = 1:nr_subj
+%                                 temp_nii_1 = [];
+%                                 temp_nii_2 = [];
+%                                 eval(sprintf('temp_nii_1 = FourD%d_%d_par%d(:,:,:,i);',ind_run,con1_count,ind_para));
+%                                 eval(sprintf('temp_nii_2 = FourD%d_%d_par%d(:,:,:,j);',ind_run+count,con1_count,ind_para));
+%                                 if use_roi == 1
+%                                     temp_nii_1(~r_roi_ind) = 0;
+%                                     temp_nii_2(~r_roi_ind) = 0;
+%                                 end;
+%                                 temp_1 = temp_nii_1(~isnan(temp_nii_1));
+%                                 temp_2 = temp_nii_2(~isnan(temp_nii_2));
+% 
+%                                 [out.r, out.p] = corrcoef([temp_1,temp_2]);
+%                                 out.r_mat(i,j) = out.r(1,2);
+%                                 out.p_mat(i,j) = out.p(1,2);   
+%                             end;
+%                        eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',ind_run+count,con1_count,ind_para)); 
+%                        [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
+%                        out.r_mat(i,j+1) = out.r(1,2);
+%                        out.p_mat(i,j+1) = out.p(1,2);  
+%                         end;
+% 
+%                     cd(results_dir);
+%                     roi_name=get(handles.name_roi,'String');
+% 
+%                     if use_roi == 1
+%                         eval(sprintf('save similarity-par%d_%s_%d-%d_con%d.mat out',ind_para,roi_name,ind_run, ind_run+count,con1_count));           
+%                     else
+%                         eval(sprintf('save similarity-par%d_%d-%d_con%d.mat out',ind_para,ind_run, ind_run+count,con1_count));
+%                     end;
+% 
+%                     % color matrix    
+%                 f1 = figure;
+%                 set(gcf,'units','normalized','position',[0.25 0 0.50 1]);
+%                 subplot(2,2,1:2);
+%                 colormap('jet');
+%                 imagesc(out.r_mat);
+%                 caxis([-1,1]);
+%                 colorbar;
+%                 xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
+%                 ylabel(sprintf('subject session %d',ind_run));
+%                     if use_roi == 1
+%                         name1=sprintf('similarity-par%d-%s-%d-%d-con%d',ind_para,roi_name,ind_run, ind_run+count,con1_count);
+%                     else
+%                         name1=sprintf('similarity-par%d-%d-%d-con%d',ind_para,ind_run, ind_run+count,con1_count);
+%                     end;
+%                 title(name1);
+% 
+%                     % histograms
+%                 subplot(2,2,3);
+%                 triu_r_mat = triu(out.r_mat,1);
+%                 vec_off_diag_r_mat = triu_r_mat(triu_r_mat~=0);
+%                 h1 = histogram(diag(out.r_mat));
+%                 hold on;
+%                 h2 = histogram(vec_off_diag_r_mat);
+%                 h1.Normalization = 'probability';
+%                 h1.BinWidth = 0.1;
+%                 h2.Normalization = 'probability';
+%                 h2.BinWidth = 0.1;
+%                 xlabel('similarity');
+%                 ylabel('frequency in percentage');
+%                     if use_roi == 1
+%                         name2=sprintf('histograms-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
+%                     else
+%                         name2=sprintf('histograms-%d-%d-con%d',ind_run, ind_run+count,con1_count);
+%                     end;
+%                 title(name2);
+% 
+%                     % ecdf - densitiy plots
+%                 subplot(2,2,4);
+% [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+%         plot(x,f,'LineWidth',2,'Color','blue')
+%         hold on
+%         plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+%         hold on
+%         plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+%         hold on;
+%         clear x f flo fup
+%         [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+%         plot(x,f,'LineWidth',2,'Color','red')
+%         hold on
+%         plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+%         hold on
+%         plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+%         hold off;
+%                     if use_roi == 1
+%                         name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con1_count);
+%                     else
+%                         name3=sprintf('density-%d-%d-con%d',ind_run, ind_run+count,con1_count);
+%                     end;     
+%                     title(name3);
+%                 fig = gcf;
+%                 fig.PaperPositionMode = 'auto';
+%                 print(fig,name1,'-dpng','-r0')
+%                 close(f1);
+%                 clearvars out f1;
+%                     %con2
+%                            fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con2_count);
+%                         for i = 1:nr_subj
+%                             for j = 1:nr_subj
+%                                 temp_nii_1 = [];
+%                                 temp_nii_2 = [];
+%                                 eval(sprintf('temp_nii_1 = FourD%d_%d_par%d(:,:,:,i);',ind_run,con2_count,ind_para));
+%                                 eval(sprintf('temp_nii_2 = FourD%d_%d_par%d(:,:,:,j);',ind_run+count,con2_count,ind_para));
+%                                 if use_roi == 1
+%                                     temp_nii_1(~r_roi_ind) = 0;
+%                                     temp_nii_2(~r_roi_ind) = 0;
+%                                 end;
+%                                 temp_1 = temp_nii_1(~isnan(temp_nii_1));
+%                                 temp_2 = temp_nii_2(~isnan(temp_nii_2));
+% 
+%                                 [out.r, out.p] = corrcoef([temp_1,temp_2]);
+%                                 out.r_mat(i,j) = out.r(1,2);
+%                                 out.p_mat(i,j) = out.p(1,2);   
+%                             end;
+%                        eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',ind_run+count,con2_count,ind_para)); 
+%                        [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
+%                        out.r_mat(i,j+1) = out.r(1,2);
+%                        out.p_mat(i,j+1) = out.p(1,2);                      
+%                         end;
+% 
+%                     cd(results_dir);
+%                     roi_name=get(handles.name_roi,'String');
+% 
+%                     if use_roi == 1
+%                         eval(sprintf('save similarity-par%d_%s_%d-%d-con%d.mat out',ind_para,roi_name,ind_run, ind_run+count,con2_count));           
+%                     else
+%                         eval(sprintf('save similarity-par%d_%d-%d-con%d.mat out',ind_para,ind_run, ind_run+count,con2_count));
+%                     end;
+% 
+%                     % color matrix    
+%                 f1 = figure;
+%                 set(gcf,'units','normalized','position',[0.25 0 0.50 1]);
+%                 subplot(2,2,1:2);
+%                 colormap('jet');
+%                 imagesc(out.r_mat);
+%                 caxis([-1,1]);
+%                 colorbar;
+%                 xlabel(sprintf('subject session %d (last column: similarity to mean image)',ind_run+count));
+%                 ylabel(sprintf('subject session %d',ind_run));
+% 
+%                     if use_roi == 1
+%                         name1=sprintf('similarity-par%d-%s-%d-%d-con%d',ind_para,roi_name,ind_run, ind_run+count,con2_count);
+%                     else
+%                         name1=sprintf('similarity-par%d-%d-%d-con%d',ind_para,ind_run, ind_run+count,con2_count);
+%                     end;
+%                 title(name1);
+% 
+%                     % histograms
+%                 subplot(2,2,3);
+%                 triu_r_mat = triu(out.r_mat,1);
+%                 vec_off_diag_r_mat = triu_r_mat(triu_r_mat~=0);
+%                 h1 = histogram(diag(out.r_mat));
+%                 hold on;
+%                 h2 = histogram(vec_off_diag_r_mat);
+%                 h1.Normalization = 'probability';
+%                 h1.BinWidth = 0.1;
+%                 h2.Normalization = 'probability';
+%                 h2.BinWidth = 0.1;
+%                 xlabel('similarity');
+%                 ylabel('frequency in percentage');
+%                     if use_roi == 1
+%                         name2=sprintf('histograms-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con2_count);
+%                     else
+%                         name2=sprintf('histograms-%d-%d-con%d',ind_run, ind_run+count,con2_count);
+%                     end;
+%                 title(name2);
+% 
+%                     % ecdf - densitiy plots
+%                 subplot(2,2,4);
+% [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+%         plot(x,f,'LineWidth',2,'Color','blue')
+%         hold on
+%         plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+%         hold on
+%         plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+%         hold on;
+%         clear x f flo fup
+%         [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+%         plot(x,f,'LineWidth',2,'Color','red')
+%         hold on
+%         plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+%         hold on
+%         plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+%         hold off;
+%                     if use_roi == 1
+%                         name3=sprintf('density-%s-%d-%d-con%d',roi_name,ind_run, ind_run+count,con2_count);
+%                     else
+%                         name3=sprintf('density-%d-%d-con%d',ind_run, ind_run+count,con2_count);
+%                     end;     
+%                     title(name3);
+% 
+%                 fig = gcf;
+%                 fig.PaperPositionMode = 'auto';
+%                 print(fig,name1,'-dpng','-r0')
+%                 close(fig);  
+%                 clearvars out f1;
+%                     end;
+% 
+%                 end;
+%             end;
+%             % compares two contrasts within one session
+%             for  i_run = 1:runs
+%                 fprintf('...compare session %d in contrast %d and %d...\n',i_run,con1_count,con2_count);
+%                 for i = 1:nr_subj
+%                     for j = 1:nr_subj
+%                         temp_nii_1 = [];
+%                         temp_nii_2 = [];
+%                         eval(sprintf('temp_nii_1 = FourD%d_%d_par%d(:,:,:,i);',i_run,con1_count,ind_para));
+%                         eval(sprintf('temp_nii_2 = FourD%d_%d_par%d(:,:,:,j);',i_run,con2_count,ind_para));
+%                         if use_roi == 1
+%                             temp_nii_1(~r_roi_ind) = 0;
+%                             temp_nii_2(~r_roi_ind) = 0;
+%                         end;
+%                         temp_1 = temp_nii_1(~isnan(temp_nii_1));
+%                         temp_2 = temp_nii_2(~isnan(temp_nii_2));
+% 
+%                         [out.r, out.p] = corrcoef([temp_1,temp_2]);
+%                         out.r_mat(i,j) = out.r(1,2);
+%                         out.p_mat(i,j) = out.p(1,2);
+%                         eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',i_run,con1_count,ind_para)); 
+%                        [out.r, out.p] = corrcoef([temp_2,mean_temp]); 
+%                        out.r_mat(j,nr_subj+2) = out.r(1,2);
+%                        out.p_mat(j,nr_subj+2) = out.p(1,2); 
+%                     end;
+%                        eval(sprintf('mean_temp = mean_FourD%d_%d_par%d;',i_run,con2_count,ind_para)); 
+%                        [out.r, out.p] = corrcoef([temp_1,mean_temp]); 
+%                        out.r_mat(i,j+1) = out.r(1,2);
+%                        out.p_mat(i,j+1) = out.p(1,2);   
+% 
+%                 end;
+% 
+%                     cd(results_dir);
+%                     roi_name=get(handles.name_roi,'String');
+% 
+%                     if use_roi == 1
+%                         eval(sprintf('save similarity-par%d_%s_%d-con%d-con%d.mat out',ind_para,roi_name,i_run,con1_count,con2_count));           
+%                     else
+%                         eval(sprintf('save similarity-par%d_%d-con%d-con%d.mat out',ind_para,i_run,con1_count,con2_count));
+%                     end;
+% 
+%                     % color matrix    
+%                 f1 = figure;
+%                 set(gcf,'units','normalized','position',[0.25 0 0.50 1]);
+%                 subplot(2,2,1:2);
+%                 colormap('jet');
+%                 imagesc(out.r_mat);
+%                 caxis([-1,1]);
+%                 colorbar;
+%                 xlabel(sprintf('subject session %d (last column: similarity to mean image)',i_run));
+%                 ylabel(sprintf('subject session %d',i_run));
+% 
+%                     if use_roi == 1
+%                         name1=sprintf('similarity-par%d-%s-%d-con%d-con%d',ind_para,roi_name,i_run,con1_count,con2_count);
+%                     else
+%                         name1=sprintf('similarity-par%d-%d-con%d-con%d',ind_para,i_run,con1_count,con2_count);
+%                     end;
+%                    title(name1);
+%                 % histograms
+%                 subplot(2,2,3);
+%                 triu_r_mat = triu(out.r_mat,1);
+%                 vec_off_diag_r_mat = triu_r_mat(triu_r_mat~=0);
+%                 h1 = histogram(diag(out.r_mat));
+%                 hold on;
+%                 h2 = histogram(vec_off_diag_r_mat);
+%                 h1.Normalization = 'probability';
+%                 h1.BinWidth = 0.1;
+%                 h2.Normalization = 'probability';
+%                 h2.BinWidth = 0.1;
+%                 xlabel('similarity');
+%                 ylabel('frequency in percentage');
+%                     if use_roi == 1
+%                         name2=sprintf('histograms-%s-%d-con%d-con%d',roi_name,i_run,con1_count,con2_count);
+%                     else
+%                         name2=sprintf('histograms-%d-con%d-con%d',i_run,con1_count,con2_count);
+%                     end;
+%                     title(name2);
+% 
+%                 % ecdf - densitiy plots
+%                 subplot(2,2,4);
+%  [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+%         plot(x,f,'LineWidth',2,'Color','blue')
+%         hold on
+%         plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')
+%         hold on
+%         plot(x,fup,'LineWidth',1,'Color','blue','LineStyle','--')
+%         hold on;
+%         clear x f flo fup
+%         [f,x,flo,fup]=ecdf(vec_off_diag_r_mat,'bounds','on');
+%         plot(x,f,'LineWidth',2,'Color','red')
+%         hold on
+%         plot(x,flo,'LineWidth',1,'Color','red','LineStyle','--')
+%         hold on
+%         plot(x,fup,'LineWidth',1,'Color','red','LineStyle','--')
+%         hold off;
+%                     if use_roi == 1
+%                         name3=sprintf('density-%s-%d-con%d-con%d',roi_name,i_run,con1_count,con2_count);
+%                     else
+%                         name3=sprintf('density-%d-con%d-con%d',i_run,con1_count,con2_count);
+%                     end;            
+%                 title(name3);
+%                 fig = gcf;
+%                 fig.PaperPositionMode = 'auto';
+%                 print(fig,name1,'-dpng','-r0')
+%                 close(fig);
+% 
+%                 clearvars out f1;      
+%             end;
+%     end;
+% end;
 elseif split == 1
     for  i_run = 1:runs
         fprintf('...compare splits session %d ...\n',i_run);
