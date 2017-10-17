@@ -389,7 +389,7 @@ f = filesep;
 
 %% 3D to 4D conversion
 cd(box_path);
-load('scripts_templates\template_3D-4D.mat'); % template for 3D to 4D conversion
+load(['scripts_templates' filesep 'template_3D-4D.mat']); % template for 3D to 4D conversion
 
 if two_cons == 0
     % list contrast_def images
