@@ -283,7 +283,7 @@ end;
     % load 4D images whole-brain, without ROI
     disp('...loads image dimensions..');
     stats_temp =sprintf(stats_dir,1);
-    temp_img = [stats_path f vp{1} f stats_temp f con];
+    temp_img = [stats_path f id{1} f stats_temp f con];
     temp_img=load_nii(temp_img);
     dim = size(temp_img.img);
     x = dim(1);

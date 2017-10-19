@@ -294,7 +294,7 @@ f = filesep;
 
     if two_cons == 0
         con=get(handles.con,'String');      
-        file = [path f vp{1} f stats_filled f con '*']; 
+        file = [path f id{1} f stats_filled f con '*']; 
         con = dir(file);
         if size(con)>1
             con = con(2).name;
@@ -303,7 +303,7 @@ f = filesep;
             con = con(1).name;
             contrast_def.contrast = con;        
         end;
-        spmmat = [path f vp{1} f stats_filled f 'SPM.mat'];
+        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
             if strcmp({SPM.xCon(i).Vcon.fname}, [con])==1
@@ -332,7 +332,7 @@ f = filesep;
         con1=get(handles.con1,'String');
         contrast_def.contrast1 = con1;        
         con=con1;
-        spmmat = [path f vp{1} f stats_filled f 'SPM.mat'];
+        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
             if strcmp({SPM.xCon(i).Vcon.fname}, [con '.nii'])==1
@@ -362,7 +362,7 @@ f = filesep;
         con2=get(handles.con2,'String');
         contrast_def.contrast2 = con2;        
         con=con2;
-        spmmat = [path f vp{1} f stats_filled f 'SPM.mat'];
+        spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
             if strcmp({SPM.xCon(i).Vcon.fname}, [con '.nii'])==1
@@ -390,7 +390,6 @@ f = filesep;
 %% 3D to 4D conversion
 cd(box_path);
 load(['scripts_templates' filesep 'template_3D-4D.mat']); % template for 3D to 4D conversion
-
 if two_cons == 0
     % list contrast_def images
     disp('...load contrast images to create 4D images...');
@@ -398,7 +397,7 @@ if two_cons == 0
         cd(path);
         con_list=cell(nr_subj,1);
         for j = 1:nr_subj
-            cd (sprintf('%s',vp{j}));
+            cd (sprintf('%s',id{j}));
             cd (sprintf(stats,single_run));
             con_list{j,1}=[pwd f con];
             cd(path);
@@ -410,7 +409,7 @@ if two_cons == 0
                 cd(path)
                 con_list=cell(nr_subj,1);
                 for j = 1:nr_subj
-                    cd (sprintf('%s',vp{j}));
+                    cd (sprintf('%s',id{j}));
                     cd (sprintf(stats,single_run));
                     con_list{j,1}=[pwd f 'con_' num2str(contrast_def.contrast_number+i_par,'%04d') '.nii,1'];
                     cd (path);
@@ -424,7 +423,7 @@ if two_cons == 0
             cd(path)
             con_list=cell(nr_subj,1);
             for j = 1:nr_subj
-                cd(sprintf('%s',vp{j}));
+                cd(sprintf('%s',id{j}));
                 cd(sprintf(stats,i));
                 con_list{j,1}=[pwd f con];
                 cd(path);
@@ -438,7 +437,7 @@ if two_cons == 0
                     cd(path)
                     con_list=cell(nr_subj,1);
                     for j = 1:nr_subj
-                        cd (sprintf('%s',vp{j}));
+                        cd (sprintf('%s',id{j}));
                         cd (sprintf(stats,i));
                         con_list{j,1}=[pwd f 'con_' num2str(contrast_def.contrast_number+i_par,'%04d') '.nii,1'];
                         cd(path);
@@ -502,7 +501,7 @@ if two_cons == 0
     % move files
     if runs == 1
         stats=sprintf(study_design.stats_directory,single_run);
-        first=[study_design.stats_path f vp{1} f stats];
+        first=[study_design.stats_path f id{1} f stats];
         file1 = [first f '4D_' single_run '.nii'];
         file2 = [first f '4D_' single_run '.mat'];
         movefile (file1,dir_results,'f');
@@ -510,7 +509,7 @@ if two_cons == 0
          if nr_para > 0
             for i_par = 1:nr_para
                 stats=sprintf(study_design.stats_directory,single_run);
-                first=[study_design.stats_path f vp{1} f stats];
+                first=[study_design.stats_path f id{1} f stats];
                 file1 = [first f '4D_par' i_par '_' single_run '.nii'];
                 file2 = [first f '4D_par' i_par '_' single_run '.mat'];
                 movefile (file1,dir_results,'f');
@@ -520,7 +519,7 @@ if two_cons == 0
     else
         for k = 1:runs
             stats=sprintf(study_design.stats_directory,k);
-            first=[study_design.stats_path f vp{1} f stats];
+            first=[study_design.stats_path f id{1} f stats];
             file1 = [first f '4D_' num2str(k) '.nii'];
             file2 = [first f '4D_' num2str(k) '.mat'];
             movefile (file1,dir_results,'f');
@@ -528,7 +527,7 @@ if two_cons == 0
             if nr_para > 0
                 for i_par = 1:nr_para
                     stats=sprintf(study_design.stats_directory,k);
-                    first=[study_design.stats_path f vp{1} f stats];
+                    first=[study_design.stats_path f id{1} f stats];
                     file1 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.nii'];
                     file2 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.mat'];
                     movefile (file1,dir_results,'f');
@@ -552,7 +551,7 @@ else
             cd(path)
             con_list=cell(nr_subj,1);
             for j = 1:nr_subj
-                cd(sprintf('%s',vp{j}));
+                cd(sprintf('%s',id{j}));
                 cd(sprintf(stats,single_run));
                 con_list{j,1}=[pwd f con ext];
                 cd(path);
@@ -563,7 +562,7 @@ else
                     cd (path)
                     con_list=cell(nr_subj,1);
                     for j = 1:nr_subj
-                        cd(sprintf('%s',vp{j}));
+                        cd(sprintf('%s',id{j}));
                         cd(sprintf(stats,single_run));
                         con_list{j,1}=[pwd f 'con_' con_count+i_par '.nii,1'];
                         cd(path);
@@ -576,7 +575,7 @@ else
                 cd(path)
                 con_list=cell(nr_subj,1);
                 for j = 1:nr_subj
-                    cd (sprintf('%s',vp{j}));
+                    cd (sprintf('%s',id{j}));
                     cd (sprintf(stats,i));
                     con_list{j,1}=[pwd f con ext ',1'];
                     cd (path);
@@ -589,7 +588,7 @@ else
 %                     cd (path)
 %                     con_list=cell(nr_subj,1);
 %                     for j = 1:nr_subj
-%                         cd (sprintf('%s',vp{j}));
+%                         cd (sprintf('%s',id{j}));
 %                         cd (sprintf(stats,i));
 %                         con_list{j,1}=[pwd f 'con_' con_count+i_par '.nii,1'];
 %                         cd (path);
@@ -653,7 +652,7 @@ else
             % move files
             if runs == 1
                 stats1=sprintf(study_design.stats_directory,single_run);
-                first=[study_design.stats_path f vp{1} f stats1];
+                first=[study_design.stats_path f id{1} f stats1];
                 file1 = [first f '4D_' con '_' num2str(single_run) '.nii'];
                 file2 = [first f '4D_' con '_' num2str(single_run) '.mat'];
                 movefile (file1,dir_results,'f');
@@ -661,7 +660,7 @@ else
                   if nr_para > 0
                     for i_par = 1:nr_para
                         stats1=sprintf(study_design.stats_directory,single_run);
-                        first=[study_design.stats_path f vp{1} f stats1];
+                        first=[study_design.stats_path f id{1} f stats1];
                         file1 = [first f '4D_' num2str(i_par) '_' num2str(single_run) '.nii'];
                         file2 = [first f '4D_' num2str(i_par) '_' num2str(single_run) '.mat'];
                         movefile (file1,dir_results,'f');
@@ -671,7 +670,7 @@ else
             else
                 for k = 1:runs
                     stats1=sprintf(study_design.stats_directory,k);
-                    first=[study_design.stats_path f vp{1} f stats1];
+                    first=[study_design.stats_path f id{1} f stats1];
                     file1 = [first f '4D_' con '_' num2str(k) '.nii'];
                     file2 = [first f '4D_' con '_' num2str(k) '.mat'];
                     movefile (file1,dir_results,'f');
@@ -679,7 +678,7 @@ else
 %                     if nr_para > 0
 %                         for i_par = 1:nr_para
 %                             stats=sprintf(study_design.stats_directory,k);
-%                             first=[study_design.stats_path f vp{1} f stats];
+%                             first=[study_design.stats_path f id{1} f stats];
 %                             file1 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.nii'];
 %                             file2 = [first f '4D_par' num2str(i_par) '_' num2str(k) '.mat'];
 %                             movefile (file1,dir_results,'f');

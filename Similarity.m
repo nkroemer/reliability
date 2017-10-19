@@ -71,6 +71,7 @@ function varargout = Similarity_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+set(handles.name_roi,'TooltipString','Type in name of ROI file you want to use');
 
 
 % --- Executes on button press in design.

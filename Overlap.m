@@ -795,7 +795,7 @@ end;
 disp('DONE');
 cd(box_path);  
 elseif two_cons == 1
-    for i = 1:length(vp)
+    for i = 1:length(id)
         eval(sprintf('results_%d = [];',i));
         % load xSPM and extract suprathresholded voxels
         for j = 1:runs
@@ -805,9 +805,9 @@ elseif two_cons == 1
         %con1
             co_temp=[];
             stats_dir_filled = sprintf(stats_dir,j);
-            SPM_path = [stats_path f vp{i} f stats_dir_filled];
+            SPM_path = [stats_path f id{i} f stats_dir_filled];
             cd(box_path);
-            fprintf('... create xSPM for %s con 1 in session %d...\n',vp{i},j)
+            fprintf('... create xSPM for %s con 1 in session %d...\n',id{i},j)
 
             xSPM = create_xSPM(SPM_path,box_path,p,con1_count);
             evalstr1 = sprintf('co_sig%d = xSPM.XYZ;',j);
@@ -833,9 +833,9 @@ elseif two_cons == 1
       %con2
             co_temp=[];
             stats_dir_filled = sprintf(stats_dir,j);
-            SPM_path = [stats_path f vp{i} f stats_dir_filled];
+            SPM_path = [stats_path f id{i} f stats_dir_filled];
             cd(box_path);
-            fprintf('... create xSPM for %s con 2 in session %d...\n',vp{i},j)
+            fprintf('... create xSPM for %s con 2 in session %d...\n',id{i},j)
 
             xSPM = create_xSPM(SPM_path,box_path,p,con2_count);
             evalstr1 = sprintf('co_sig%d = xSPM.XYZ;',j);
@@ -931,9 +931,9 @@ elseif two_cons == 1
 
 
  %create results table with names
-    %vp in rows
+    %id in rows
      row = {};   
-     row = vp;
+     row = id;
     cols = {};
     for k = 1:runs
         if runs == 1

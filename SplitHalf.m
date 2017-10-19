@@ -165,7 +165,7 @@ disp('...create list with all SPM.mat files...')
 for j = 1:runs
     for i = 1:nr_subj
         cd(stats_path);
-        cd(sprintf('%s',vp{i}));
+        cd(sprintf('%s',id{i}));
         cd(sprintf(stats_dir,j));
 
         if exist('SPM.mat','file')==2
@@ -214,7 +214,7 @@ save(name,'study_design');
 
 for m = 1:runs
     for count = 1:nr_subj
-        fprintf('...load and modify SPM.mat for %s in session %d...',vp{count},m)
+        fprintf('...load and modify SPM.mat for %s in session %d...',id{count},m)
         dir_spm = SPM_list{count,m};
         load(dir_spm);
         % create vector for session number (SPM.Sess(nr))
@@ -481,16 +481,16 @@ for m = 1:runs
             
         %new stats folder
         cd(stats_path);
-        cd(sprintf('%s',vp{count}));
+        cd(sprintf('%s',id{count}));
         mkdir(split_dir)
-        dir_results = sprintf('%s%s%s%s%s%s%s',stats_path,f,f,vp{count},f,f,split_dir);
+        dir_results = sprintf('%s%s%s%s%s%s%s',stats_path,f,f,id{count},f,f,split_dir);
         SPM.swd = dir_results;
         eval(sprintf('save %s%s%sSPM.mat SPM',dir_results,f,f));
 
         %% estimation of GLM
         cd(dir_results);
         %--->part of spm_fMRI_design
-            fprintf('...do statistics for %s in session %d...',vp{count},m);
+            fprintf('...do statistics for %s in session %d...',id{count},m);
 
             %-Construct Design matrix {X} %-Microtime onset and microtime resolution
             try
@@ -1021,8 +1021,8 @@ for m = 1:runs
         SPM = spm_contrasts(SPM,vec);
 
         save SPM.mat SPM;
-        clearvars -except new_dir split_dir split_name con_vec study_design oldpointer handles run runs count vp n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
-        fprintf('...new statistic for %s in session %d done...\n',vp{count},m);
+        clearvars -except new_dir split_dir split_name con_vec study_design oldpointer handles run runs count id n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
+        fprintf('...new statistic for %s in session %d done...\n',id{count},m);
     end;
 end;
 
@@ -1053,10 +1053,10 @@ for ind_con = 1:length(con_vec)
     for i = 1:runs
         newstats_dir = sprintf(stats_dir,i); 
         new_dir = sprintf('%s_split_%s',newstats_dir,split_name);
-        for j=1:length(vp)
-            con_img1 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,vp{j},f,f,new_dir,f,f,cont);
+        for j=1:length(id)
+            con_img1 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,id{j},f,f,new_dir,f,f,cont);
             matlabbatch{i}.spm.util.cat.vols{j,1} = con_img1;
-            con_img2 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,vp{j},f,f,new_dir,f,f,cont+1+nr_para);
+            con_img2 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,id{j},f,f,new_dir,f,f,cont+1+nr_para);
             matlabbatch{i+1}.spm.util.cat.vols{j,1} = con_img2;
         end;
     
@@ -1101,10 +1101,10 @@ for ind_con = 1:length(con_vec)
         if length(con_vec) > 1
             img_name1 = sprintf('%s1_reg%d_%d',name,con_vec(ind_con),k);
             img_name2 = sprintf('%s2_reg%d_%d',name,con_vec(ind_con),k); 
-            file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name1);
-            file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name1);
-            file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name2);
-            file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name2);
+            file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
+            file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
+            file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
+            file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
             movefile (file1,dir_results,'f');
             movefile (file2,dir_results,'f');
             movefile (file3,dir_results,'f');
@@ -1112,10 +1112,10 @@ for ind_con = 1:length(con_vec)
         else
             img_name1 = sprintf('%s1_%d',name,k);
             img_name2 = sprintf('%s2_%d',name,k); 
-            file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name1);
-            file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name1);
-            file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name2);
-            file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name2);
+            file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
+            file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
+            file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
+            file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
             movefile (file1,dir_results,'f');
             movefile (file2,dir_results,'f');
             movefile (file3,dir_results,'f');
@@ -1137,10 +1137,10 @@ if nr_para>0
                 sess = round(i./2);
                 newstats_dir = sprintf(stats_dir,sess); 
                 new_dir = sprintf('%s_split_%s',newstats_dir,split_name);
-                for j=1:length(vp)
-                    con_img1 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,vp{j},f,f,new_dir,f,f,cont);
+                for j=1:length(id)
+                    con_img1 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,id{j},f,f,new_dir,f,f,cont);
                     matlabbatch{i}.spm.util.cat.vols{j,1} = con_img1;
-                    con_img2 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,vp{j},f,f,new_dir,f,f,cont+1+nr_para);
+                    con_img2 = sprintf('%s%s%s%s%s%s%s%s%scon_%04d.nii,1',stats_path,f,f,id{j},f,f,new_dir,f,f,cont+1+nr_para);
                     matlabbatch{i+1}.spm.util.cat.vols{j,1} = con_img2;
                 end;
                     img_name1 = sprintf('%s1_par%d_%d.nii',name,ind_par,sess);
@@ -1165,10 +1165,10 @@ if nr_para>0
                     new_dir = sprintf('%s_split_%s',newstats_dir,split_name);
                     img_name1 = sprintf('%s1_par%d_%d',name,ind_par,k);
                     img_name2 = sprintf('%s2_par%d_%d',name,ind_par,k); 
-                    file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name1);
-                    file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name1);
-                    file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name2);
-                    file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,vp{1},f,f,new_dir,f,f,img_name2);
+                    file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
+                    file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
+                    file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
+                    file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
                     movefile (file1,dir_results,'f');
                     movefile (file2,dir_results,'f');
                     movefile (file3,dir_results,'f');

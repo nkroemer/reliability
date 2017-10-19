@@ -71,6 +71,8 @@ function varargout = Corr2ROI_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+set(handles.nr,'TooltipString','How many previously created maps do you want to include?');
+set(handles.prefix,'TooltipString','Define prefix of your thresholded image');
 
 
 % --- Executes on button press in design.
