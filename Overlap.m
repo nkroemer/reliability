@@ -251,7 +251,7 @@ compl = sprintf('%s%s%s%s',roi_dir, f,f,roi_ful);
 
 disp('...reslicing ROI...');
 stats_filled = sprintf(stats_dir,1);
-temp = [stats_path f id{1} f stats_filled con ',1'];
+temp = [stats_path f id{1} f stats_filled f con ',1'];
 matlabbatch{1}.spm.spatial.coreg.write.ref = {temp};
 temp_1 = sprintf('%s,1',compl);
 matlabbatch{1}.spm.spatial.coreg.write.source = {temp_1};
