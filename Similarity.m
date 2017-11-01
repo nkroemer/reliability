@@ -172,6 +172,7 @@ if two_cons == 0
     nr_para = study_design.number_parametric;
 
 else
+    con=[contrast_def.contrast1 contrast_def.contrast_format];
     con1=contrast_def.contrast1;
     con2=contrast_def.contrast2;
     con1_count=contrast_def.contrast1_number;
@@ -198,11 +199,7 @@ if use_roi == 1
     roi_compl = [roi_dir f roi_name];
     disp('...reslicing ROI...');
     stats_filled = sprintf(stats,1);
-    if two_cons == 1
-        temp = [path f id{1} f stats_filled f con1 ',1'];
-    else
-        temp = [path f id{1} f stats_filled f con ',1'];
-    end;
+    temp = [path f id{1} f stats_filled f con ',1'];
     matlabbatch{1}.spm.spatial.coreg.write.ref = {temp};
     matlabbatch{1}.spm.spatial.coreg.write.source = {sprintf('%s,1',roi_compl)};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;

@@ -221,6 +221,7 @@ if two_cons == 0
     nr_para = study_design.number_parametric;
 
 else
+    con=[contrast_def.contrast1 contrast_def.contrast_format];
     con1=contrast_def.contrast1;
     con2=contrast_def.contrast2;
     con1_count=contrast_def.number_regressor1;
