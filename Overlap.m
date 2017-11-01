@@ -71,6 +71,7 @@ function varargout = Overlap_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+set(handles.roi,'TooltipString','Type in name of ROI file WITHOUT suffix');
 
 
 % --- Executes on button press in design.
@@ -207,7 +208,6 @@ results_dir = study_design.results_directory;
 if split == 1
     split_dir = study_design.split_directory;
 end;
-box_path = pwd; 
 if runs == 1
     single_run = str2double(study_design.identifier_session);
 end;
@@ -244,7 +244,7 @@ if isstruct(roi_ful)
         roi_ful = roi_ful(1).name;
     end;
 end;
-compl = sprintf('%s%s%s%s',roi_dir, f,f,roi_ful);
+compl = [roi_dir f roi_ful];
 
 
 %% reslice ROI

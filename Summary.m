@@ -119,7 +119,6 @@ f = filesep;
 
 study_design = evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');
-box_path=pwd;
 
 %% get study design info
 results_dir = study_design.results_directory;

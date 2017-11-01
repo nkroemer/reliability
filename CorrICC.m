@@ -71,6 +71,7 @@ function varargout = CorrICC_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+set(handles.roi_name,'TooltipString','Type in name of ROI file WITHOUT suffix');
 
 % --- Executes on button press in design.
 function design_Callback(hObject, eventdata, handles)
@@ -184,7 +185,6 @@ f = filesep;
 
 %% set parameters
 %get information out of study_design
-box=pwd;
 study_design=evalin('base','study_design');
 contrast_def=evalin('base','contrast_def');
 runs=str2double(study_design.number_sessions); 
@@ -3697,7 +3697,7 @@ end;
 disp('finished ICC calculation')
 
 
-cd(box);    
+cd(box_path);    
 disp('DONE');
  
 

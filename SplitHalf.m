@@ -139,7 +139,6 @@ function run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 disp('Starting Split-Half...')
-cwd=pwd;
 %% define file seperator 
 f = filesep;
 %% set parameters
@@ -197,11 +196,11 @@ else
     for i_con = 1:length(con_vec)
         con = con_vec(1,i_con);
         if strcmp(SPM.Sess(1).U(con).P(1).name,'none')
-            eval(sprintf('study_design.number_parametric_reg%d = 0',i_con));
+            eval(sprintf('study_design.number_parametric_reg%d = 0;',i_con));
             eval(sprintf('nr_para_reg%d = 0',i_con));
         else
-            eval(sprintf('nr_para_reg%d = size(SPM.Sess(1).U(con).P,2',i_con));
-            eval(sprintf('study_design.number_parametric_reg%d = nr_para_reg%d',i_con,i_con));
+            eval(sprintf('nr_para_reg%d = size(SPM.Sess(1).U(con).P,2);',i_con));
+            eval(sprintf('study_design.number_parametric_reg%d = nr_para_reg%d;',i_con,i_con));
         end;     
     end;
 end;
@@ -1029,7 +1028,7 @@ end;
 disp('creating 4D images');
 %% Create 4D images out of 3D images 
 % uses SPM12
-cd(cwd);
+cd(box_path);
 % uses template batch 'template_3D-4D.mat'
 load ('template_3D-4D.mat');
 % define 4D image name - number of run will be added below
@@ -1179,7 +1178,7 @@ end;
 end;
 
 
-cd(cwd);
+cd(box_path);
 disp('...DONE');
 
 

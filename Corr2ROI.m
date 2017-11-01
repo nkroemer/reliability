@@ -216,7 +216,6 @@ disp('Starting creation of ROI out of correlation maps...');
 f = filesep;
 study_design = evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');
-box_path=pwd;
 
 %get GUI input
 use_corr = get(handles.use_corr,'value');
@@ -235,6 +234,7 @@ else
 end;
 
 % reslice atlas and move to results directory
+cd(box_path);
 disp('...reslicing atlas...');
 cd('atlas')
 atlas_dir = pwd;

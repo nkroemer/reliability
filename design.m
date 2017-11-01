@@ -420,7 +420,6 @@ if single == 1
 else
     runs = get(handles.runs,'String'); % number of sessions
 end;
-box = pwd;
 
 %% generate study_design
 disp('...save study design...');
@@ -435,7 +434,7 @@ end;
 cd(dir_results{1})
 save(name_design,'study_design');
 disp('...DONE');
-cd(box);
+cd(box_path);
 
     
 

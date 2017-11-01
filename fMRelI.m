@@ -71,6 +71,8 @@ function varargout = fMRelI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 disp('Starting fMRelI...');
+box_path=pwd;
+
 set(handles.specify,'TooltipString','Specification of sample, data folders etc.');
 set(handles.define,'TooltipString','Specification of contrast names and regressor numbers');
 set(handles.split,'TooltipString','Use split-half procedure to look at within-session reliability');

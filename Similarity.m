@@ -71,7 +71,7 @@ function varargout = Similarity_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
-set(handles.name_roi,'TooltipString','Type in name of ROI file you want to use');
+set(handles.name_roi,'TooltipString','Type in name of ROI file WITHOUT suffix');
 
 
 % --- Executes on button press in design.
@@ -160,7 +160,6 @@ nr_subj = str2double(study_design.number_subjects);
 load(study_design.subject_list);
 stats=study_design.stats_directory;
 path=study_design.stats_path;
-box_path = pwd;
 
 %% get GUI input
 split = get(handles.split,'Value');
@@ -189,7 +188,13 @@ if use_roi == 1
     roi_dir=evalin('base','roi_dir');
     cd(roi_dir);
     roi_name = dir(sprintf('%s*',roi_name));
-    roi_name = roi_name.name;
+    if isstruct(roi_name)
+        if length(roi_ful)==2
+            roi_name = roi_name(2).name;
+        else
+            roi_name = roi_name(1).name;
+        end;
+    end;
     roi_compl = [roi_dir f roi_name];
     disp('...reslicing ROI...');
     stats_filled = sprintf(stats,1);
@@ -210,14 +215,31 @@ if use_roi == 1
 
     % run batch
     spm_jobman('serial',matlabbatch);
-    r_roi = [roi_dir f roi_name];
+    r_roi=dir(sprintf('r%s*',roi_name));
+    if length(r_roi)==2
+        compl1 = [roi_dir f 'r' roi '.img'];
+        movefile(compl1,results_dir,'f');
+        compl2 = [roi_dir f 'r' roi '.hdr'];
+        movefile(compl2,results_dir,'f');
+        cd(results_dir);    
+        r_roi = load_nii(sprintf('r%s.img',roi));
+        r_roi_ind = r_roi.img==1;
+    else
+        if ~strcmp(roi_dir,results_dir)
+        compl = [roi_dir f 'r' roi '.nii'];
+        movefile(compl,results_dir,'f');
+        end;
+        cd(results_dir);    
+        r_roi = load_nii(sprintf('r%s.nii',roi));
+        r_roi_ind = r_roi.img==1;        
+    end;
     if ~strcmp(roi_dir,results_dir)
         movefile (r_roi,results_dir,'f');
     end;
 
     % create index for ROI voxels
     cd(results_dir)
-    r_roi = load_nii(sprintf('r%s',roi_name));
+    r_roi = load_nii(r_roi);
     r_roi_ind = r_roi.img==1;
 end;
 
