@@ -180,6 +180,7 @@ function run_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %% define file seperator 
 f = filesep;
+box_path=evalin('base','box_path');
 
 %% set parameters
 disp('Starting calulcation of overlap...');
@@ -869,9 +870,11 @@ elseif two_cons == 1
             end;
                 fprintf('...compare con1 to con2 in session %d...\n',k);
                 count = 0;
+                if eval(sprintf('nr_sig_con1_%d',k)) > 0 && eval(sprintf('nr_sig_con2_%d',k)) > 0
                 for l = 1:eval(sprintf('nr_sig_con1_%d',k))
                    eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_con2_%d,co_sig_con1_%d(:,l))));',k,k));
                    count = count + length(idx);
+                end;
                 end;
    
 
@@ -892,12 +895,14 @@ elseif two_cons == 1
             eval(sprintf('con_count = con%d_count;',ind_con));
         for k = runs:-1:2
                 for ind = 1:k-1
-                    fprintf('...compare %d to %d...\n',k,k-ind);
+                    fprintf('...compare %d to %d in %s...\n',k,k-ind, con);
                         count = 0;
+                        if eval(sprintf('nr_sig_con%d_%d',ind_con,k)) > 0 && eval(sprintf('nr_sig_con%d_%d',ind_con,k-ind)) > 0
                     for l = 1:eval(sprintf('nr_sig_con%d_%d',ind_con,k))
                        eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_con%d_%d,co_sig_con%d_%d(:,l))));',ind_con,k-ind,ind_con,k));
                        count = count + length(idx);
                     end;
+                        end;
 
 
                     eval(sprintf('%s_overlap_%d_%d = count;',con,k-ind,k));

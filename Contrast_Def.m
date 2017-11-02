@@ -258,6 +258,7 @@ disp('Starting creation of contrast definition...');
 
 %% define file seperator 
 f = filesep;
+box_path=evalin('base','box_path');
 
 %% get study design info
     study_design=evalin('base','study_design');

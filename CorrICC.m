@@ -182,6 +182,7 @@ function run_Callback(hObject, eventdata, handles)
 disp('Starting calculation of correlation measures...');
 %% define file seperator 
 f = filesep;
+box_path=evalin('base','box_path');
 
 %% set parameters
 %get information out of study_design

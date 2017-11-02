@@ -72,6 +72,7 @@ function varargout = fMRelI_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 disp('Starting fMRelI...');
 box_path=pwd;
+assignin('base','box_path',box_path);
 
 set(handles.specify,'TooltipString','Specification of sample, data folders etc.');
 set(handles.define,'TooltipString','Specification of contrast names and regressor numbers');

@@ -141,6 +141,8 @@ function run_Callback(hObject, eventdata, handles)
 disp('Starting Split-Half...')
 %% define file seperator 
 f = filesep;
+box_path=evalin('base','box_path');
+
 %% set parameters
 
 % get study design info

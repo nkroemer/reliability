@@ -404,6 +404,8 @@ function save_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 disp('Starting creation of study design...');
+box_path=evalin('base','box_path');
+
 %% set parameters
 %get GUI input
 subjects = get(handles.subjects,'String'); % number of participants

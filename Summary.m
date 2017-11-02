@@ -116,6 +116,7 @@ function run_Callback(hObject, eventdata, handles)
 disp('Starting reliability summary...');
 %% define file seperator 
 f = filesep;
+box_path=evalin('base','box_path');
 
 study_design = evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');

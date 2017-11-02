@@ -152,6 +152,7 @@ f = filesep;
 disp('Starting calculations of similarity...');
 study_design=evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');
+box_path=evalin('base','box_path');
 
 %% get study design info
 results_dir = study_design.results_directory;
@@ -185,12 +186,12 @@ end;
 %% load and reslice ROI
 if use_roi == 1
     disp('...load and reslice ROI...')
-    roi_name=get(handles.name_roi,'String');
+    roi_pur=get(handles.name_roi,'String');
     roi_dir=evalin('base','roi_dir');
     cd(roi_dir);
-    roi_name = dir(sprintf('%s*',roi_name));
+    roi_name = dir(sprintf('%s*',roi_pur));
     if isstruct(roi_name)
-        if length(roi_ful)==2
+        if length(roi_name)==2
             roi_name = roi_name(2).name;
         else
             roi_name = roi_name(1).name;
@@ -212,32 +213,24 @@ if use_roi == 1
 
     % run batch
     spm_jobman('serial',matlabbatch);
-    r_roi=dir(sprintf('r%s*',roi_name));
+    r_roi=dir(sprintf('r%s*',roi_pur));
     if length(r_roi)==2
-        compl1 = [roi_dir f 'r' roi '.img'];
+        compl1 = [roi_dir f 'r' roi_pur '.img'];
         movefile(compl1,results_dir,'f');
-        compl2 = [roi_dir f 'r' roi '.hdr'];
+        compl2 = [roi_dir f 'r' roi_pur '.hdr'];
         movefile(compl2,results_dir,'f');
         cd(results_dir);    
-        r_roi = load_nii(sprintf('r%s.img',roi));
+        r_roi = load_nii(sprintf('r%s.img',roi_pur));
         r_roi_ind = r_roi.img==1;
     else
         if ~strcmp(roi_dir,results_dir)
-        compl = [roi_dir f 'r' roi '.nii'];
+        compl = [roi_dir f  'r' roi_pur '.nii'];
         movefile(compl,results_dir,'f');
         end;
         cd(results_dir);    
         r_roi = load_nii(sprintf('r%s.nii',roi));
         r_roi_ind = r_roi.img==1;        
     end;
-    if ~strcmp(roi_dir,results_dir)
-        movefile (r_roi,results_dir,'f');
-    end;
-
-    % create index for ROI voxels
-    cd(results_dir)
-    r_roi = load_nii(r_roi);
-    r_roi_ind = r_roi.img==1;
 end;
 
 % load 4D images
