@@ -138,7 +138,6 @@ function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('Starting Split-Half...')
 %% define file seperator 
 f = filesep;
 box_path=evalin('base','box_path');
@@ -213,7 +212,8 @@ save(name,'study_design');
 
 %% loads and modifies SPM for each participant
 
-for m = 1:runs
+for m = 2:runs
+    split_dir = sprintf(split_dir,m);
     for count = 1:nr_subj
         fprintf('...load and modify SPM.mat for %s in session %d...',id{count},m)
         dir_spm = SPM_list{count,m};
@@ -250,16 +250,16 @@ for m = 1:runs
                 %split parametric value
                 if length(con_vec) == 1 && nr_para > 0
                     for k = 1:nr_para
-                        eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P',k));
-                        eval(sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k));
-                        eval(sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k));
+                        eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P;',k));
+                        eval(sprintf('mod%d_1 = mod%d(pos(1:end/2));',k,k));
+                        eval(sprintf('mod%d_2 = mod%d(pos(end/2:end));',k,k));
                     end;
                 end;
                 if length(con_vec) > 1 && nr_para > 0
                     for k = 1:eval(sprintf('nr_para_reg%d',ind_con))
-                        eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P',k));
-                        eval(sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k));
-                        eval(sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k));
+                        eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P;',k));
+                        eval(sprintf('mod%d_1 = mod%d(pos(1:end/2));',k,k));
+                        eval(sprintf('mod%d_2 = mod%d(pos(end/2:end));',k,k));
                     end;    
                 end;
 
@@ -276,12 +276,12 @@ for m = 1:runs
                     if nr_para>0
                         for l = 1:nr_para
                             U(1).P(l).name = sprintf('par_value_1_%d',l);
-                            eval(sprintf('U(1).P(l).P = mod%d_1',l));
+                            eval(sprintf('U(1).P(l).P = mod%d_1;',l));
                             eval(evalstr);
                             U(1).P(l).h = 1;
                             U(1).P(l).i = [1,l+1];
                             U(2).P(l).name = sprintf('par_value_2_%d',l);
-                            eval(sprintf('U(2).P(l).P = mod%d_2',l));
+                            eval(sprintf('U(2).P(l).P = mod%d_2;',l));
                             U(2).P(l).h = 1;
                             U(2).P(l).i = [1,l+1];
                         end;
@@ -297,12 +297,12 @@ for m = 1:runs
                      if eval(sprintf('nr_para_reg%d >0',ind_con))
                         for l = 1:nr_para
                             U(1).P(l).name = sprintf('par_value_1_%d',l);
-                            eval(sprintf('U(1).P(l).P = mod%d_1',l));
+                            eval(sprintf('U(1).P(l).P = mod%d_1;',l));
                             eval(evalstr);
                             U(1).P(l).h = 1;
                             U(1).P(l).i = [1,l+1];
                             U(2).P(l).name = sprintf('par_value_2_%d',l);
-                            eval(sprintf('U(2).P(l).P = mod%d_2',l));
+                            eval(sprintf('U(2).P(l).P = mod%d_2;',l));
                             U(2).P(l).h = 1;
                             U(2).P(l).i = [1,l+1];
                         end;
@@ -358,17 +358,17 @@ for m = 1:runs
                 if length(con_vec) == 1
                     if nr_para > 0
                         for k = 1:nr_para
-                        eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P',k));
-                        eval(sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k));
-                        eval(sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k));
+                        eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P;',k));
+                        eval(sprintf('mod%d_1 = mod%d(pos(1:end/2));',k,k));
+                        eval(sprintf('mod%d_2 = mod%d(pos(end/2:end));',k,k));
                         end;
                     end;
                 else
                     if eval(sprintf('nr_para_reg%d > 0',ind_con))
                         for k = 1:nr_para
-                            eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P',k));
-                            eval(sprintf('mod%d_1 = mod%d(pos(1:end/2))',k,k));
-                            eval(sprintf('mod%d_2 = mod%d(pos(end/2:end))',k,k));
+                            eval(sprintf('mod%d = SPM.Sess(sess_count).U(con).P(k).P;',k));
+                            eval(sprintf('mod%d_1 = mod%d(pos(1:end/2));',k,k));
+                            eval(sprintf('mod%d_2 = mod%d(pos(end/2:end));',k,k));
                         end;
                     end;                   
                 end;
@@ -386,12 +386,11 @@ for m = 1:runs
                     if nr_para>0
                         for l = 1:nr_para
                             U(1).P(l).name = sprintf('par_value_1_%d',l);
-                            eval(sprintf('U(1).P(l).P = mod%d_1',l));
-                            eval(evalstr);
+                            eval(sprintf('U(1).P(l).P = mod%d_1;',l));
                             U(1).P(l).h = 1;
                             U(1).P(l).i = [1,l+1];
                             U(2).P(l).name = sprintf('par_value_2_%d',l);
-                            eval(sprintf('U(2).P(l).P = mod%d_2',l));
+                            eval(sprintf('U(2).P(l).P = mod%d_2;',l));
                             U(2).P(l).h = 1;
                             U(2).P(l).i = [1,l+1];
                         end;
@@ -407,12 +406,12 @@ for m = 1:runs
                      if eval(sprintf('nr_para_reg%d>0',ind_con))
                         for l = 1:nr_para
                             U(1).P(l).name = sprintf('par_value_1_%d',l);
-                            eval(sprintf('U(1).P(l).P = mod%d_1',l));
+                            eval(sprintf('U(1).P(l).P = mod%d_1;',l));
                             eval(evalstr);
                             U(1).P(l).h = 1;
                             U(1).P(l).i = [1,l+1];
                             U(2).P(l).name = sprintf('par_value_2_%d',l);
-                            eval(sprintf('U(2).P(l).P = mod%d_2',l));
+                            eval(sprintf('U(2).P(l).P = mod%d_2;',l));
                             U(2).P(l).h = 1;
                             U(2).P(l).i = [1,l+1];
                         end;
@@ -484,12 +483,12 @@ for m = 1:runs
         cd(stats_path);
         cd(sprintf('%s',id{count}));
         mkdir(split_dir)
-        dir_results = sprintf('%s%s%s%s%s%s%s',stats_path,f,f,id{count},f,f,split_dir);
+        dir_results = [stats_path f id{count} f split_dir];
         SPM.swd = dir_results;
-        eval(sprintf('save %s%s%sSPM.mat SPM',dir_results,f,f));
+        cd(dir_results);
+        save SPM.mat SPM ;
 
         %% estimation of GLM
-        cd(dir_results);
         %--->part of spm_fMRI_design
             fprintf('...do statistics for %s in session %d...',id{count},m);
 
@@ -972,12 +971,12 @@ for m = 1:runs
             if nr_para > 0
                 for p = 2:nr_para+1
                     name1=sprintf('half1_con%d_value%d',con_vec(ind_con),p-1);
-                    eval(sprintf('nams_%d{p}=name1',ind_con));
+                    eval(sprintf('nams_%d{p}=name1;',ind_con));
                 end;
                 for q = (nr_para+2):(2*nr_para+2)
                     if q == nr_para+2
                         name2 = sprintf('half2_con%d',con_vec(ind_con));
-                        eval(sprintf('nams_%d{q}=name2',ind_con));
+                        eval(sprintf('nams_%d{q}=name2;',ind_con));
                     else
                         name3=sprintf('half2_con%d_value%d',con_vec(ind_con),q-(nr_para+1));
                         eval(sprintf('nams_%d{q} = name3;',con_vec(ind_con)));
@@ -988,7 +987,7 @@ for m = 1:runs
         end;
         nams={};
         for ind_con = 1:length(con_vec)
-            eval(sprintf('nams={nams{:},nams_%d{:}}',ind_con));
+            eval(sprintf('nams={nams{:},nams_%d{:}};',ind_con));
         end;
                 
             DxCon=struct('name',nams,'STAT', 'T', 'c', cons,'X0','','iX0','c','X1o','','eidf','1','Vcon','','Vspm','');    
@@ -1022,7 +1021,7 @@ for m = 1:runs
         SPM = spm_contrasts(SPM,vec);
 
         save SPM.mat SPM;
-        clearvars -except new_dir split_dir split_name con_vec study_design oldpointer handles run runs count id n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
+        clearvars -except box_path f nr_subj new_dir split_dir split_name con_vec study_design oldpointer handles run runs count id n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
         fprintf('...new statistic for %s in session %d done...\n',id{count},m);
     end;
 end;
@@ -1102,10 +1101,10 @@ for ind_con = 1:length(con_vec)
         if length(con_vec) > 1
             img_name1 = sprintf('%s1_reg%d_%d',name,con_vec(ind_con),k);
             img_name2 = sprintf('%s2_reg%d_%d',name,con_vec(ind_con),k); 
-            file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
-            file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
-            file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
-            file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
+            file1 = [stats_path f id{1} f new_dir f img_name1 '.nii'];
+            file2 = [stats_path f id{1} f new_dir f img_name1 '.mat'];
+            file3 = [stats_path f id{1} f new_dir f img_name2 '.nii'];
+            file4 = [stats_path f id{1} f new_dir f img_name2 '.mat'];
             movefile (file1,dir_results,'f');
             movefile (file2,dir_results,'f');
             movefile (file3,dir_results,'f');
@@ -1113,10 +1112,10 @@ for ind_con = 1:length(con_vec)
         else
             img_name1 = sprintf('%s1_%d',name,k);
             img_name2 = sprintf('%s2_%d',name,k); 
-            file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
-            file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
-            file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
-            file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
+            file1 = [stats_path f id{1} f new_dir f img_name1 '.nii'];
+            file2 = [stats_path f id{1} f new_dir f img_name1 '.mat'];
+            file3 = [stats_path f id{1} f new_dir f img_name2 '.nii'];
+            file4 = [stats_path f id{1} f new_dir f img_name2 '.mat'];
             movefile (file1,dir_results,'f');
             movefile (file2,dir_results,'f');
             movefile (file3,dir_results,'f');
@@ -1166,10 +1165,10 @@ if nr_para>0
                     new_dir = sprintf('%s_split_%s',newstats_dir,split_name);
                     img_name1 = sprintf('%s1_par%d_%d',name,ind_par,k);
                     img_name2 = sprintf('%s2_par%d_%d',name,ind_par,k); 
-                    file1 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
-                    file2 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name1);
-                    file3 = sprintf('%s%s%s%s%s%s%s%s%s%s.nii',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
-                    file4 = sprintf('%s%s%s%s%s%s%s%s%s%s.mat',stats_path,f,f,id{1},f,f,new_dir,f,f,img_name2);
+                    file1 = [stats_path f id{1} f new_dir f img_name1 '.nii'];
+                    file2 = [stats_path f id{1} f new_dir f img_name1 '.mat'];
+                    file3 = [stats_path f id{1} f new_dir f img_name2 '.nii'];
+                    file4 = [stats_path f id{1} f new_dir f img_name2 '.mat'];
                     movefile (file1,dir_results,'f');
                     movefile (file2,dir_results,'f');
                     movefile (file3,dir_results,'f');

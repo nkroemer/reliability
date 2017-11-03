@@ -193,8 +193,11 @@ group = get(handles.group,'value');
 use_roi = get(handles.use_roi,'value');
 
 if use_roi == 1
-roi=get(handles.roi,'String');
-roi_dir=evalin('base','roi_dir');
+    roi=get(handles.roi,'String');
+    roi_dir=evalin('base','roi_dir');
+    str = 'ROI';
+else
+    str = '';
 end;
 
 
@@ -271,10 +274,12 @@ spm_jobman('serial',matlabbatch);
 % create index for ROI voxels
 r_roi=dir(sprintf('r%s*',roi));
 if length(r_roi)==2
-    compl1 = [roi_dir f 'r' roi '.img'];
-    movefile(compl1,results_dir,'f');
-    compl2 = [roi_dir f 'r' roi '.hdr'];
-    movefile(compl2,results_dir,'f');
+    if ~strcmp(roi_dir,results_dir)
+        compl1 = [roi_dir f 'r' roi '.img'];
+        movefile(compl1,results_dir,'f');
+        compl2 = [roi_dir f 'r' roi '.hdr'];
+        movefile(compl2,results_dir,'f');
+    end;
     cd(results_dir);    
     r_roi = load_nii(sprintf('r%s.img',roi));
     r_roi_ind = r_roi.img==1;
@@ -400,10 +405,10 @@ colorbar;
 xlabel(sprintf('%s',cols{:}));
 ylabel('subject ID');
 title('results overlap subjectwise');
-print(f2,'results_overlap_subjectwise','-dpng','-r0');
+print(f2,sprintf('results_overlap%s_subjectwise',str),'-dpng','-r0');
 
             
-save results_overlap_subjectwise.mat results_overlap_subj 
+eval(sprintf('save results%s_overlap_subjectwise_%g.mat results_overlap_subj',str,p)); 
 clear results;
 if nr_para>0
     for ind_para = 1:nr_para
@@ -504,10 +509,11 @@ if nr_para>0
         xlabel(sprintf('%s',cols{:}));
         ylabel('subject ID');
         title('results overlap subjectwise parametric');
-        print(f2,sprintf('results_overlap_subjectwise_par%d',ind_para),'-dpng','-r0');
+        print(f2,sprintf('results_overlap%s_subjectwise_par%d',str,ind_para),'-dpng','-r0');
 
 
-        eval(sprintf('save results_overlap_subjectwise_par%d.mat results_overlap_subj_par',ind_para));   
+        eval(sprintf('save results_overlap%s_subjectwise_par%d_%g.mat results_overlap_subj_par',str,ind_para,p));   
+    clear results
     end;
 end;
     
@@ -648,11 +654,11 @@ colorbar;
 xlabel(sprintf('%s',cols{:}));
 ylabel('subject ID');
 title('results overlap subjectwise');
-print(f2,'results_overlap_subjectwise_split','-dpng','-r0');
+print(f2,['results_overlap_subjectwise_split' str],'-dpng','-r0');
 
             
 cd(results_dir);             
-save results_overlap_subjectwise_split.mat results_overlap_subj_split       
+eval(sprintf('save results_overlap%s_subjectwise_split_%g.mat results_overlap_subj_split',str,p));       
 
 if nr_para>0
     for ind_para=1:nr_para
@@ -787,11 +793,11 @@ colorbar;
 xlabel(sprintf('%s',cols{:}));
 ylabel('subject ID');
 title('results overlap subjectwise');
-print(f2,sprintf('results_overlap_subjectwise_split_par%d',ind_para),'-dpng','-r0');
+print(f2,sprintf('results_overlap%s_subjectwise_split_par%d',str,ind_para),'-dpng','-r0');
 
             
 cd(results_dir);             
-eval(sprintf('save results_overlap_subjectwise_split_par%d.mat results_overlap_subj_split',ind_para));     
+eval(sprintf('save results_overlap%s_subjectwise_split_par%d_%g.mat results_overlap_subj_split',str,ind_para,p));     
     end;
 end;
 disp('DONE');
@@ -961,10 +967,6 @@ elseif two_cons == 1
 
     
 end;
-    cd(results_dir);  
-    results_overlap=dataset({results,cols{:}},'obsnames', row);
-    save results_overlap_subjectwise.mat results_overlap
-    
     disp('DONE');
     cd(box_path);
 
@@ -993,12 +995,10 @@ else
         % apply ROI
         fprintf('...apply ROI...\n')
         for count_roi = 1:length(roi_xyz)
-            fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
-            for count_sig = 1:length(eval(sprintf('co_sig%d(1,:)',j)))
-                if isequal(eval(sprintf('co_sig%d(:,count_sig)',j)),roi_xyz(:,count_roi))
-                    eval(sprintf('co_temp(:,end+1)=co_sig%d(:,count_sig);',j));
-                    fprintf('...significant...\n');
-                end;
+            %fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
+            eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d,roi_xyz(:,count_roi))));',j));
+            if idx>0
+                eval(sprintf('co_temp(:,end+1)=co_sig%d(:,idx);',j));
             end;
         end;
         eval(sprintf('co_sig%d= co_temp;',j));
@@ -1051,7 +1051,8 @@ else
     end;   
     results_overlap_group=dataset({results_overlap,cols{:}});
     cd(results_dir);             
-    save results_overlap_grouplevel.mat results_overlap_group 
+    eval(sprintf('save results_overlap%s_grouplevel_%g.mat results_overlap_group',str,p)); 
+    clear results_overlap_group
     
     if nr_para>0
         for ind_para=1:nr_para
@@ -1059,6 +1060,7 @@ else
 
             for j = 1:runs
                 co_temp=[];
+                eval(sprintf('co_sig%d = [];',j));
                 cd(results_dir)
                 % calculate T statistics via 4D images
                 tmp = load_nii(sprintf('4D_par%d_%d.nii',ind_para,j));
@@ -1075,22 +1077,20 @@ else
                 [x,y,z] = ind2sub([size(Pmap,1),size(Pmap,2),size(Pmap,3)],find(Pmap<=p)); 
                 x = x';y=y';z=z';
                 eval(sprintf('co_sig%d = [x;y;z];',j));
-                if use_roi == 1
-                % apply ROI
-                fprintf('...apply ROI...\n')
-                for count_roi = 1:length(roi_xyz)
-                    fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
-                    for count_sig = 1:length(eval(sprintf('co_sig%d(1,:)',j)))
-                        if isequal(eval(sprintf('co_sig%d(:,count_sig)',j)),roi_xyz(:,count_roi))
-                            eval(sprintf('co_temp(:,end+1)=co_sig%d(:,count_sig);',j));
-                            fprintf('...significant...\n');
-                        end;
-                    end;
+            
+                        % apply ROI
+            if use_roi == 1
+            fprintf('...apply ROI...\n')
+            for count_roi = 1:length(roi_xyz)
+                %fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
+                eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d,roi_xyz(:,count_roi))));',j));
+                if idx>0
+                    eval(sprintf('co_temp(:,end+1)=co_sig%d(:,idx);',j));
                 end;
-                eval(sprintf('co_sig%d= co_temp;',j));
-                clear co_temp;    
-                end;             
-                
+            end;
+            eval(sprintf('co_sig%d= co_temp;',j));
+            clear co_temp;        
+            end;
                 eval(sprintf('nr_sig%d = size(co_sig%d,2);',j,j));
             end;
 
@@ -1100,8 +1100,10 @@ else
                     fprintf('...compare %d to %d...\n',k,k-ind);
                     count = 0;
                     for l = 1:eval(sprintf('nr_sig%d',k))
+                        if eval(sprintf('nr_sig%d',k))> 0 && eval(sprintf('nr_sig%d',k-ind))> 0
                            eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d(:,l),co_sig%d)));',k,k-ind));
                            count = count + length(idx);
+                        end;
                     end;
                     eval(sprintf('overlap_%d_%d = count;',k-ind,k));
                     if eval(sprintf('overlap_%d_%d',k-ind,k)) == 0
@@ -1137,8 +1139,9 @@ else
             end;   
             results_overlap_group=dataset({results_overlap,cols{:}});
             cd(results_dir);             
-            eval(sprintf('save results_overlap_grouplevel_par%d.mat results_overlap_group',ind_para));     
-        
+            eval(sprintf('save results_overlap%s_grouplevel_par%d_%g.mat results_overlap_group',str,ind_para,p));     
+            clear results_overlap_group
+
         end;
     end;
     
@@ -1216,7 +1219,7 @@ else
     end;   
     results_overlap_group=dataset({results_overlap,cols{:}});
     cd(results_dir);             
-    save results_overlap_grouplevel_split.mat results_overlap_group 
+    eval(sprintf('save results_overlap%s_grouplevel_split_%g.mat results_overlap_group',str,p)); 
     
     if nr_para>0
         for ind_para=1:nr_para
@@ -1298,7 +1301,7 @@ else
             end;   
             results_overlap_group=dataset({results_overlap,cols{:}});
             cd(results_dir);             
-            eval(sprintf('save results_overlap_grouplevel_split_par%d.mat results_overlap_group',ind_para));     
+            eval(sprintf('save results_overlap%s_grouplevel_split_par%d_%g.mat results_overlap_group',str,ind_para,p));     
         
         end;
     end; 
@@ -1424,7 +1427,7 @@ else
     
     results_overlap_group=dataset({results_overlap,cols{:}});
     cd(results_dir);             
-    save results_overlap_grouplevel.mat results_overlap_group 
+    eval(sprintf('save results_overlap%s_grouplevel_%g.mat results_overlap_group',str,p)); 
     
     end;
         disp('DONE');

@@ -165,6 +165,11 @@ path=study_design.stats_path;
 %% get GUI input
 split = get(handles.split,'Value');
 use_roi = get(handles.use_roi,'Value');
+if use_roi == 1
+    str = 'ROI';
+else
+    str = '';
+end;
 
 %% load contrast information
 two_cons = contrast_def.two_contrasts;
@@ -185,6 +190,7 @@ end;
 
 %% load and reslice ROI
 if use_roi == 1
+    
     disp('...load and reslice ROI...')
     roi_pur=get(handles.name_roi,'String');
     roi_dir=evalin('base','roi_dir');
@@ -215,10 +221,12 @@ if use_roi == 1
     spm_jobman('serial',matlabbatch);
     r_roi=dir(sprintf('r%s*',roi_pur));
     if length(r_roi)==2
+        if ~strcmp(roi_dir,results_dir)
         compl1 = [roi_dir f 'r' roi_pur '.img'];
         movefile(compl1,results_dir,'f');
         compl2 = [roi_dir f 'r' roi_pur '.hdr'];
         movefile(compl2,results_dir,'f');
+        end;
         cd(results_dir);    
         r_roi = load_nii(sprintf('r%s.img',roi_pur));
         r_roi_ind = r_roi.img==1;

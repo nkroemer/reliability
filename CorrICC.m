@@ -262,10 +262,12 @@ if roi == 1
     % create index for ROI voxels
     r_roi=dir(sprintf('r%s*',roi_name));
     if length(r_roi)==2
+        if ~strcmp(roi_dir,dir_results)
         compl1 = [roi_dir f 'r' roi_name '.img'];
         movefile(compl1,dir_results,'f');
         compl2 = [roi_dir f 'r' roi_name '.hdr'];
         movefile(compl2,dir_results,'f');
+        end;
         cd(dir_results);    
         r_roi = load_nii(sprintf('r%s.img',roi_name));
         r_roi_ind = r_roi.img==1;
@@ -2048,7 +2050,7 @@ if nr_para > 0
     end;
 clear data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
     end;
-    end;
+end;
 
 %calculation ICC for each comparison
  if runs > 1

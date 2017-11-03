@@ -296,7 +296,7 @@ box_path=evalin('base','box_path');
         con=get(handles.con,'String');      
         file = [path f id{1} f stats_filled f con '*']; 
         con = dir(file);
-        if size(con)>1
+        if length(con)>1
             con = con(2).name;
             contrast_def.contrast = con;
         else
@@ -306,7 +306,7 @@ box_path=evalin('base','box_path');
         spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
-            if strcmp({SPM.xCon(i).Vcon.fname}, [con])==1
+            if strcmp({SPM.xCon(i).Vcon.fname}, {con})==1
                 idx = i;
             end;
         end;
@@ -322,7 +322,7 @@ box_path=evalin('base','box_path');
 
             nr_para = 0;
         else
-            nr_para = size(SPM.Sess(1).U(reg_count).P,2);
+            nr_para = size(SPM.Sess(1).U(idx).P,2);
             study_design.number_parametric = nr_para;
             contrast_def.number_parametric = nr_para;            
         end;
@@ -439,7 +439,7 @@ if two_cons == 0
                     for j = 1:nr_subj
                         cd (sprintf('%s',id{j}));
                         cd (sprintf(stats,i));
-                        con_list{j,1}=[pwd f 'con_' num2str(contrast_def.contrast_number+i_par,'%04d') '.nii,1'];
+                        con_list{j,1}=[pwd f 'con_' num2str(contrast_def.contrast_number+i_par,'%04d') ext ',1'];
                         cd(path);
                     end;
                     eval(sprintf('con_img_%d_par%d = con_list;',i,i_par));
