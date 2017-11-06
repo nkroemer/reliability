@@ -53,7 +53,7 @@ If you have only data from one fMRI session and are interested in the reliabilit
 
 1. Click on the 'Split-Half' dialog.
 1. Load your study design.
-1. Define the data by inserting the onset regressor for your contrast of interest.
+1. Indicate the number of the condition you want to split (according to the design information in the SPM.mat).
 1. Define a name for the split-half output file.
 1. Always check the 'split data' box throughout the use in different modules in analyzing split-half data.
 1. Click 'RUN' to start.
