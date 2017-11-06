@@ -13,7 +13,7 @@ Other customized atlases can be used, if you provide an 'atlas.nii' and a corres
 
 1. Make sure that you have SPM12 (link) installed.
 1. Download the latest Version of the toolbox on [github](https://github.com/nkroemer/reliability/) and save it into your intended directory.
-1. In the MATLAB 'Home' tab, click on the 'Set path' button and select 'Add with subfolders…'. Now, select the fmreli toolbox folder, save, and close. Windows users might have to open MATLAB as an administrator (by right-clicking on the MATLAB Symbol) to make permanent changes.
+1. In the MATLAB 'Home' tab, click on the 'Set path' button and select 'Add with subfolders…'. Now, select the fmreli toolbox folder, save, and close. Windows users might have to open MATLAB as an administrator (by right-clicking on the MATLAB icon) to make permanent changes.
 Alternatively, you may use the command line to add the path:
 ```
 pathtool
