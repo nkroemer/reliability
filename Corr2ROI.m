@@ -216,7 +216,7 @@ disp('Starting creation of ROI out of correlation maps...');
 f = filesep;
 study_design = evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');
-
+box_path = evalin('base','box_path');
 %get GUI input
 use_corr = get(handles.use_corr,'value');
 use_icc = get(handles.use_icc,'value');
