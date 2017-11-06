@@ -1,4 +1,4 @@
-# fMRelI Toolbox beta
+# fMRelI Toolbox beta 1.0
 
 ## What is the fMRelI toolbox?
 
@@ -14,7 +14,6 @@ The use of other brain atlases is possible, all you will need is a 'labels.mat' 
 1. Make sure that you have SPM12 installed.
 1. Download the latest Version of the toolbox on [github](https://github.com/nkroemer/reliability/tree/fMRelI_beta0.1) and save it into your desired Matlab toolbox directory.
 1. If you want to use an additional brain atlas, the files 'atlas.nii', 'atlas.txt' and 'labels.mat' have to be saved to a subfolder called 'atlas'. 
-1. If you like structure, you can add 'create_xSPM.m', 'fmri_clust_filt.m', 'id.mat', 'load_nii.m', 'save_nii.m' and 'template_3D-4D.mat' to a folder called 'scripts_templates'. 
 1. In the Matlab 'Home' tab, click on the 'Set path' button and in the dialog box select 'Add with subfolders…'. Now, select the fMRelI toolbox folder, save and close. Windows users might have to open Matlab as an administrator (by right-clicking on the Matlab Symbol) in order for the changes to be permanent.
 Alternatively, you may enter this in the command line:
 ```
@@ -25,7 +24,7 @@ savepath  fMRelI toolbox folder/pathdef.m
 
 ## Basic setup
 
-1. After installing, you can call the toolbox by entering *fMRelI* in the command line.
+1. After installing, you can call the toolbox by entering *fmreli* in the command line.
 
 1. In order to use the toolbox you need to have run the first-level statistics in SPM12 on all the contrasts you are interested in.
 The required folder structure is as follows:
