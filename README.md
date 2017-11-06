@@ -6,8 +6,7 @@ The toolbox was designed to simplify the assessment of reliability and similarit
 
 ## Dependencies
 
-To use the toolbox, you need to have MATLAB and SPM12 installed. It currently comes with the CONN atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas).
-Other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
+To use the toolbox, you need to have MATLAB and SPM12 installed. 
 
 ## Installing the toolbox
 
@@ -20,6 +19,8 @@ pathtool
 addpath(genpath('fmreli toolbox folder'))
 savepath  fmreli toolbox folder/pathdef.m
 ```
+
+By default, the toolbox comes with the CONN atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas), but other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
 
 That's it, you are good to go.
 
