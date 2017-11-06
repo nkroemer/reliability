@@ -153,6 +153,7 @@ disp('Starting calculations of similarity...');
 study_design=evalin('base','study_design');
 contrast_def = evalin('base','contrast_def');
 box_path=evalin('base','box_path');
+cd(box_path);
 
 %% get study design info
 results_dir = study_design.results_directory;
@@ -1406,7 +1407,7 @@ elseif split == 1
                 
         % ecdf - densitiy plots
         subplot(2,2,4);
-[f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
+        [f,x,flo,fup]=ecdf(diag(out.r_mat),'bounds','on');
         plot(x,f,'LineWidth',2,'Color','blue')
         hold on
         plot(x,flo,'LineWidth',1,'Color','blue','LineStyle','--')

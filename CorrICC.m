@@ -729,13 +729,14 @@ elseif split == 1
         end;
         % create data matrix with data for all voxels in cols, subjects in rows
         % and 2 splits in third dimension
-        data = zeros(nr_subj,nr_vox,2);
-        for ind_split = 1:2
+        data1 = zeros(nr_subj,nr_vox);
+        data2 = zeros(nr_subj,nr_vox);
             for ind_subj = 1:nr_subj
-                eval(sprintf('temp = img_%d_split%d(:,:,:,ind_subj);',i,ind_split));
-                data(ind_subj,:,ind_split)=temp(:);
+                eval(sprintf('temp = img_%d_split1(:,:,:,ind_subj);',i));
+                data1(ind_subj,:)=temp(:);
+                eval(sprintf('temp = img_%d_split2(:,:,:,ind_subj);',i));
+                data2(ind_subj,:)=temp(:);                
             end;
-        end;
         clear temp
         eval(sprintf('clear img_%d_split1 img_%d_split2;',i,i));
     
@@ -752,7 +753,7 @@ elseif split == 1
     zr2 = zeros(nr_vox,1);
     for i_vox = 1:nr_vox
         if pear == 1 
-            r = corrcoef(data(:,i_vox,1),data(:,i_vox,2), 'rows', 'pairwise');
+            r = corrcoef(data1(:,i_vox),data2(:,i_vox), 'rows', 'pairwise');
                 if isnan (r(1,2))
                     r1(i_vox,1) = 0;
                     zr1(i_vox,1) = 0;
@@ -762,7 +763,7 @@ elseif split == 1
                 end;
         end
         if spea == 1
-                r = corr(data(:,i_vox,1),data(:,i_vox,2), 'Type','Spearman', 'rows', 'pairwise');
+                r = corr(data1(:,i_vox),data2(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                 r2(i_vox,1) = r;  
                 zr2(i_vox,1) = atanh(r);  
         end;
@@ -838,7 +839,7 @@ elseif split == 1
         summary(1,end+1)=mean_r;
         cols{1,end+1} = sprintf('mean_spea%s_%d_split',str,i);    
     end;
-    clear data
+    clear data1 data 2
   end; 
 clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
 
@@ -911,8 +912,8 @@ if nr_para > 0
             count_comp = count_comp +1;
             fprintf('...creates correlation maps for splitted session %d ...\n',i);
             %load 4D images
-%             one=data(:,:,1);
-%             second=data(:,:,2);
+             one=data(:,:,1);
+             second=data(:,:,2);
 
             r1 = zeros(nr_vox,1);
             zr1 = zeros(nr_vox,1);
@@ -920,7 +921,7 @@ if nr_para > 0
             zr2 = zeros(nr_vox,1);
             for i_vox = 1:nr_vox
                 if pear == 1 
-                    r = corrcoef(data(:,i_vox,1),data(:,i_vox,2), 'rows', 'pairwise');
+                    r = corrcoef(one(:,i_vox),second(:,i_vox), 'rows', 'pairwise');
                         if isnan (r(1,2))
                             r1(i_vox,1) = 0;
                             zr1(i_vox,1) = 0;
@@ -930,12 +931,12 @@ if nr_para > 0
                         end;
                 end
                 if spea == 1
-                        r = corr(data(:,i_vox,1),data(:,i_vox,2), 'Type','Spearman', 'rows', 'pairwise');
+                        r = corr(one(:,i_vox),second(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                         r2(i_vox,1) = r;  
                         zr2(i_vox,1) = atanh(r);  
                 end;
             end;
-%             clear one second
+             clear one second
                 
             % create correlation matrices for image 
             r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -2403,7 +2404,7 @@ end;
     assignin('base','results_ICC',results_ICC);
 
     cd(dir_results);             
-    sprintf('save results_ICC%s.mat results_ICC',str);
+    eval(sprintf('save results_ICC%s.mat results_ICC',str));
 
 %% based on split-half
 elseif split == 1
