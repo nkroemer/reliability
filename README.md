@@ -98,3 +98,7 @@ This module will create several 3D-nifti output files named after the coefficien
 #### Atlas-based reliability
 
 With this module, you can create an output similar to that from the voxel-wise reliability module, but containing information about atlas-based ROIs. The output is a matrix containing the reliability coefficients for every ROI in the atlas for every comparison.
+
+## Bug report, suggestions & questions
+
+Please do not hesitate to e-Mail us (<nils.kroemer@uni-tuebingen.de> & <juliane.froehner@tu-dresden.de>) regarding questions, feature requests or bug reports. We are happy to receive your feedback in order to keep optimizing fmreli. In case something does not work or you encounter a bug or error in the toolbox, you can also inform us via the [issues page](https://github.com/nkroemer/reliability/issues).
