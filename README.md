@@ -2,11 +2,11 @@
 
 ## What is the fmreli toolbox?
 
-The toolbox was designed to simplify the assessment of reliability and similarity of fMRI data across different sessions and contrasts. It incorporates common measures of global and local reliability. Moreover, it implements the assessment of reliability for cross-sectional designs with only a single run by randomly splitting the trials in half. fmreli offers a graphical user interface (GUI) and incorporates functions provided by *SPM* and and the *Nifti and ANALYZE toolbox*. A preprint of the paper detailing the use of the toolbox is available at [bioArXiv.org](paste link here).
+The toolbox was designed to simplify the assessment of reliability and similarity of fMRI data across different sessions and contrasts. It incorporates common measures of global and local reliability. Moreover, it implements the assessment of reliability for cross-sectional designs with only a single run by randomly splitting the trials in half. fmreli offers a graphical user interface (GUI) and incorporates functions provided by [*SPM*](http://www.fil.ion.ucl.ac.uk/spm/software/spm12/) and and the [*Nifti and ANALYZE toolbox*](https://de.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image). A preprint of the paper detailing the use of the toolbox is available at [bioArXiv.org](paste link here).
 
 ## Dependencies
 
-To use the toolbox, you need to have MATLAB and SPM12 installed. It currently comes with the CONN atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas).
+To use the toolbox, you need to have MATLAB and SPM12 installed. It currently comes with the [CONN](https://www.nitrc.org/projects/conn/) atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas).
 Other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
 
 ## Installing the toolbox
