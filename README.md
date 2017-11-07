@@ -2,7 +2,7 @@
 
 ## What is the fmreli toolbox?
 
-The toolbox was designed to simplify the assessment of reliability and similarity of fMRI data across different sessions and contrasts. It incorporates common measures of global and local reliability. Moreover, it implements the assessment of reliability for cross-sectional design with only a single run by randomly splitting the trials in half. fmreli offers a graphical user interface (GUI) and incorporates functions provided by *SPM* and and the *Nifti and ANALYZE toolbox*. A preprint of the paper detailing the use of the toolbox is available at [bioArXiv.org](paste link here).
+The toolbox was designed to simplify the assessment of reliability and similarity of fMRI data across different sessions and contrasts. It incorporates common measures of global and local reliability. Moreover, it implements the assessment of reliability for cross-sectional designs with only a single run by randomly splitting the trials in half. fmreli offers a graphical user interface (GUI) and incorporates functions provided by *SPM* and and the *Nifti and ANALYZE toolbox*. A preprint of the paper detailing the use of the toolbox is available at [bioArXiv.org](paste link here).
 
 ## Dependencies
 
@@ -11,7 +11,7 @@ Other customized atlases can be used, if you provide an 'atlas.nii' and a corres
 
 ## Installing the toolbox
 
-1. Make sure that you have SPM12 (link) installed.
+1. Make sure that you have [SPM12](http://www.fil.ion.ucl.ac.uk/spm/software/download/) installed.
 1. Download the latest Version of the toolbox on [github](https://github.com/nkroemer/reliability/tree/fMRelI_beta0.1) and save it into your intended directory.
 1. In the MATLAB 'Home' tab, click on the 'Set path' button and select 'Add with subfolders…'. Now, select the fmreli toolbox folder, save, and close. Windows users might have to open MATLAB as an administrator (by right-clicking on the MATLAB Symbol) to make permanent changes.
 Alternatively, you may use the command line to add the path:
