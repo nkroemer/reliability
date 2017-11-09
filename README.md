@@ -2,7 +2,7 @@
 
 ## What is the fmreli toolbox?
 
-The toolbox was designed to simplify the assessment of reliability and similarity of fMRI data across different sessions and contrasts. It incorporates common measures of global and local reliability. Moreover, it implements the assessment of reliability for cross-sectional designs with only a single run by randomly splitting the trials in half. fmreli offers a graphical user interface (GUI) and incorporates functions provided by [*SPM*](http://www.fil.ion.ucl.ac.uk/spm/software/spm12/) and and the [*Nifti and ANALYZE toolbox*](https://de.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image). A preprint of the paper detailing the use of the toolbox is available at [bioArXiv.org](https://doi.org/10.1101/215053).
+The toolbox was designed to simplify the assessment of reliability and similarity of fMRI data across different sessions and contrasts. It incorporates common measures of global and local reliability. Moreover, it implements the assessment of reliability for cross-sectional designs with only a single run by randomly splitting the trials in half. fmreli offers a graphical user interface (GUI) and incorporates functions provided by [*SPM*](http://www.fil.ion.ucl.ac.uk/spm/software/spm12/) and and the [*Nifti and ANALYZE toolbox*](https://de.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image). A preprint of the paper detailing the use of the toolbox is available at [bioRxiv.org](https://doi.org/10.1101/215053).
 
 ## Dependencies
 
