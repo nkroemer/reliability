@@ -79,6 +79,7 @@ set(handles.dice_ROI,'TooltipString','Calculation of Dice-/Jaccard-coefficients'
 set(handles.similarity,'TooltipString','Calculation of global similarity measures');
 set(handles.summary,'TooltipString','Creates reliability summary for all ROIs in atlas');
 set(handles.threshold,'TooltipString','Creates ROIs with certain reliability threshold');
+assignin('base','box_path',pwd);
 
 
 
