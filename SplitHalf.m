@@ -146,7 +146,7 @@ box_path=evalin('base','box_path');
 
 % get study design info
 study_design=evalin('base','study_design');
-name_study_design=evalin('base','name_study_design');
+name_study_design=study_design.name_design;
 subjects = study_design.subject_list;
 load(subjects);
 nr_subj = str2double(study_design.number_subjects);
