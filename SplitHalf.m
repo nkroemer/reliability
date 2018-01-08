@@ -170,7 +170,7 @@ for j = 1:runs
 
         if exist('SPM.mat','file')==2
             path=pwd;
-            path=sprintf('%s%s%sSPM.mat',path,f,f);
+            path=sprintf('%s%sSPM.mat',path,f);
             SPM_list{i,j}=path;
         end;
     end; 
@@ -205,7 +205,7 @@ else
         end;     
     end;
 end;
-
+cd(study_design.results_directory)
 name=name_study_design{1};
 save(name,'study_design');
 
@@ -213,7 +213,7 @@ save(name,'study_design');
 %% loads and modifies SPM for each participant
 
 for m = 1:runs
-    split_dir = sprintf(split_dir,m);
+    split_dir_subj = sprintf(split_dir,m);
     for count = 1:nr_subj
         fprintf('...load and modify SPM.mat for %s in session %d...',id{count},m)
         dir_spm = SPM_list{count,m};
@@ -482,8 +482,8 @@ for m = 1:runs
         %new stats folder
         cd(stats_path);
         cd(sprintf('%s',id{count}));
-        mkdir(split_dir)
-        dir_results = [stats_path f id{count} f split_dir];
+        mkdir(split_dir_subj)
+        dir_results = [stats_path f id{count} f split_dir_subj];
         SPM.swd = dir_results;
         cd(dir_results);
         save SPM.mat SPM ;
