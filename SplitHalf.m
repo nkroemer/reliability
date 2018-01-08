@@ -213,8 +213,8 @@ save(name,'study_design');
 %% loads and modifies SPM for each participant
 
 for m = 1:runs
-    split_dir_subj = sprintf(split_dir,m);
     for count = 1:nr_subj
+        split_dir_subj = sprintf(split_dir,m);
         fprintf('...load and modify SPM.mat for %s in session %d...',id{count},m)
         dir_spm = SPM_list{count,m};
         load(dir_spm);
