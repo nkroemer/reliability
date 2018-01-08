@@ -310,7 +310,8 @@ box_path=evalin('base','box_path');
                 idx = i;
             end;
         end;
-        contrast_def.number_regressor = idx;    
+        contrast_def.number_regressor = find(SPM.xCon(idx).c==1);
+        idx = contrast_def.number_regressor;
         [pathstr,name,ext] = fileparts(con);
         contrast_def.contrast_number = str2double(regexp(con,'[\d]+','match'));
         contrast_def.contrast_format = ext;
@@ -343,7 +344,7 @@ box_path=evalin('base','box_path');
                 ext = '.img';
             end;
         end;
-        contrast_def.number_regressor1 = idx;
+        contrast_def.number_regressor1 = find(SPM.xCon(idx).c==1);
         contrast_def.contrast_format = ext;
         contrast_def.contrast1_number = str2double(regexp(con1,'[\d]+','match'));
 
@@ -372,7 +373,7 @@ box_path=evalin('base','box_path');
             end;
         end;       
         
-        contrast_def.number_regressor2 = idx;
+        contrast_def.number_regressor2 = find(SPM.xCon(idx).c==1);
         contrast_def.contrast2_number = str2double(regexp(con2,'[\d]+','match'));
 
         % info parametric modulators - not yet implemented
