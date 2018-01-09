@@ -176,7 +176,7 @@ end;
 two_cons = contrast_def.two_contrasts;
 if two_cons == 0
     con=contrast_def.contrast;
-    nr_para = study_design.number_parametric;
+    nr_para = contrast_def.number_parametric;
 
 else
     con=[contrast_def.contrast1 contrast_def.contrast_format];
