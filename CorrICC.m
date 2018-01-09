@@ -738,7 +738,7 @@ elseif split == 1
                 data2(ind_subj,:)=temp(:);                
             end;
         clear temp
-        eval(sprintf('clear img_%d_split1 img_%d_split2;',i,i));
+        %eval(sprintf('clear img_%d_split1 img_%d_split2;',i,i));
     
     %correlations for each split
     count_comp = count_comp +1;
