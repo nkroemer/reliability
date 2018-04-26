@@ -6,12 +6,12 @@ The toolbox was designed to simplify the assessment of reliability and similarit
 
 ## Dependencies
 
-To use the toolbox, you need to have MATLAB and SPM12 installed. 
+To use the toolbox, you need to have MATLAB and SPM12 installed (see instructions). 
 
 ## Installing the toolbox
 
 1. Make sure that you have [SPM12](http://www.fil.ion.ucl.ac.uk/spm/software/download/) installed.
-1. Download the latest Version of the toolbox on [github](https://github.com/nkroemer/reliability/) and save it into your intended directory.
+1. Download the latest version of the toolbox on [github](https://github.com/nkroemer/reliability/) and save it into your intended directory.
 1. In the MATLAB 'Home' tab, click on the 'Set path' button and select 'Add with subfolders…'. Now, select the fmreli toolbox folder, save, and close. Windows users might have to open MATLAB as an administrator (by right-clicking on the MATLAB icon) to make permanent changes.
 Alternatively, you may use the command line to add the path:
 ```
@@ -20,7 +20,7 @@ addpath(genpath('fmreli toolbox folder'))
 savepath  fmreli toolbox folder/pathdef.m
 ```
 
-By default, the toolbox comes with the [CONN](https://www.nitrc.org/projects/conn/) atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas), but other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
+By default, the toolbox comes with the [CONN](https://www.nitrc.org/projects/conn/) atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas). Other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
 
 That's it, you are good to go.
 
@@ -50,7 +50,7 @@ The required folder structure is (at the moment) as follows:
 
 ### Split-half reliability: Assessing reliability within a single contrast and session
 
-If you have only data from one fMRI session and are interested in the reliability of one contrast/condition, the toolbox offers the option to split the data.
+If you have only data from one fMRI run/session and are interested in the reliability of one contrast/condition, the toolbox offers the option to split the data.
 
 1. Click on the 'Split-Half' dialog.
 1. Load your study design.
@@ -69,7 +69,7 @@ The similarity module computes the global similarity of activation maps between 
 1. OPTIONAL Select 'use ROI' and define the ROI name and directory if you want to restrict the analysis to a subset of voxels.
 1. Click 'RUN'.
 
-The output from this module includes heatmaps, density plots, and histograms depicting the simmilarity between participants across runs or sessions. Moreover, a \*.mat file will be saved containing the correlation and associated p-values.
+The output from this module includes heatmaps, density plots, and histograms depicting the similarity between participants across runs or sessions. Moreover, a \*.mat file will be saved containing the correlation coefficients and corresponding p-values.
 
 #### Whole-brain/ROI overlap
 
@@ -84,7 +84,7 @@ In the output folder, you will find a file containing the coefficients for every
 
 ### Voxel-wise/ROI reliability
 
-This module is used to calculate the correlation coefficients (intra-class coefficient, Pearson & Spearman correlation coefficients) on the voxel-level within subjects and between contrasts.
+This module is used to calculate the correlation coefficients (intra-class coefficient, Pearson & Spearman correlation coefficients) on the voxel level within subjects and between contrasts.
 
 1. Define the study design and contrasts of interest.
 1. Check the boxes to select coefficients you want to analyze.
@@ -97,8 +97,8 @@ This module will create several 3D-nifti output files named after the coefficien
 
 #### Atlas-based reliability
 
-With this module, you can create an output similar to that from the voxel-wise reliability module, but containing information about atlas-based ROIs. The output is a matrix containing the reliability coefficients for every ROI in the atlas for every comparison.
+With this module, you can create an output aggregated for ROIs provided by the atlas. The output is a matrix containing the reliability coefficients for every ROI in the atlas for every analysis.
 
 ## Bug report, suggestions & questions
 
-Please do not hesitate to e-Mail us (<nils.kroemer@uni-tuebingen.de> & <juliane.froehner@tu-dresden.de>) regarding questions, feature requests or bug reports. We are happy to receive your feedback in order to keep optimizing fmreli. In case something does not work or you encounter a bug or error in the toolbox, you can also inform us via the [issues page](https://github.com/nkroemer/reliability/issues).
+Please do not hesitate to email us (<nils.kroemer@uni-tuebingen.de> & <juliane.froehner@tu-dresden.de>) regarding questions, feature requests or bug reports. We are happy to receive your feedback to improve fmreli. In case something does not work or you find a bug or error in the toolbox, please let us know via the [issues page](https://github.com/nkroemer/reliability/issues).
