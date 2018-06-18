@@ -217,7 +217,7 @@ spea = get(handles.spea,'value');
 two_cons = contrast_def.two_contrasts;
 if two_cons == 0
     con=contrast_def.contrast;
-    nr_para = contrast_def.number_parametric;
+    nr_para = study_design.number_parametric;
 
 else
     con=[contrast_def.contrast1 contrast_def.contrast_format];
@@ -738,7 +738,7 @@ elseif split == 1
                 data2(ind_subj,:)=temp(:);                
             end;
         clear temp
-        %eval(sprintf('clear img_%d_split1 img_%d_split2;',i,i));
+        eval(sprintf('clear img_%d_split1 img_%d_split2;',i,i));
     
     %correlations for each split
     count_comp = count_comp +1;
@@ -1847,7 +1847,7 @@ if cons == 1 || abs == 1
  
             %consistency agreement  
             if cons==1
-                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS); 
                 ICC_con_ROI(ind_voxel,1) = voxICC_con;
                 z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
             end;
@@ -1985,7 +1985,7 @@ if nr_para > 0
  
             %consistency agreement  
             if cons==1
-                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS); 
                 ICC_con_ROI(ind_voxel,1) = voxICC_con;
                 z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
             end;
@@ -2148,7 +2148,7 @@ end;
 
                     %consistency agreement  
                     if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS); 
                     ICC_con_ROI(ind_vox,1) = voxICC_con;
                     z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
                     end;
@@ -2319,7 +2319,7 @@ if nr_para > 0
 
                     %consistency agreement  
                     if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS); 
                     ICC_con_ROI(ind_vox,1) = voxICC_con;
                     z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
                     end;
@@ -2474,7 +2474,7 @@ elseif split == 1
 
         %consistency agreement  
         if cons==1
-            voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+            voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS); 
             ICC_con_ROI(ind_voxel,1) = voxICC_con;
             z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
         end;
@@ -2612,7 +2612,7 @@ if nr_para > 0
 
             %consistency agreement  
             if cons==1
-                voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS); 
                 ICC_con_ROI(ind_voxel,1) = voxICC_con;
                 z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
             end;
@@ -2804,7 +2804,7 @@ elseif two_cons == 1
 
         %consistency agreement  
         if cons==1
-            voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+            voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS); 
             ICC_con_ROI(ind_voxel,1) = voxICC_con;
             z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
         end;
@@ -3134,7 +3134,7 @@ for ind_con = 1:2
  
             %consistency agreement  
             if cons==1
-                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*WMS); 
+                voxICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS); 
                 ICC_con_ROI(ind_voxel,1) = voxICC_con;
                 z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
             end;
@@ -3440,7 +3440,7 @@ clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
 
                     %consistency agreement  
                     if cons==1
-                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*WMS); 
+                    voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS); 
                     ICC_con_ROI(ind_vox,1) = voxICC_con;
                     z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
                     end;
