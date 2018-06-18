@@ -415,18 +415,16 @@ stats = get(handles.stats,'String'); % stats folder
 dir_stats=evalin('base','dir_stats'); % directory with statistics
 prefix_design = get(handles.prefix_design,'String'); % prefix for study design
 name_design = sprintf('%s_study_design.mat',prefix_design); % creates study design file name
-single = get(handles.single,'value');
-if single == 1
+runs = str2double(get(handles.runs,'String')); % number of sessions
+if runs == 1
     single_run = get(handles.single_run,'String');
-    runs = '1';
-else
-    runs = get(handles.runs,'String'); % number of sessions
+   
 end;
 
 %% generate study_design
 disp('...save study design...');
 
-if single == 0
+if runs > 1
     study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);
 else
     study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'identifier_session',single_run,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);

@@ -11,9 +11,9 @@ function varargout = fmreli(varargin)
 %
 %      FMRELI('Property','Value',...) creates a new FMRELI or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before fmreli_OpeningFcn gets called.  An
+%      applied to the GUI before fmreli_openingfcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to fmreli_OpeningFcn via varargin.
+%      stop.  All inputs are passed to fmreli_openingfcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
@@ -22,7 +22,7 @@ function varargout = fmreli(varargin)
 
 % Edit the above text to modify the response to help fmreli
 
-% Last Modified by GUIDE v2.5 06-Nov-2017 16:58:20
+% Last Modified by GUIDE v2.5 18-Jun-2018 11:23:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,6 +71,9 @@ function varargout = fmreli_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 disp('Starting fMRelI...');
+box_path=pwd;
+assignin('base','box_path',box_path);
+
 set(handles.specify,'TooltipString','Specification of sample, data folders etc.');
 set(handles.define,'TooltipString','Specification of contrast names and regressor numbers');
 set(handles.split,'TooltipString','Use split-half procedure to look at within-session reliability');
@@ -79,7 +82,6 @@ set(handles.dice_ROI,'TooltipString','Calculation of Dice-/Jaccard-coefficients'
 set(handles.similarity,'TooltipString','Calculation of global similarity measures');
 set(handles.summary,'TooltipString','Creates reliability summary for all ROIs in atlas');
 set(handles.threshold,'TooltipString','Creates ROIs with certain reliability threshold');
-assignin('base','box_path',pwd);
 
 
 
@@ -153,3 +155,11 @@ function axes2_CreateFcn(hObject, eventdata, handles)
 % Hint: place code in OpeningFcn to populate axes1
 axes(hObject);
 imshow('logo.png');
+
+
+% --- Executes on button press in desana.
+function desana_Callback(hObject, eventdata, handles)
+% hObject    handle to desana (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+design_ana;

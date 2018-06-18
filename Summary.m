@@ -168,27 +168,35 @@ atlas = atlas.img;
 
 cd(atlas_dir);
 load('labels.mat');
+load('labels_yeo.mat');
+
 rel_summary={};
 
 rel_summary(2:length(Labels)+1,1) = Labels;
+rel_summary(1,1) = {'atlas regions'};
+rel_summary(2:length(Labels_yeo)+1,2) = Labels_yeo(:,3);
+rel_summary(1,3) = {'yeo networks'};
+
 %% get GUI input
 corr = get(handles.corr,'Value');
 if corr == 1
     cd(results_dir);
-    corrs = dir('CorrMap*');
+    %corrs = dir('CorrMap*');
     corrsZ = dir('z_Corr*');
-    list_corrs = cell(1,length(corrs));
-    for ind_corrs = 1:length(corrs)
-        tmp = load_nii(corrs(ind_corrs).name);
-        [pathstr,name,ext] = fileparts(corrs(ind_corrs).name) ;
-        eval(sprintf('%s = tmp.img;',name));
-        list_corrs{1,ind_corrs} = name;
-    end;
-    rel_summary(1,2:length(list_corrs)+1) = list_corrs;
+    %list_corrs = cell(1,length(corrs));
+%     for ind_corrs = 1:length(corrs)
+%         tmp = load_nii(corrs(ind_corrs).name);
+%         [pathstr,name,ext] = fileparts(corrs(ind_corrs).name) ;
+%         eval(sprintf('%s = tmp.img;',name));
+%         list_corrs{1,ind_corrs} = name;
+%     end;
+    %rel_summary(1,3:length(list_corrs)+2) = list_corrs;
     list_corrsZ = cell(1,length(corrsZ));
     for ind_corrsZ = 1:length(corrsZ)
         tmp = load_nii(corrsZ(ind_corrsZ).name);
         [pathstr,name,ext] = fileparts(corrsZ(ind_corrsZ).name) ;
+        [a,b]=strtok(name,'z_');
+        name=[a b];
         eval(sprintf('%s = tmp.img;',name));
         list_corrsZ{1,ind_corrsZ} = name;
     end;
@@ -197,20 +205,22 @@ end;
 icc = get(handles.icc,'Value');
 if icc == 1
     cd(results_dir);
-    iccs = dir('ICC*');
+    %iccs = dir('ICC*');
     iccsZ = dir('z_ICC*');
-    list_iccs = cell(1,length(iccs));
-    for ind_iccs = 1:length(iccs)
-        tmp = load_nii(iccs(ind_iccs).name);
-        [pathstr,name,ext] = fileparts(iccs(ind_iccs).name) ;
-        eval(sprintf('%s = tmp.img;',name));
-        list_iccs{1,ind_iccs} = name;
-    end;
-    rel_summary(1,end+1:length(rel_summary(1,:))+length(list_iccs)) = list_iccs;
+    %list_iccs = cell(1,length(iccs));
+%     for ind_iccs = 1:length(iccs)
+%         tmp = load_nii(iccs(ind_iccs).name);
+%         [pathstr,name,ext] = fileparts(iccs(ind_iccs).name) ;
+%         eval(sprintf('%s = tmp.img;',name));
+%         list_iccs{1,ind_iccs} = name;
+%     end;
+%     rel_summary(1,end+1:length(rel_summary(1,:))+length(list_iccs)) = list_iccs;
     list_iccsZ = cell(1,length(iccsZ));
     for ind_iccsZ = 1:length(iccsZ)
         tmp = load_nii(iccsZ(ind_iccsZ).name);
         [pathstr,name,ext] = fileparts(iccsZ(ind_iccsZ).name) ;
+        [a,b]=strtok(name,'z_');
+        name=[a b];
         eval(sprintf('%s = tmp.img;',name));
         list_iccsZ{1,ind_iccsZ} = name;
     end;
@@ -220,47 +230,52 @@ end;
 
 for ind_labels = 1:length(Labels)
     fprintf('...analyzing voxels in %s...\n',Labels{ind_labels})
+    fprintf('...corresponding to yeo network %d...\n',Labels_yeo{ind_labels,2})
     [x,y,z] = ind2sub([size(atlas,1),size(atlas,2),size(atlas,3)],find(atlas==ind_labels));
     if icc == 1
-        icc_vox = zeros(length(find(atlas==ind_labels)),length(list_iccs)+length(list_iccsZ));
+        icc_vox = zeros(length(find(atlas==ind_labels)),length(list_iccsZ));
     end;
     if corr == 1
-        corr_vox = zeros(length(find(atlas==ind_labels)),length(list_corrs)+length(list_corrsZ));
+        corr_vox = zeros(length(find(atlas==ind_labels)),length(list_corrsZ));
     end;        
     for ind_vox = 1:length(find(atlas==ind_labels))
         if icc == 1
-            for ind_list = 1:length(list_iccs)
-               eval(sprintf('tmp =  %s;',list_iccs{1,ind_list}));
-               icc_vox(ind_vox,ind_list) = mean(tmp(x(ind_vox),y(ind_vox),z(ind_vox),:),'omitnan');
-            end;
+%             for ind_list = 1:length(list_iccs)
+%                eval(sprintf('tmp =  %s;',list_iccs{1,ind_list}));
+%                icc_vox(ind_vox,ind_list) = mean(tmp(x(ind_vox),y(ind_vox),z(ind_vox),:),'omitnan');
+%             end;
             for ind_list = 1:length(list_iccsZ)
-               eval(sprintf('icc_vox(ind_vox,length(list_iccs)+ind_list) = mean(%s(x(ind_vox),y(ind_vox),z(ind_vox),:));',list_iccsZ{1,ind_list}));
+               eval(sprintf('icc_vox(ind_vox,ind_list) = mean(%s(x(ind_vox),y(ind_vox),z(ind_vox),:));',list_iccsZ{1,ind_list}));
             end;           
         end;
         if corr == 1
-            for ind_list = 1:length(list_corrs)
-               eval(sprintf('corr_vox(ind_vox,ind_list) = mean(%s(x(ind_vox),y(ind_vox),z(ind_vox),:));',list_corrs{1,ind_list}));
-            end;
+%             for ind_list = 1:length(list_corrs)
+%                eval(sprintf('corr_vox(ind_vox,ind_list) = mean(%s(x(ind_vox),y(ind_vox),z(ind_vox),:));',list_corrs{1,ind_list}));
+%             end;
             for ind_list = 1:length(list_corrsZ)
-               eval(sprintf('corr_vox(ind_vox,length(list_corrs)+ind_list) = mean(%s(x(ind_vox),y(ind_vox),z(ind_vox),:));',list_corrsZ{1,ind_list}));
+               eval(sprintf('corr_vox(ind_vox,ind_list) = mean(%s(x(ind_vox),y(ind_vox),z(ind_vox),:));',list_corrsZ{1,ind_list}));
             end;            
         end;
     end
     
     if corr == 1 && icc == 1
         for ind_list = 1:length(corr_vox(1,:))
-            rel_summary{ind_labels+1,ind_list+1} = mean(corr_vox(:,ind_list),'omitnan');
+            temp=mean(corr_vox(:,ind_list),'omitnan');
+            rel_summary{ind_labels+1,ind_list+2} = (exp(2*temp)-1)./(exp(2*temp)+1);
         end;
         for ind_list = 1:length(icc_vox(1,:))
-            rel_summary{ind_labels+1,length(corr_vox(1,:))+ind_list+1} = mean(icc_vox(:,ind_list),'omitnan');
+            temp = mean(icc_vox(:,ind_list),'omitnan');
+            rel_summary{ind_labels+1,length(corr_vox(1,:))+ind_list+2} = (exp(2*temp)-1)./(exp(2*temp)+1);
         end;
     elseif corr == 1
         for ind_list = 1:length(corr_vox(1,:))
-            rel_summary{ind_labels+1,ind_list+1} = mean(corr_vox(:,ind_list),'omitnan');
+             temp = mean(corr_vox(:,ind_list),'omitnan');
+             rel_summary{ind_labels+1,ind_list+2} =(exp(2*temp)-1)./(exp(2*temp)+1);
         end;
     elseif icc == 1
         for ind_list = 1:length(icc_vox(1,:))
-            rel_summary{ind_labels+1,ind_list+1} = mean(icc_vox(:,ind_list),'omitnan');
+            temp = mean(icc_vox(:,ind_list),'omitnan');
+            rel_summary{ind_labels+1,ind_list+2} = (exp(2*temp)-1)./(exp(2*temp)+1);
         end;
     end;
 
