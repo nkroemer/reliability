@@ -1,4 +1,4 @@
-# fmreli toolbox beta v0.1
+# fmreli toolbox beta v0.2
 
 ## What is the fmreli toolbox?
 
