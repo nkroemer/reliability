@@ -22,6 +22,8 @@ savepath  fmreli toolbox folder/pathdef.m
 
 By default, the toolbox comes with the [CONN](https://www.nitrc.org/projects/conn/) atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas). Other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
 
+For the similarity feature, please download the freely available color maps (https://de.mathworks.com/matlabcentral/fileexchange/51986-perceptually-uniform-colormaps). 
+
 That's it, you are good to go.
 
 ## Basic setup
