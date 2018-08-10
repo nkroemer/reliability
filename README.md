@@ -1,4 +1,4 @@
-# fmreli toolbox beta v0.2
+# fmreli toolbox beta v1.0
 
 ## What is the fmreli toolbox?
 
@@ -6,7 +6,7 @@ The toolbox was designed to simplify the assessment of reliability and similarit
 
 ## Dependencies
 
-To use the toolbox, you need to have MATLAB and SPM12 installed (see instructions). 
+To use the toolbox, you need to have MATLAB (v2015 or later) and SPM12 installed (see instructions). 
 
 ## Installing the toolbox
 
@@ -47,6 +47,12 @@ The required folder structure is (at the moment) as follows:
     1. Click on the 'Contrast(s) of interest' dialog.
     1. Define the contrast(s) by the name they were given in the first-level SPM contrast manager. In case you renamed the output files, you can adjust the prefix accordingly in the dialog on the left.
     1. Click on the 'Save contrast definition' dialog. This saves a \*.mat file to your fmreli output folder containing your contrast information.
+    
+1. In case you have other data than first-level statistics in SPM12, *fmreli beta 1.0* offers the possibility to use existing 4D files, e.g. of resting state or DTI data. 
+    1. Please save your 4D files of interest in the defined results directory. 
+    1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in placebo and intervention: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
+    1. If you have only one condition for several sessions, just indicate the sessions, such as 4D_1.nii, 4D_2.nii ... 
+    1. Attention: If you do not provide the original first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
 
 ### Split-half reliability: Assessing reliability within a single contrast and session
 
