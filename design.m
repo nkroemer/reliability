@@ -22,7 +22,7 @@ function varargout = design(varargin)
 
 % Edit the above text to modify the response to help design
 
-% Last Modified by GUIDE v2.5 10-Oct-2017 15:55:46
+% Last Modified by GUIDE v2.5 10-Aug-2018 09:49:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -74,8 +74,8 @@ varargout{1} = handles.output;
 set(handles.subjects,'TooltipString','How many subjects are included in the analysis?');
 set(handles.list,'TooltipString','Load cell array with subject strings called id, e.g. id.mat');
 set(handles.runs,'TooltipString','How many sessions?');
-set(handles.stats_dir,'TooltipString','Choose folder containing subject folders');
-set(handles.stats,'TooltipString','Type in stats folder, e.g. stats_%d or days%d\stats1; %d as wildcard for session');
+set(handles.stats_dir,'TooltipString','Leave empty if you use already existing 4D file; Choose folder containing subject folders');
+set(handles.stats,'TooltipString','Leave empty if you use already existing 4D file; Type in stats folder, e.g. stats_%d or days%d\stats1; %d as wildcard for session');
 
 
 % --- Executes on button press in pushbutton4.
@@ -408,27 +408,36 @@ box_path=evalin('base','box_path');
 
 %% set parameters
 %get GUI input
-subjects = get(handles.subjects,'String'); % number of participants
-list=evalin('base','list'); % list with participant codes
 dir_results=evalin('base','dir_results'); % result directory
-stats = get(handles.stats,'String'); % stats folder
-dir_stats=evalin('base','dir_stats'); % directory with statistics
 prefix_design = get(handles.prefix_design,'String'); % prefix for study design
 name_design = sprintf('%s_study_design.mat',prefix_design); % creates study design file name
 runs = str2double(get(handles.runs,'String')); % number of sessions
 if runs == 1
-    single_run = get(handles.single_run,'String');
-   
+    single_run = get(handles.single_run,'String');  
 end;
 
-%% generate study_design
-disp('...save study design...');
+exStats = get(handles.existStats,'Value');
+ex4D = get(handles.exist4D,'Value');
+if exStats == 1
+    stats = get(handles.stats,'String'); % stats folder
+    dir_stats=evalin('base','dir_stats'); % directory with statistics
+    subjects = get(handles.subjects,'String'); % number of participants
+    list=evalin('base','list'); % list with participant codes
+    %% generate study_design
+    disp('...save study design...');
+    if runs > 1
+        study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'subject_list',list,'results_directory',dir_results,'exist_stats',exStats,'stats_directory',stats,'stats_path',dir_stats,'exist_4D',ex4D);
+    else
+        study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'identifier_session',single_run,'subject_list',list,'results_directory',dir_results,'exist_stats',exStats, 'stats_directory',stats,'stats_path',dir_stats,'exist_4D',ex4D);
+    end;   
+elseif ex4D == 1
+    if runs > 1
+        study_design = struct('name_design',name_design,'number_sessions',runs,'results_directory',dir_results,'exist_stats',exStats,'exist_4D',ex4D);
+    else
+        study_design = struct('name_design',name_design,'number_sessions',runs,'identifier_session',single_run,'results_directory',dir_results,'exist_stats',exStats,'exist_4D',ex4D);
+    end;    
+end;
 
-if runs > 1
-    study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);
-else
-    study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'identifier_session',single_run,'subject_list',list,'results_directory',dir_results,'stats_directory',stats,'stats_path',dir_stats);
-end;    
 
 %% save study design in results folder
 cd(dir_results{1})
@@ -449,3 +458,59 @@ function axes1_CreateFcn(hObject, eventdata, handles)
 % Hint: place code in OpeningFcn to populate axes1
 axes(hObject);
 imshow('logo.png');
+
+
+% --- Executes on button press in exist4D.
+function exist4D_Callback(hObject, eventdata, handles)
+% hObject    handle to exist4D (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of exist4D
+
+
+% --- Executes on button press in existStats.
+function existStats_Callback(hObject, eventdata, handles)
+% hObject    handle to existStats (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of existStats
+
+
+function edit20_Callback(hObject, eventdata, handles)
+% hObject    handle to edit20 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit20 as text
+%        str2double(get(hObject,'String')) returns contents of edit20 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit20_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit20 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in checkbox4.
+function checkbox4_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox4

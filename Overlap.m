@@ -203,7 +203,7 @@ end;
 
 
 %get study design information
-runs=str2double(study_design.number_sessions); 
+runs=study_design.number_sessions; 
 nr_subj=str2double(study_design.number_subjects);
 load(study_design.subject_list);
 stats_dir=study_design.stats_directory;
@@ -221,7 +221,8 @@ cd(results_dir);
 two_cons = contrast_def.two_contrasts;
 if two_cons == 0
     con=contrast_def.contrast;
-    con_count=contrast_def.number_regressor;
+    %con_count=contrast_def.number_regressor;
+    con_count = contrast_def.contrast_number;
     nr_para = study_design.number_parametric;
 
 else
@@ -424,23 +425,23 @@ if nr_para>0
                     fprintf('... create xSPM for %s in session %d...\n',id{i},j)
 
                     xSPM = create_xSPM(SPM_path,box_path,p,con_count+ind_para);
-                    eval(sprintf('co_sig%d = xSPM.XYZ;',j));
+                    eval(sprintf('co_sig%d_par = xSPM.XYZ;',j));
 
                     if use_roi == 1
                         % apply ROI
                         for count_roi = 1:length(roi_xyz)
                             %fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
-                            eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d,roi_xyz(:,count_roi))));',j));
+                            eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig%d_par,roi_xyz(:,count_roi))));',j));
                             if idx>0
-                                eval(sprintf('co_temp(:,end+1)=co_sig%d(:,idx);',j));
+                                eval(sprintf('co_temp(:,end+1)=co_sig%d_par(:,idx);',j));
                                % fprintf('...significant...\n');
                             end;
                         end;
-                        eval(sprintf('co_sig_%d= co_temp;',j));
+                        eval(sprintf('co_sig_%d_par= co_temp;',j));
                     else
-                        eval(sprintf('co_sig_%d= co_sig%d;',j,j));
+                        eval(sprintf('co_sig_%d_par= co_sig%d_par;',j,j));
                     end;
-                    eval(sprintf('nr_sig_%d = size(co_sig_%d,2);',j,j));
+                    eval(sprintf('nr_sig_%d_par = size(co_sig_%d_par,2);',j,j));
                     clear co_temp;           
 
                  end;
@@ -451,9 +452,11 @@ if nr_para>0
                 for ind = 1:k-1
                     fprintf('...compare %d to %d...\n',k,k-ind);
                         count = 0;
-                    for l = 1:eval(sprintf('nr_sig_%d',k))
-                       eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_%d,co_sig_%d(:,l))));',k-ind,k));
-                       count = count + length(idx);
+                    for l = 1:eval(sprintf('nr_sig_%d_par',k))
+                       if ~isempty(eval(sprintf('co_sig_%d_par',k-ind)))
+                           eval(sprintf('idx=find(~any(bsxfun(@minus,co_sig_%d_par,co_sig_%d_par(:,l))));',k-ind,k));
+                           count = count + length(idx);
+                       end;
                     end;
 
 
@@ -462,8 +465,8 @@ if nr_para>0
                         eval(sprintf('dice_%d_%d = 0;',k-ind,k));
                         eval(sprintf('jaccard_%d_%d = 0;',k-ind,k));
                     else
-                        eval(sprintf('dice_%d_%d = (2.*overlap_%d_%d)./(nr_sig_%d+nr_sig_%d);',k-ind,k,k-ind,k,k-ind,k));
-                        eval(sprintf('jaccard_%d_%d = overlap_%d_%d./(nr_sig_%d+nr_sig_%d-overlap_%d_%d);',k-ind,k,k-ind,k,k-ind,k,k-ind,k));
+                        eval(sprintf('dice_%d_%d = (2.*overlap_%d_%d)./(nr_sig_%d_par+nr_sig_%d_par);',k-ind,k,k-ind,k,k-ind,k));
+                        eval(sprintf('jaccard_%d_%d = overlap_%d_%d./(nr_sig_%d_par+nr_sig_%d_par-overlap_%d_%d);',k-ind,k,k-ind,k,k-ind,k,k-ind,k));
                     end;
 
 
@@ -964,11 +967,31 @@ elseif two_cons == 1
             end;
         end;
     
+    assignin('base','results',results);
+    assignin('base','cols',cols);
+    assignin('base','row',row);
 
-    
-end;
+    cd(results_dir);             
+
+    results_overlap_subj=dataset({results,cols{:}}, ...
+                    'obsnames', row);
+    f2 = figure;            
+    imagesc(results,[0,1]);
+    colormap('jet');
+    colorbar;
+    xlabel(sprintf('%s',cols{:}));
+    ylabel('subject ID');
+    title('results overlap subjectwise');
+    print(f2,sprintf('results_overlap%s_%g_subjectwise',str,p),'-dpng','-r0');
+
+
+    eval(sprintf('save results%s_overlap_subjectwise_%g.mat results_overlap_subj',str,p)); 
+    clear results;
     disp('DONE');
     cd(box_path);
+    
+end;
+    
 
 else
     disp('...calculate overlap on group level...');
@@ -1243,7 +1266,7 @@ else
                     Pmap = 1-tcdf(Tmap,nr_subj-1);
                 [x,y,z] = ind2sub([size(Pmap,1),size(Pmap,2),size(Pmap,3)],find(Pmap<=p)); 
                 x = x';y=y';z=z';
-                eval(sprintf('co_sig%d = [x;y;z];',j));
+                eval(sprintf('co_sig%d_split%d = [x;y;z];',j,ind_split));
                 % apply ROI
                 if use_roi == 1
                                     fprintf('...apply ROI...\n')

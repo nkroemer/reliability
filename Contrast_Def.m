@@ -22,7 +22,7 @@ function varargout = Contrast_Def(varargin)
 
 % Edit the above text to modify the response to help Contrast_Def
 
-% Last Modified by GUIDE v2.5 11-Sep-2017 15:46:41
+% Last Modified by GUIDE v2.5 10-Aug-2018 10:52:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -260,30 +260,40 @@ disp('Starting creation of contrast definition...');
 f = filesep;
 box_path=evalin('base','box_path');
 
+%% get GUI input
+    % definition of contrast definition name
+    prefix = get(handles.prefix,'String'); 
+    name_contrast = sprintf('%s_contrast',prefix);
+    two_cons = get(handles.two_cons,'value'); % 1 = comparison of two contrasts out of one statistic
+    cond_1 = get(handles.cond1,'value'); % 1 = only one condition
+    cond_2 = get(handles.cond2,'value'); % 1 = several conditions
+    
 %% get study design info
     study_design=evalin('base','study_design');
     runs = study_design.number_sessions; % number runs
-    nr_subj=str2double(study_design.number_subjects); % number subjects
-    load(study_design.subject_list); % subject list 
-    stats=study_design.stats_directory; % name of stats directory
-    path=study_design.stats_path; % path to stats directories
     dir_results=study_design.results_directory; % result directory
     name_design = study_design.name_design;
     if runs == 1
         single_run = str2double(study_design.identifier_session);
     end;
+    
+    exStats = study_design.exist_stats;
+    if exStats == 1
+        nr_subj=str2double(study_design.number_subjects); % number subjects
+        load(study_design.subject_list); % subject list 
+        stats=study_design.stats_directory; % name of stats directory
+        path=study_design.stats_path; % path to stats directories
+    end;
+    
+    ex4D = study_design.exist_4D; 
 
-%% get GUI input
-    % definition of contrast definition name
-    prefix = get(handles.prefix,'String'); 
-    name_contrast = sprintf('%s_contrast',prefix);
-
+%%
     % initiate contrast_def structure
     contrast_def = struct();
-
+    
+if exStats == 1
     %get contrast_def information and extend study_design by number of
     %parametric modulators
-    two_cons = get(handles.two_cons,'value'); % 1 = comparison of two contrasts out of one statistic
     contrast_def.two_contrasts = two_cons;
     if runs == 1
         stats_filled = sprintf(stats,single_run);
@@ -291,8 +301,7 @@ box_path=evalin('base','box_path');
         stats_filled = sprintf(stats,1);
     end;
 
-
-    if two_cons == 0
+    if two_cons == 0 
         con=get(handles.con,'String');      
         file = [path f id{1} f stats_filled f con '*']; 
         con = dir(file);
@@ -303,6 +312,7 @@ box_path=evalin('base','box_path');
             con = con(1).name;
             contrast_def.contrast = con;        
         end;
+        
         spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
         for i = 1:length(SPM.xCon)
@@ -332,7 +342,7 @@ box_path=evalin('base','box_path');
         end;
         cd(dir_results)
         save(name_design,'study_design');
-    else
+    elseif two_cons == 1 
         con1=get(handles.con1,'String');
         contrast_def.contrast1 = con1;        
         con=con1;
@@ -391,10 +401,11 @@ box_path=evalin('base','box_path');
         save(name_design,'study_design');    
     end;
 
-%% 3D to 4D conversion
+% 3D to 4D conversion
 cd(box_path);
 load(['scripts_templates' filesep 'template_3D-4D.mat']); % template for 3D to 4D conversion
-if two_cons == 0
+if two_cons == 0 
+   
     % list contrast_def images
     disp('...load contrast images to create 4D images...');
     if runs == 1
@@ -546,7 +557,7 @@ if two_cons == 0
     %save study design in results folder
     save(name_design,'study_design');
 
-else
+elseif two_cons == 1 
     disp('...load contrast images to create 4D images...');
     for ind_con = 1:2
     eval(sprintf('con=contrast_def.contrast%d;',ind_con));
@@ -694,12 +705,35 @@ else
             end;
     clear file1 file2 con_list con_img_1 con_img_2 matlabbatch
     end;
-
-
+  
 end;
+elseif ex4D == 1
+    cd(dir_results)
+    list = dir('4D*');
+    example = load_nii(list(1).name);
+    study_design.number_subjects = length(example.img(1,1,1,:));
+    if cond_1 == 1
+        contrast_def.number_conditions = 1; 
+    elseif cond_2 == 1
+        conditions = {};
+        for i = 1:length(list)
+            name = list(i).name;
+            [a,b] = strtok(name,'_');
+            [c,d] = strtok(b,'_');
+            if ~any(strcmp(conditions,c))    
+                conditions{end+1,1} = c;
+            end;
+        end;
+        contrast_def.number_conditions = length(conditions);
+        contrast_def.conditions = conditions;
+    end;  
+    
+end;
+
 cd(dir_results)
 %save contrast_def information
 save(name_contrast,'contrast_def');
+save(name_design,'study_design');
 disp('...DONE');
 cd(box_path);    
 
@@ -713,3 +747,39 @@ function axes1_CreateFcn(hObject, eventdata, handles)
 % Hint: place code in OpeningFcn to populate axes1
 axes(hObject);
 imshow('logo.png');
+
+
+% --- Executes on button press in exist4D.
+function exist4D_Callback(hObject, eventdata, handles)
+% hObject    handle to exist4D (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of exist4D
+
+
+% --- Executes on button press in exist4D2.
+function exist4D2_Callback(hObject, eventdata, handles)
+% hObject    handle to exist4D2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of exist4D2
+
+
+% --- Executes on button press in cond1.
+function cond1_Callback(hObject, eventdata, handles)
+% hObject    handle to cond1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cond1
+
+
+% --- Executes on button press in cond2.
+function cond2_Callback(hObject, eventdata, handles)
+% hObject    handle to cond2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of cond2
