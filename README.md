@@ -54,6 +54,7 @@ The required folder structure is (at the moment) as follows:
     1. Please save your 4D files of interest in the defined results directory. 
     1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in placebo and intervention: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
     1. If you have only one condition for several sessions, just indicate the sessions, such as 4D_1.nii, 4D_2.nii ... 
+    1. Please also provide an exemplary 3D niftii called 'temp_img.nii' to facilitate creating result images with the image dimensions of your study.
     1. Attention: If you do not provide the original first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
 
 ### Split-half reliability: Assessing reliability within a single contrast and session
