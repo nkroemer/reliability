@@ -481,130 +481,238 @@ cd (dir_results);
                 for i = 1:runs
                     for j = (runs-1):1
                         if i+j <= runs
-                            if pear == 1 && spea == 1
+                            if pear == 1 || spea == 1
                                 eval(sprintf('first = img_%d_ROI;',i))
                                 eval(sprintf('second = img_%d_ROI;',i+j))
-                                r = corrcoef(first,second, 'rows', 'pairwise');
-                                if isnan (r(1,2))
-                                    r1(i_vox,1) = 0;
-                                    zr1(i_vox,1) = 0;
-                                else
-                                    r1(i_vox,1) = r(1,2);
-                                    zr1(i_vox,1) = atanh(r(1,2));
+                                if pear == 1
+                                    r = corrcoef(first,second, 'rows', 'pairwise');
+                                    if isnan (r(1,2))
+                                        r1(i_vox,1) = 0;
+                                        zr1(i_vox,1) = 0;
+                                    else
+                                        r1(i_vox,1) = r(1,2);
+                                        zr1(i_vox,1) = atanh(r(1,2));
+                                    end;
+                                    summary(1,end+1)=r1;
+                                    cols{1,end+1} = sprintf('Pearson_%d_%d',i,i+j);   
+                                    summary(1,end+1)=zr1;
+                                    cols{1,end+1} = sprintf('zPearson_%d_%d',i,i+j); 
                                 end;
-                                r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
-                                r2(i_vox,1) = r;  
-                                zr2(i_vox,1) = atanh(r);                            
-                                
-                                summary(1,end+1)=r1;
-                                cols{1,end+1} = sprintf('Pearson_%d_%d',i,i+j);   
-                                summary(1,end+1)=zr1;
-                                cols{1,end+1} = sprintf('zPearson_%d_%d',i,i+j); 
-                                summary(1,end+1)=r2;
-                                cols{1,end+1} = sprintf('Spearman_%d_%d',i,i+j);   
-                                summary(1,end+1)=zr2;
-                                cols{1,end+1} = sprintf('zSpearman_%d_%d',i,i+j);
+                                if spea == 1
+                                    r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                    r2(i_vox,1) = r;  
+                                    zr2(i_vox,1) = atanh(r);                            
+
+
+                                    summary(1,end+1)=r2;
+                                    cols{1,end+1} = sprintf('Spearman_%d_%d',i,i+j);   
+                                    summary(1,end+1)=zr2;
+                                    cols{1,end+1} = sprintf('zSpearman_%d_%d',i,i+j);
+                                end;
                                 
                                 clear first second
                                 if nr_para > 0
                                     for ind_p = 1:nr_para
                                         eval(sprintf('first = img_par%d_%d_ROI;',ind_p,i))
                                         eval(sprintf('second = img_par%d_%d_ROI;',ind_p,i+j))
-                                        r = corrcoef(first,second, 'rows', 'pairwise');
-                                        if isnan (r(1,2))
-                                            r1(i_vox,1) = 0;
-                                            zr1(i_vox,1) = 0;
-                                        else
-                                            r1(i_vox,1) = r(1,2);
-                                            zr1(i_vox,1) = atanh(r(1,2));
+                                        if pear == 1
+                                            r = corrcoef(first,second, 'rows', 'pairwise');
+                                            if isnan (r(1,2))
+                                                r1(i_vox,1) = 0;
+                                                zr1(i_vox,1) = 0;
+                                            else
+                                                r1(i_vox,1) = r(1,2);
+                                                zr1(i_vox,1) = atanh(r(1,2));
+                                            end;
+                                            summary(1,end+1)=r1;
+                                            cols{1,end+1} = sprintf('Pearson_%d_%d_par%d',i,i+j,ind_p);   
+                                            summary(1,end+1)=zr1;
+                                            cols{1,end+1} = sprintf('zPearson_%d_%d_par%d',i,i+j,ind_p); 
                                         end;
-                                        r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
-                                        r2(i_vox,1) = r;  
-                                        zr2(i_vox,1) = atanh(r);                            
+                                        if spea == 1
+                                            r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                            r2(i_vox,1) = r;  
+                                            zr2(i_vox,1) = atanh(r);                            
 
-                                        summary(1,end+1)=r1;
-                                        cols{1,end+1} = sprintf('Pearson_%d_%d_par%d',i,i+j,ind_p);   
-                                        summary(1,end+1)=zr1;
-                                        cols{1,end+1} = sprintf('zPearson_%d_%d_par%d',i,i+j,ind_p); 
-                                        summary(1,end+1)=r2;
-                                        cols{1,end+1} = sprintf('Spearman_%d_%d_par%d',i,i+j,ind_p);   
-                                        summary(1,end+1)=zr2;
-                                        cols{1,end+1} = sprintf('zSpearman_%d_%d_par%d',i,i+j,ind_p);
+                                            summary(1,end+1)=r2;
+                                            cols{1,end+1} = sprintf('Spearman_%d_%d_par%d',i,i+j,ind_p);   
+                                            summary(1,end+1)=zr2;
+                                            cols{1,end+1} = sprintf('zSpearman_%d_%d_par%d',i,i+j,ind_p);
 
-                                        clear first second                                        
-                                    end;
-                                end;
-                                
-                                
-                            elseif pear == 1 && spea == 0
-                                eval(sprintf('first = img_%d_ROI;',i))
-                                eval(sprintf('second = img_%d_ROI;',i+j))
-                                r = corrcoef(first,second, 'rows', 'pairwise');
-                                if isnan (r(1,2))
-                                    r1(i_vox,1) = 0;
-                                    zr1(i_vox,1) = 0;
-                                else
-                                    r1(i_vox,1) = r(1,2);
-                                    zr1(i_vox,1) = atanh(r(1,2));
-                                end;
-                                summary(1,end+1)=r1;
-                                cols{1,end+1} = sprintf('Pearson_%d_%d',i,i+j);   
-                                summary(1,end+1)=zr1;
-                                cols{1,end+1} = sprintf('zPearson_%d_%d',i,i+j); 
-                                
-                                clear first second 
-                                if nr_para > 0
-                                    for ind_p = 1:nr_para
-                                        eval(sprintf('first = img_par%d_%d_ROI;',ind_p,i))
-                                        eval(sprintf('second = img_par%d_%d_ROI;',ind_p,i+j))
-                                        r = corrcoef(first,second, 'rows', 'pairwise');
-                                        if isnan (r(1,2))
-                                            r1(i_vox,1) = 0;
-                                            zr1(i_vox,1) = 0;
-                                        else
-                                            r1(i_vox,1) = r(1,2);
-                                            zr1(i_vox,1) = atanh(r(1,2));
+                                            clear first second    
                                         end;
-                                        summary(1,end+1)=r1;
-                                        cols{1,end+1} = sprintf('Pearson_%d_%d_par%d',i,i+j,ind_p);   
-                                        summary(1,end+1)=zr1;
-                                        cols{1,end+1} = sprintf('zPearson_%d_%d_par%d',i,i+j,ind_p); 
-
-                                        clear first second 
                                     end;
                                 end;
-                            elseif pear == 0 && spea == 1
-                                eval(sprintf('first = img_%d_ROI;',i))
-                                eval(sprintf('second = img_%d_ROI;',i+j))
-                                r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
-                                r2(i_vox,1) = r;  
-                                zr2(i_vox,1) = atanh(r); 
-                                summary(1,end+1)=r2;
-                                cols{1,end+1} = sprintf('Spearman_%d_%d',i,i+j);   
-                                summary(1,end+1)=zr2;
-                                cols{1,end+1} = sprintf('zSpearman_%d_%d',i,i+j);
-                                
-                                clear first second
-                                if nr_para > 0
-                                    for ind_p = 1:nr_para
-                                        eval(sprintf('first = img_par%d_%d_ROI;',ind_p,i))
-                                        eval(sprintf('second = img_par%d_%d_ROI;',ind_p,i+j))
-                                        r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
-                                        r2(i_vox,1) = r;  
-                                        zr2(i_vox,1) = atanh(r); 
-                                        summary(1,end+1)=r2;
-                                        cols{1,end+1} = sprintf('Spearman_%d_%d_par%d',i,i+j,ind_p);   
-                                        summary(1,end+1)=zr2;
-                                        cols{1,end+1} = sprintf('zSpearman_%d_%d_par%d',i,i+j,ind_p);
-                                        clear first second 
-                                    end;
-                                end;
-                            end;    
+                            end;
                         end;
                     end;
+                end;             
+                if cons == 1 || abs == 1                                
+                    disp('...calculating ICCs for mean ROI activity...')
+                    %create data matrix
+                    data=zeros(nr_subj,runs);  
+                    for ind_runs = 1:runs
+                         eval(sprintf('data(:,ind_runs) = img_%d_ROI;',ind_runs));
+                    end;
+                    disp('...over all sessions...')
+                    %calculate ICCs
+                    nsamples=nr_subj*runs;
+
+                    grandmean=0;
+                    for sub=1:nr_subj,     
+                        for sess=1:runs,
+                            grandmean= grandmean + data(sub,sess);
+                        end
+                    end;
+                    grandmean=grandmean./nsamples;
+
+                    sessionmean=zeros(runs,1);
+                    for sess=1:runs
+                        for sub=1:nr_subj,  
+                            sessionmean(sess) = sessionmean(sess) + data(sub,sess);
+                        end
+                        sessionmean(sess)=sessionmean(sess)./nr_subj;
+                    end
+
+                    subjmean=zeros(nr_subj,1);
+                    for sub=1:nr_subj
+                        for sess=1:runs
+                            subjmean(sub)=subjmean(sub) + data(sub,sess);
+                        end
+                        subjmean(sub)=subjmean(sub)./runs;
+                    end
+
+                    % mean squares
+                    BMS=0; % between subject
+                    WMS=0; % within subject 
+                    EMS=0; % error
+                    JMS=0; % session
+
+                    for sub=1:nr_subj,    
+                        BMS = BMS + (subjmean(sub)-grandmean).^2;
+                        for sess=1:runs
+                            WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
+                            EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                        end
+                    end;
+
+                    for sess=1:runs
+                        JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+                    end;
+
+                    %define the true value of the mean square.
+                    BMS= runs.*BMS./(nr_subj-1);
+                    WMS= WMS./(runs-1)./nr_subj;
+                    JMS= nr_subj.*JMS./(runs-1);
+                    EMS= EMS./(runs-1)./(nr_subj-1); 
+
+                    %consistency agreement  
+                    if cons==1
+                        ICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS); 
+                        zICC_con = .5.*log((1+ICC_con)./(1-ICC_con));
+                        summary(1,end+1)=ICC_con;
+                        cols{1,end+1} = 'ICC_con';  
+                        summary(1,end+1)=zICC_con;
+                        cols{1,end+1} = 'zICC_con';                                     
+                    end;
+
+                   %absolute agreement 
+                   if abs==1
+                       ICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+                       runs.* (JMS-EMS)./nr_subj);
+                       zICC_abs = .5.*log((1+ICC_abs)./(1-ICC_abs));
+                        summary(1,end+1)=ICC_abs;
+                        cols{1,end+1} = 'ICC_abs';  
+                        summary(1,end+1)=zICC_abs;
+                        cols{1,end+1} = 'zICC_abs';                                   
+                   end;  
+                   clear data 
+                   if nr_para > 0
+                       for i_para = 1:nr_para
+                            %create data matrix
+                            data=zeros(nr_subj,runs);  
+                            for ind_runs = 1:runs
+                                 eval(sprintf('data(:,ind_runs) = img_par%d_%d_ROI;',i_para,ind_runs));
+                            end;
+                            disp('...over all sessions...')
+                            %calculate ICCs
+                            nsamples=nr_subj*runs;
+
+                            grandmean=0;
+                            for sub=1:nr_subj,     
+                                for sess=1:runs,
+                                    grandmean= grandmean + data(sub,sess);
+                                end
+                            end;
+                            grandmean=grandmean./nsamples;
+
+                            sessionmean=zeros(runs,1);
+                            for sess=1:runs
+                                for sub=1:nr_subj,  
+                                    sessionmean(sess) = sessionmean(sess) + data(sub,sess);
+                                end
+                                sessionmean(sess)=sessionmean(sess)./nr_subj;
+                            end
+
+                            subjmean=zeros(nr_subj,1);
+                            for sub=1:nr_subj
+                                for sess=1:runs
+                                    subjmean(sub)=subjmean(sub) + data(sub,sess);
+                                end
+                                subjmean(sub)=subjmean(sub)./runs;
+                            end
+
+                            % mean squares
+                            BMS=0; % between subject
+                            WMS=0; % within subject 
+                            EMS=0; % error
+                            JMS=0; % session
+
+                            for sub=1:nr_subj,    
+                                BMS = BMS + (subjmean(sub)-grandmean).^2;
+                                for sess=1:runs
+                                    WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
+                                    EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+                                end
+                            end;
+
+                            for sess=1:runs
+                                JMS=  JMS + (sessionmean(sess)-grandmean).^2;
+                            end;
+
+                            %define the true value of the mean square.
+                            BMS= runs.*BMS./(nr_subj-1);
+                            WMS= WMS./(runs-1)./nr_subj;
+                            JMS= nr_subj.*JMS./(runs-1);
+                            EMS= EMS./(runs-1)./(nr_subj-1); 
+
+                            %consistency agreement  
+                            if cons==1
+                                ICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS); 
+                                zICC_con = .5.*log((1+ICC_con)./(1-ICC_con));
+                                summary(1,end+1)=ICC_con;
+                                cols{1,end+1} = sprintf('ICC_con_par%d',i_para);  
+                                summary(1,end+1)=zICC_con;
+                                cols{1,end+1} = sprintf('zICC_con_par%d',i_para);                                     
+                            end;
+
+                           %absolute agreement 
+                           if abs==1
+                               ICC_abs=(BMS-EMS)./(BMS+(runs-1).*EMS + ...
+                               runs.* (JMS-EMS)./nr_subj);
+                               zICC_abs = .5.*log((1+ICC_abs)./(1-ICC_abs));
+                                summary(1,end+1)=ICC_abs;
+                                cols{1,end+1} = sprintf('ICC_abs_par%d',i_para);  
+                                summary(1,end+1)=zICC_abs;
+                                cols{1,end+1} = sprintf('zICC_abs_par%d',i_para);                                   
+                           end; 
+                       end;
+                   end;
                 end;
             elseif two_cons == 1
+            % not yet implemented    
             elseif split == 1
+            % not yet implemented
             end;
         elseif ex4D == 1
             for ind_cond = 1:nr_cond
