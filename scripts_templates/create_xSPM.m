@@ -107,7 +107,6 @@ fprintf('\t%-32s: %30s','SPM computation','...initialising')            %-#
 %--------------------------------------------------------------------------
 Z     = Inf;
 for i = Ic
-    
     Z = min(Z,spm_data_read(xCon(i).Vspm,'xyz',XYZ));
 end
 

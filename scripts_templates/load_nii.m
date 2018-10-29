@@ -1,5 +1,3 @@
-%  Copyright (c) 2014, Jimmy Shen All rights reserved.
-
 %  Load NIFTI or ANALYZE dataset. Support both *.nii and *.hdr/*.img
 %  file extension. If file extension is not provided, *.hdr/*.img will
 %  be used as default.

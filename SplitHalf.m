@@ -146,7 +146,7 @@ box_path=evalin('base','box_path');
 
 % get study design info
 study_design=evalin('base','study_design');
-name_study_design=study_design.name_design;
+name_study_design=evalin('base','name_study_design');
 subjects = study_design.subject_list;
 load(subjects);
 nr_subj = str2double(study_design.number_subjects);
@@ -170,7 +170,7 @@ for j = 1:runs
 
         if exist('SPM.mat','file')==2
             path=pwd;
-            path=sprintf('%s%sSPM.mat',path,f);
+            path=sprintf('%s%s%sSPM.mat',path,f,f);
             SPM_list{i,j}=path;
         end;
     end; 
@@ -205,7 +205,7 @@ else
         end;     
     end;
 end;
-cd(study_design.results_directory)
+
 name=name_study_design{1};
 save(name,'study_design');
 
@@ -213,8 +213,8 @@ save(name,'study_design');
 %% loads and modifies SPM for each participant
 
 for m = 1:runs
+    split_dir = sprintf(split_dir,m);
     for count = 1:nr_subj
-        split_dir_subj = sprintf(split_dir,m);
         fprintf('...load and modify SPM.mat for %s in session %d...',id{count},m)
         dir_spm = SPM_list{count,m};
         load(dir_spm);
@@ -482,8 +482,8 @@ for m = 1:runs
         %new stats folder
         cd(stats_path);
         cd(sprintf('%s',id{count}));
-        mkdir(split_dir_subj)
-        dir_results = [stats_path f id{count} f split_dir_subj];
+        mkdir(split_dir)
+        dir_results = [stats_path f id{count} f split_dir];
         SPM.swd = dir_results;
         cd(dir_results);
         save SPM.mat SPM ;

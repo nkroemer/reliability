@@ -5407,12 +5407,13 @@ if cons == 1 || abs == 1
                     ICC_abs_ROI=zeros(nr_vox,1);
                     z_ICC_con_ROI=zeros(nr_vox,1);
                     z_ICC_abs_ROI=zeros(nr_vox,1);
-                    voxBMS = zeros(nr_vox,1);
-                    voxWMS = zeros(nr_vox,1);
-                    voxJMS = zeros(nr_vox,1);
-                    voxEMS = zeros(nr_vox,1);
+                                            voxBMS = zeros(nr_vox,1);
+                        voxWMS = zeros(nr_vox,1);
+                        voxJMS = zeros(nr_vox,1);
+                        voxEMS = zeros(nr_vox,1);
 
-                     %create data matrix
+                    
+                    %create data matrix
                     data=zeros(nr_vox,nr_subj,runs);
                     for ind_runs = 1:runs
                         for ind_subj = 1:nr_subj
@@ -5431,11 +5432,7 @@ if cons == 1 || abs == 1
                                     data1 = data(ind_vox,:,ind_run);
                                     data1 = [data1,data(ind_vox,:,ind_run+ind_sec)];    
                                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data1);
-                                    voxBMS(ind_voxel,1) = BMS; % between subject
-                                    voxWMS(ind_voxel,1) = WMS; % within subject
-                                    voxEMS(ind_voxel,1) = EMS; % error
-                                    voxJMS(ind_voxel,1) = JMS; % session
-
+                                    
                                     %consistency agreement
                                     if cons==1
                                         voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS);
@@ -5464,19 +5461,6 @@ if cons == 1 || abs == 1
                                     z_ICC_abs_ROI(~r_roi_ind)=0;
                                 end;
                                 
-                                
-                                voxBMS = reshape(voxBMS,x,y,z);
-                                voxEMS = reshape(voxEMS,x,y,z);
-                                voxJMS = reshape(voxJMS,x,y,z);
-                                voxWMS = reshape(voxWMS,x,y,z);
-                                if roi == 1
-                                    voxBMS(~r_roi_ind)=0;
-                                    voxWMS(~r_roi_ind)=0;
-                                    voxEMS(~r_roi_ind)=0;
-                                    voxJMS(~r_roi_ind)=0;
-                                end;
-
-                                
                                 % save ICC maps
                                 target_img = temp_img;
                                 file1 = sprintf('ICC%s_con_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
@@ -5503,32 +5487,6 @@ if cons == 1 || abs == 1
                                 target_img.fileprefix = file4;
                                 target_img.img = z_ICC_abs_ROI;
                                 save_nii(target_img,target_img.fileprefix);
-                                
-                                clear target_img;
-                                target_img = temp_img;
-                                target_img.fileprefix = sprintf('BMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
-                                target_img.img = voxBMS;
-                                save_nii(target_img,target_img.fileprefix);
-                                
-                                clear target_img;
-                                target_img = temp_img;
-                                target_img.fileprefix = sprintf('EMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
-                                target_img.img = voxEMS;
-                                save_nii(target_img,target_img.fileprefix);
-                                
-                                clear target_img;
-                                target_img = temp_img;
-                                target_img.fileprefix = sprintf('WMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
-                                target_img.img = voxWMS;
-                                save_nii(target_img,target_img.fileprefix);
-                                
-                                clear target_img;
-                                target_img = temp_img;
-                                target_img.fileprefix = sprintf('JMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
-                                target_img.img = voxJMS;
-                                save_nii(target_img,target_img.fileprefix);
-
-
                                 
                                 % computing average ICC
                                 disp('...computing average ICC...')
