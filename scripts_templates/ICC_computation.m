@@ -4,7 +4,7 @@ nsamples=nr_subj*runs;
 grandmean=0;
 for sub=1:nr_subj,     
     for sess=1:runs,
-        grandmean= grandmean + data(sub,sess);
+        grandmean= grandmean + data(sess,sub);
     end;
 end;
 grandmean=grandmean./nsamples;
@@ -12,7 +12,7 @@ grandmean=grandmean./nsamples;
 sessionmean=zeros(runs,1);
 for sess=1:runs
     for sub=1:nr_subj,  
-        sessionmean(sess) = sessionmean(sess) + data(sub,sess);
+        sessionmean(sess) = sessionmean(sess) + data(sess,sub);
     end;
     sessionmean(sess)=sessionmean(sess)./nr_subj;
 end;
@@ -20,7 +20,7 @@ end;
 subjmean=zeros(nr_subj,1);
 for sub=1:nr_subj
     for sess=1:runs
-        subjmean(sub)=subjmean(sub) + data(sub,sess);
+        subjmean(sub)=subjmean(sub) + data(sess,sub);
     end
     subjmean(sub)=subjmean(sub)./runs;
 end
@@ -34,8 +34,8 @@ JMS=0; % session
 for sub=1:nr_subj,    
     BMS = BMS + (subjmean(sub)-grandmean).^2;
     for sess=1:runs
-        WMS = WMS + (data(sub,sess)-subjmean(sub)).^2;
-        EMS = EMS + (data(sub,sess)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
+        WMS = WMS + (data(sess,sub)-subjmean(sub)).^2;
+        EMS = EMS + (data(sess,sub)-subjmean(sub)-sessionmean(sess)+grandmean).^2;
     end
 end;
 

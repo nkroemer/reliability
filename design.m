@@ -431,10 +431,13 @@ if exStats == 1
         study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'identifier_session',single_run,'subject_list',list,'results_directory',dir_results,'exist_stats',exStats, 'stats_directory',stats,'stats_path',dir_stats,'exist_4D',ex4D);
     end;   
 elseif ex4D == 1
+    subjects = get(handles.subjects,'String'); % number of participants
+    %% generate study_design
+    disp('...save study design...');    
     if runs > 1
-        study_design = struct('name_design',name_design,'number_sessions',runs,'results_directory',dir_results,'exist_stats',exStats,'exist_4D',ex4D);
+        study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'results_directory',dir_results,'exist_stats',exStats,'exist_4D',ex4D);
     else
-        study_design = struct('name_design',name_design,'number_sessions',runs,'identifier_session',single_run,'results_directory',dir_results,'exist_stats',exStats,'exist_4D',ex4D);
+        study_design = struct('name_design',name_design,'number_subjects',subjects,'number_sessions',runs,'identifier_session',single_run,'results_directory',dir_results,'exist_stats',exStats,'exist_4D',ex4D);
     end;    
 end;
 

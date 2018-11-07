@@ -673,7 +673,7 @@ end;
 
 elseif ex4D == 1
     cd(dir_results)
-    list = dir('4D*');
+    list = dir('4D*.nii');
     example = load_nii(list(1).name);
     study_design.number_subjects = length(example.img(1,1,1,:));
     if cond_1 == 1

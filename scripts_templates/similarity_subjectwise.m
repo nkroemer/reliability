@@ -1,4 +1,4 @@
-function out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean)
+function out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind)
 
 if sim2mean ==  1
        mean_temp = [];

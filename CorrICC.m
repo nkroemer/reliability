@@ -251,13 +251,20 @@ if roi == 1
         end;
     end;
     compl = [roi_dir f roi_ful];
+    temp_1 = sprintf('%s,1',compl);
     
     % reslice ROI
     disp('...reslicing ROI...');
-    stats_filled = sprintf(stats_dir,1);
-    temp = [stats_path f id{1} f stats_filled f con ',1'];
+    if exStats == 1
+        stats_filled = sprintf(stats_dir,1);
+        temp = [stats_path f id{1} f stats_filled f con ',1'];
+    elseif ex4D == 1
+        cd(dir_results)
+        abk_4Dto3D([dir_results f '4D_1.nii'],1)
+        temp = [dir_results f 'template_3D.nii' ',1'];
+    end;
+        
     matlabbatch{1}.spm.spatial.coreg.write.ref = {temp};
-    temp_1 = sprintf('%s,1',compl);
     matlabbatch{1}.spm.spatial.coreg.write.source = {temp_1};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;
     matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
@@ -281,7 +288,7 @@ if roi == 1
         end;
         cd(dir_results);
         r_roi = load_nii(sprintf('r%s.img',roi_name));
-        r_roi_ind = r_roi.img==1;
+        r_roi_ind = r_roi.img>0.0001;
     else
         compl = [roi_dir f 'r' roi_name '.nii'];
         if ~strcmp(roi_dir,dir_results)
@@ -289,10 +296,27 @@ if roi == 1
         end;
         cd(dir_results);
         r_roi = load_nii(sprintf('r%s.nii',roi_name));
-        r_roi_ind = r_roi.img==1;
+        r_roi_ind = r_roi.img>0.0001;
     end;
     cd(dir_results);
+    if ex4D == 1
+        temp = [dir_results f 'template_3D.nii'];
+        temp = load_nii(temp);
+    end;
     clear r_roi roi_ful;
+else
+    str = '';
+    if exStats == 1
+        stats_filled = sprintf(stats_dir,1);
+        temp = [stats_path f id{1} f stats_filled f con];
+        temp = load_nii(temp);
+    elseif ex4D == 1
+        temp = [dir_results f 'template_3D.nii'];
+        temp = load_nii(temp);
+    end;
+    [x,y,z] = size(temp.img);
+    r_roi_ind = zeros(x,y,z);
+    r_roi_ind = r_roi_ind==0;    
 end;
 %% load 4D images whole-brain, without ROI
 if exStats == 1
@@ -371,7 +395,7 @@ elseif ex4D == 1
                 file = [dir_results f '4D_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file;',ind_run));
                 cd(dir_results);
-                temp_img = load_nii('temp_img.nii');
+                temp_img = temp;
                 eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d = FourD%d.img;',ind_run,ind_run));
                 
@@ -384,7 +408,7 @@ elseif ex4D == 1
                 file = [dir_results f '4D_' conditions{ind_cond,1} '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file;',ind_run));
                 cd(dir_results);
-                temp_img = load_nii('temp_img.nii');
+                temp_img = temp;
                 eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%s%d = FourD%d.img;',conditions{ind_cond,1},ind_run,ind_run));
                 
@@ -888,6 +912,9 @@ if roi == 1
             end;
         end;
     elseif ex4D == 1
+        % initiate summary
+        cols = {};
+        summary = [];
         for ind_cond = 1:nr_cond
             for i = 1:runs
                 if nr_cond == 1
@@ -895,7 +922,7 @@ if roi == 1
                     for i_subj = 1:nr_subj
                         img_subj = [];
                         eval(sprintf('img_subj = FourD%d(:,:,:,%d);',i,i_subj));
-                        eval(sprintf('img_%d_ROI(i_subj,1) = mean(img_subj(r_roi_ind);',i));
+                        eval(sprintf('img_%d_ROI(i_subj,1) = mean(img_subj(r_roi_ind));',i));
                         clear img_subj
                     end;
                     
@@ -969,9 +996,9 @@ if roi == 1
                 end;
                 disp('...calculating ICCs for mean ROI activity...')
                 %create data matrix
-                data=zeros(nr_subj,runs);
+                data=zeros(runs,nr_subj);
                 for ind_runs = 1:runs
-                    eval(sprintf('data(:,ind_runs) = img_%d_ROI%s;',ind_runs,str_cond));
+                    eval(sprintf('data(ind_runs,:) = img_%d_ROI%s;',ind_runs,str_cond));
                 end;
                 
                 disp('...over all sessions...')
@@ -984,9 +1011,9 @@ if roi == 1
                     ICC_con=(BMS-EMS)./(BMS+(runs-1).*EMS);
                     zICC_con = .5.*log((1+ICC_con)./(1-ICC_con));
                     summary(1,end+1)=ICC_con;
-                    cols{1,end+1} = sprintf('ICC_con%s',conditions{ind_cond,1});
+                    cols{1,end+1} = sprintf('ICC_con%s',str_cond);
                     summary(1,end+1)=zICC_con;
-                    cols{1,end+1} = sprintf('zICC_con%s',conditions{ind_cond,1});
+                    cols{1,end+1} = sprintf('zICC_con%s',str_cond);
                 end;
                 
                 %absolute agreement
@@ -995,9 +1022,9 @@ if roi == 1
                         runs.* (JMS-EMS)./nr_subj);
                     zICC_abs = .5.*log((1+ICC_abs)./(1-ICC_abs));
                     summary(1,end+1)=ICC_abs;
-                    cols{1,end+1} = sprintf('ICC_abs%s',conditions{ind_cond,1});
+                    cols{1,end+1} = sprintf('ICC_abs%s',str_cond);
                     summary(1,end+1)=zICC_abs;
-                    cols{1,end+1} = sprintf('zICC_abs%s',conditions{ind_cond,1});
+                    cols{1,end+1} = sprintf('zICC_abs%s',str_cond);
                 end;
                 clear data
             end;
@@ -2985,13 +3012,20 @@ if cons == 1 || abs == 1
             for ind_runs = 1:runs
                 for ind_subj = 1:nr_subj
                     eval(sprintf('temp = img_%d(:,:,:,ind_subj);',ind_runs));
-                    data(:,ind_subj,ind_runs)=temp(:);
+                    data1(:,ind_subj,ind_runs)=temp(:);
                 end;
             end;
             clear temp
             disp('...over all sessions...')
             %calculate ICCs
             for ind_voxel = 1:nr_vox
+                for ind_runs = 1:runs
+                    if ind_runs == 1
+                        data = data1(ind_voxel,:,ind_runs);
+                    else
+                        data = [data;data1(ind_vox,:,ind_runs)];
+                    end;
+                end;
                 [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);
                 voxBMS(ind_voxel,1) = BMS; % between subject
                 voxWMS(ind_voxel,1) = WMS; % within subject
@@ -3120,14 +3154,20 @@ if cons == 1 || abs == 1
                     for ind_runs = 1:runs
                         for ind_subj = 1:nr_subj
                             eval(sprintf('temp = img_par%d_%d(:,:,:,ind_subj);',i_par,ind_runs));
-                            data(:,ind_subj,ind_runs)=temp(:);
+                            data1(:,ind_subj,ind_runs)=temp(:);
                         end;
                     end;
                     clear temp
                     
                     %calculate ICCs
                     for ind_voxel = 1:nr_vox
-
+                        for ind_runs = 1:runs
+                            if ind_runs == 1
+                                data = data1(ind_voxel,:,ind_runs);
+                            else
+                                data = [data;data1(ind_vox,:,ind_runs)];
+                            end;
+                        end;
                         [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);                     
                         voxBMS(ind_voxel,1) = BMS; % between subject
                         voxWMS(ind_voxel,1) = WMS; % within subject
@@ -3265,7 +3305,7 @@ if cons == 1 || abs == 1
                             fprintf('...calculate ICC for session %d and session %d...\n',ind_run,ind_run+ind_sec);
                             for ind_vox = 1:nr_vox
                                 data = data1(ind_vox,:,ind_run);
-                                data = [data,data1(ind_vox,ind_run+ind_sec)];
+                                data = [data;data1(ind_vox,:,ind_run+ind_sec)];
 
                                 [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                                 voxBMS(ind_vox,1) = BMS; % between subject
@@ -3419,7 +3459,7 @@ if cons == 1 || abs == 1
                                     
                                     for ind_vox = 1:nr_vox
                                         data = data2(ind_vox,:,ind_run);
-                                        data = [data,data2(ind_vox,ind_run+ind_sec)];
+                                        data = [data;data2(ind_vox,:,ind_run+ind_sec)];
 
                                         [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                                         voxBMS(ind_voxel,1) = BMS; % between subject
@@ -3561,7 +3601,7 @@ if cons == 1 || abs == 1
                 for ind_split = 1:2
                     for ind_subj = 1:nr_subj
                         eval(sprintf('temp = img_%d_split%d(:,:,:,ind_subj);',ind_runs,ind_split));
-                        data(:,ind_subj,ind_split)=temp(:);
+                        data1(:,ind_subj,ind_split)=temp(:);
                     end;
                 end;
                 clear temp
@@ -3569,7 +3609,10 @@ if cons == 1 || abs == 1
                 %calculate ICCs
                 fprintf('...calculate ICCs for splitted session %d...\n',ind_runs)
                 for ind_voxel = 1:nr_vox
-                    [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
+                    data = data1(ind_voxel,:,1);
+                    data = [data;data1(ind_voxel,:,2)];
+
+                    [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data(ind_voxel,:,:));
                     voxBMS(ind_voxel,1) = BMS; % between subject
                     voxWMS(ind_voxel,1) = WMS; % within subject
                     voxEMS(ind_voxel,1) = EMS; % error
@@ -3696,13 +3739,15 @@ if cons == 1 || abs == 1
                         for ind_split = 1:2
                             for ind_subj = 1:nr_subj
                                 eval(sprintf('temp = img_%d_par%d_split%d(:,:,:,ind_subj);',ind_runs,i_par,ind_split));
-                                data(:,ind_subj,ind_split)=temp(:);
+                                data1(:,ind_subj,ind_split)=temp(:);
                             end;
                         end;
                         clear temp
-                        
-                        %calculate ICCs
                         for ind_voxel = 1:nr_vox
+                            %calculate ICCs
+                            data = data1(ind_voxel,:,1);
+                            data = [data;data1(ind_voxel,:,2)];
+
                             [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                             voxBMS(ind_voxel,1) = BMS; % between subject
                             voxWMS(ind_voxel,1) = WMS; % within subject
@@ -3885,7 +3930,7 @@ if cons == 1 || abs == 1
                 for ind_con = 1:2
                     for ind_subj = 1:nr_subj
                         eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',ind_runs,ind_con));
-                        data(:,ind_subj,ind_con)=temp(:);
+                        data1(:,ind_subj,ind_con)=temp(:);
                     end;
                 end;
                 clear temp
@@ -3894,6 +3939,8 @@ if cons == 1 || abs == 1
                 fprintf('...calculate ICC between contrasts for session %d...',ind_runs);
                 
                 for ind_voxel = 1:nr_vox
+                    data = data1(ind_voxel,:,1);
+                    data = [data;data1(ind_voxel,:,2)];
                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                     voxBMS(ind_voxel,1) = BMS; % between subject
                     voxWMS(ind_voxel,1) = WMS; % within subject
@@ -4021,17 +4068,19 @@ if cons == 1 || abs == 1
                     fprintf('...calculating ICCs between parametric regressors of contrasts in session %d...',ind_runs)
                 
                     %create data matrix
-                    data=zeros(nr_vox,nr_subj,2);
+                    data1=zeros(nr_vox,nr_subj,2);
                     for ind_con = 1:2
                          for ind_subj = 1:nr_subj
                              eval(sprintf('temp = img_con%d_par%d_%d(:,:,:,ind_subj);',ind_con,i_par,ind_runs));
-                             data(:,ind_subj,ind_runs)=temp(:);
+                             data1(:,ind_subj,ind_con)=temp(:);
                          end;
                     end;
                         clear temp
                 
                         %calculate ICCs
                         for ind_voxel = 1:nr_vox
+                            data = data1(ind_voxel,:,1);
+                            data = [data;data1(ind_voxel,:,2)];
                             [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                             voxBMS(ind_voxel,1) = BMS; % between subject
                             voxWMS(ind_voxel,1) = WMS; % within subject
@@ -4204,7 +4253,7 @@ if cons == 1 || abs == 1
                 z_ICC_abs_ROI=zeros(numel(img_1_con1(:,:,:,1)),1);
                              
                 %create data matrix
-                data=zeros(nr_vox,nr_subj,runs);
+                data1=zeros(nr_vox,nr_subj,runs);
                 voxBMS = zeros(nr_vox,1);
                 voxWMS = zeros(nr_vox,1);
                 voxJMS = zeros(nr_vox,1);
@@ -4213,13 +4262,21 @@ if cons == 1 || abs == 1
                 for ind_runs = 1:runs
                     for ind_subj = 1:nr_subj
                         eval(sprintf('temp = img_%d_con%d(:,:,:,ind_subj);',ind_runs,ind_con));
-                        data(:,ind_subj,ind_runs)=temp(:);
+                        data1(:,ind_subj,ind_runs)=temp(:);
                     end;
                 end;
                 clear temp
                 
                 %calculate ICCs
                 for ind_voxel = 1:nr_vox
+                    for ind_runs = 1:runs
+                        if ind_runs == 1
+                            data = data1(ind_voxel,:,ind_runs);
+                        else
+                            data = [data;data1(ind_voxel,:,ind_runs)];
+                        end
+                    end
+                       
                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);
                     voxBMS(ind_voxel,1) = BMS; % between subject
                     voxWMS(ind_voxel,1) = WMS; % within subject
@@ -4340,7 +4397,7 @@ if cons == 1 || abs == 1
                 z_ICC_abs_ROI=zeros(nr_vox,1);
             
                         %create data matrix
-                        data=zeros(nr_vox,nr_subj,runs);
+                        data1=zeros(nr_vox,nr_subj,runs);
                         voxBMS = zeros(nr_vox,1);
                         voxWMS = zeros(nr_vox,1);
                         voxJMS = zeros(nr_vox,1);
@@ -4350,13 +4407,20 @@ if cons == 1 || abs == 1
                     for ind_runs = 1:runs
                          for ind_subj = 1:nr_subj
                              eval(sprintf('temp = img_con%d_par%d_%d(:,:,:,ind_subj);',ind_con,i_par,ind_runs));
-                             data(:,ind_subj,ind_runs)=temp(:);
+                             data1(:,ind_subj,ind_runs)=temp(:);
                          end;
                     end;
                     clear temp
             
                     %calculate ICCs
                     for ind_voxel = 1:nr_vox
+                        for ind_runs = 1:runs
+                            if ind_runs == 1
+                                data = data1(ind_voxel,:,ind_runs);
+                            else
+                                data = [data;data1(ind_voxel,:,ind_runs)];
+                            end
+                        end                        
                         [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);
                         voxBMS(ind_voxel,1) = BMS; % between subject
                         voxWMS(ind_voxel,1) = WMS; % within subject
@@ -4789,7 +4853,7 @@ if cons == 1 || abs == 1
     if ex4D == 1
         if nr_cond == 1
             %create data matrix
-            data=zeros(nr_vox,nr_subj,runs);
+            data1=zeros(nr_vox,nr_subj,runs);
             voxBMS = zeros(nr_vox,1);
             voxWMS = zeros(nr_vox,1);
             voxJMS = zeros(nr_vox,1);
@@ -4798,14 +4862,20 @@ if cons == 1 || abs == 1
             for ind_runs = 1:runs
                 for ind_subj = 1:nr_subj
                     eval(sprintf('temp = FourD%d(:,:,:,ind_subj);',ind_runs));
-                    data(:,ind_subj,ind_runs)=temp(:);
+                    data1(:,ind_subj,ind_runs)=temp(:);
                 end;
             end;
             clear temp
             disp('...over all sessions...')
             %calculate ICCs
             for ind_voxel = 1:nr_vox
- 
+                for ind_runs = 1:runs
+                    if ind_runs == 1
+                        data = data1(ind_voxel,:,ind_runs);
+                    else
+                        data = [data;data1(ind_voxel,:,ind_runs)];
+                    end
+                end
                 [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);
                 voxBMS(ind_voxel,1) = BMS; % between subject
                 voxWMS(ind_voxel,1) = WMS; % within subject
@@ -4947,7 +5017,7 @@ if cons == 1 || abs == 1
                             fprintf('...calculate ICC for session %d and session %d...\n',ind_run,ind_run+ind_sec);
                             for ind_vox = 1:nr_vox
                                 data = data1(ind_vox,:,ind_run);
-                                data = [data,data1(ind_vox,:,ind_run+ind_sec)];    
+                                data = [data;data1(ind_vox,:,ind_run+ind_sec)];    
                                 [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                                 voxBMS(ind_vox,1) = BMS; % between subject
                                 voxWMS(ind_vox,1) = WMS; % within subject
@@ -5084,7 +5154,7 @@ if cons == 1 || abs == 1
                 for ind_con = 1:2
                     for ind_subj = 1:nr_subj
                         eval(sprintf('temp = FourD%s%d(:,:,:,ind_subj);',conditions{ind_con,1},ind_con));
-                        data(:,ind_subj,ind_con)=temp(:);
+                        data1(:,ind_subj,ind_con)=temp(:);
                     end;
                 end;
                 clear temp
@@ -5093,7 +5163,8 @@ if cons == 1 || abs == 1
                 fprintf('...calculate ICC betweens conditions for session %d...\n ',ind_runs);
                 
                 for ind_voxel = 1:nr_vox
-
+                    data = data1(ind_voxel,:,1);
+                    data = [data;data1(ind_voxel,:,2)];  
                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                     voxBMS(ind_voxel,1) = BMS; % between subject
                     voxWMS(ind_voxel,1) = WMS; % within subject
@@ -5277,14 +5348,20 @@ if cons == 1 || abs == 1
                 for ind_runs = 1:runs
                     for ind_subj = 1:nr_subj
                         eval(sprintf('temp = FourD%s%d(:,:,:,ind_subj);',conditions{ind_con,1},ind_runs));
-                        data(:,ind_subj,ind_runs)=temp(:);
+                        data1(:,ind_subj,ind_runs)=temp(:);
                     end;
                 end;
                 clear temp
                 
                 %calculate ICCs
                 for ind_voxel = 1:nr_vox
-
+                    for ind_runs = 1:runs
+                        if ind_runs == 1
+                            data = data1(ind_voxel,:,ind_runs);
+                        else
+                            data = [data;data1(ind_vox,:,ind_runs)];
+                        end;
+                    end;
                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);
                     voxBMS(ind_voxel,1) = BMS; % between subject
                     voxWMS(ind_voxel,1) = WMS; % within subject

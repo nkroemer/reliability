@@ -203,7 +203,6 @@ if exStats == 1
 end;
 %% load and reslice ROI
 if use_roi == 1
-    str=get(handles.name_roi,'String');
     disp('...load and reslice ROI...')
     roi_pur=get(handles.name_roi,'String');
     roi_dir=evalin('base','roi_dir');
@@ -218,8 +217,15 @@ if use_roi == 1
     end;
     roi_compl = [roi_dir f roi_name];
     disp('...reslicing ROI...');
-    stats_filled = sprintf(stats,1);
-    temp = [path f id{1} f stats_filled f con ',1'];
+    if exStats == 1
+        stats_filled = sprintf(stats,1);
+        temp = [path f id{1} f stats_filled f con ',1'];
+    elseif ex4D == 1
+        cd(results_dir)
+        abk_4Dto3D([results_dir f '4D_1.nii'],1)
+        temp = [results_dir f 'template_3D.nii' ',1'];
+    end;
+        
     matlabbatch{1}.spm.spatial.coreg.write.ref = {temp};
     matlabbatch{1}.spm.spatial.coreg.write.source = {sprintf('%s,1',roi_compl)};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;
@@ -242,7 +248,7 @@ if use_roi == 1
         end;
         cd(results_dir);    
         r_roi = load_nii(sprintf('r%s.img',roi_pur));
-        r_roi_ind = r_roi.img==1;
+        r_roi_ind = r_roi.img>0.0001;
     else
         if ~strcmp(roi_dir,results_dir)
         compl = [roi_dir f  'r' roi_pur '.nii'];
@@ -250,10 +256,21 @@ if use_roi == 1
         end;
         cd(results_dir);    
         r_roi = load_nii(sprintf('r%s',roi_name));
-        r_roi_ind = r_roi.img==1;        
+        r_roi_ind = r_roi.img>0.0001;        
     end;
 else
     str = '';
+    if exStats == 1
+        stats_filled = sprintf(stats,1);
+        temp = [path f id{1} f stats_filled f con];
+        temp = load_nii(temp);
+    elseif ex4D == 1
+        temp = [results_dir f 'template_3D.nii'];
+        temp = load_nii(temp);
+    end;
+    [x,y,z] = size(temp.img);
+    r_roi_ind = zeros(x,y,z);
+    r_roi_ind = r_roi_ind==0;
 end;
 
 
@@ -404,7 +421,7 @@ for ind_run = 1:runs
                 fprintf('...compare session %d to %d...\n',ind_run,ind_run+count);
                 eval(sprintf('TempFourD1 = FourD%d;',ind_run));
                 eval(sprintf('TempFourD2 = FourD%d;',ind_run+count));
-                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
         
                 cd(results_dir);
                 eval(sprintf('save similarity-%s-%s-%d-%d.mat out',str,con,ind_run, ind_run+count));           
@@ -426,7 +443,7 @@ if nr_para > 0
                         fprintf('...compare parametric session %d to %d...\n',ind_run,ind_run+count);
                         eval(sprintf('TempFourD1 = FourD%d_par%d;',ind_run,ind_para));
                         eval(sprintf('TempFourD2 = FourD%d_par%d;',ind_run+count,ind_para));
-                        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
                         
                         cd(results_dir);
                         eval(sprintf('save similarity-par%d-%s-%s-%d-%d.mat out',ind_para,str,con,ind_run, ind_run+count));           
@@ -452,7 +469,7 @@ elseif two_cons == 1
                 fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con1_count);
                 eval(sprintf('TempFourD1 = FourD%d_%d;',ind_run,con1_count));
                 eval(sprintf('TempFourD2 = FourD%d_%d;',ind_run+count,con1_count));
-                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
                 
                 cd(results_dir);
                 eval(sprintf('save similarity-%s-%s-%d-%d.mat out',str,con1,ind_run, ind_run+count));           
@@ -470,7 +487,7 @@ elseif two_cons == 1
                         fprintf('...compare session %d to %d in parametric modulator %d of contrast %d...\n',ind_run,ind_run+count,ind_para,con1_count);
                         eval(sprintf('TempFourD1 = FourD%d_%d_par%d;',ind_run,con1_count,ind_para));
                         eval(sprintf('TempFourD2 = FourD%d_%d_par%d;',ind_run+count,con1_count,ind_para));
-                        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
 
                         cd(results_dir);
                         eval(sprintf('save similarity-%s-%s-par%d-%d-%d.mat out',str,con1,ind_para,ind_run, ind_run+count));           
@@ -488,7 +505,7 @@ elseif two_cons == 1
                 fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con2_count);
                 eval(sprintf('TempFourD1 = FourD%d_%d;',ind_run,con2_count));
                 eval(sprintf('TempFourD2 = FourD%d_%d;',ind_run+count,con2_count));
-                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
                 
                 cd(results_dir);
                 eval(sprintf('save similarity-%s-%s-%d-%d.mat out',str,con2,ind_run, ind_run+count));           
@@ -506,7 +523,7 @@ elseif two_cons == 1
                         fprintf('...compare session %d to %d in parametric modulator %d of contrast %d...\n',ind_run,ind_run+count,ind_para,con2_count);
                         eval(sprintf('TempFourD1 = FourD%d_%d_par%d;',ind_run,con2_count,ind_para));
                         eval(sprintf('TempFourD2 = FourD%d_%d_par%d;',ind_run+count,con2_count,ind_para));
-                        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
 
                         cd(results_dir);
                         eval(sprintf('save similarity-%s-%s-par%d-%d-%d.mat out',str,con2,ind_para,ind_run, ind_run+count));           
@@ -528,7 +545,7 @@ elseif two_cons == 1
         fprintf('...compare session %d in contrast %d and %d...\n',i_run,con1_count,con2_count);
         eval(sprintf('TempFourD1 = FourD%d_%d;',i_run,con1_count));
         eval(sprintf('TempFourD2 = FourD%d_%d;',i_run,con2_count));
-        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
                 
         cd(results_dir);
         eval(sprintf('save similarity-%s-%s-%s-%d.mat out',str,con1,con2,ind_run));           
@@ -544,7 +561,7 @@ elseif two_cons == 1
             for ind_para = 1:nr_para1
                 eval(sprintf('TempFourD1 = FourD%d_%d_par%d;',i_run,con1_count,ind_para));
                 eval(sprintf('TempFourD2 = FourD%d_%d_par%d;',i_run,con2_count,ind_para));
-                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
 
                 cd(results_dir);
                 eval(sprintf('save similarity-%s-%s-%s-par%d-%d.mat out',str,con1,con2,ind_para,ind_run));           
@@ -566,7 +583,7 @@ elseif split == 1
         fprintf('...compare splits session %d ...\n',i_run);
         eval(sprintf('TempFourD1 = FourD%d_split1;',i_run));
         eval(sprintf('TempFourD2 = FourD%d_split2;',i_run));
-        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
         
         cd(results_dir);
         eval(sprintf('save similarity-%s-%s-%d-split.mat out',str,con,i_run));           
@@ -583,7 +600,7 @@ elseif split == 1
                 fprintf('...compare splits parametric modulator %d session %d ...\n',ind_para,i_run);
                 eval(sprintf('TempFourD1 = FourD%d_split1_par%d(:,:,:,i);',i_run,ind_para));
                 eval(sprintf('TempFourD2 = FourD%d_split2_par%d(:,:,:,j);',i_run,ind_para));
-                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
                 cd(results_dir);
                 eval(sprintf('save similarity-par%d-%s-%s-%d-split.mat out',ind_para,str,con,i_run));           
                 
@@ -605,7 +622,7 @@ for ind_run = 1:runs
                 fprintf('...compare session %d to %d...\n',ind_run,ind_run+count);
                 eval(sprintf('TempFourD1 = FourD%d;',ind_run));
                 eval(sprintf('TempFourD2 = FourD%d;',ind_run+count));
-                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
         
                 cd(results_dir);
                 eval(sprintf('save similarity-%s-%d-%d.mat out',str,ind_run, ind_run+count));           
@@ -628,7 +645,7 @@ else
                     fprintf('...compare session %d to %d in condition %s...\n',ind_run,ind_run+count,conditions{ind_cond,1});
                     eval(sprintf('TempFourD1 = FourD%s%d;',conditions{ind_cond,1},ind_run));
                     eval(sprintf('TempFourD2 = FourD%s%d;',conditions{ind_cond,1},ind_run+count));
-                    out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+                    out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
                     cd(results_dir);
                     eval(sprintf('save similarity-%s-%d-%d-%s.mat out',str,ind_run, ind_run+count,conditions{ind_cond,1}));           
                     [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
@@ -648,7 +665,7 @@ else
         fprintf('...compare session %d in condition %s and %s...\n',i_run,conditions{1,1},conditions{2,1});
         eval(sprintf('TempFourD1 = FourD%s%d(:,:,:,i);',conditions{1,1},i_run));
         eval(sprintf('TempFourD2 = FourD%s%d(:,:,:,j);',conditions{2,1},i_run));
-        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean);
+        out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2mean,r_roi_ind);
         cd(results_dir);
         eval(sprintf('save similarity-%s-%d-%s-%s.mat out',str,i_run,conditions{1,1},conditions{2,1}));           
         [fig] = similarity_figure(out.r_mat,sim2mean,i_run,ind_run+count,str);

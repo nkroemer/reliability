@@ -123,16 +123,21 @@ contrast_def = evalin('base','contrast_def');
 
 %% get study design info
 results_dir = study_design.results_directory;
-stats_path = study_design.stats_path;
 load(study_design.subject_list); % loads id list
-stats_filled = sprintf(study_design.stats_directory,1);
-two_cons = contrast_def.two_contrasts;
-if two_cons == 1
-    con = [contrast_def.contrast1 contrast_def.contrast_format];
-    
-else
-    con = contrast_def.contrast;
+exStats = study_design.exist_stats;
+ex4D = study_design.exist_4D;
+if exStats == 1
+    stats_path = study_design.stats_path;
+    stats_filled = sprintf(study_design.stats_directory,1);
+    two_cons = contrast_def.two_contrasts;
+    if two_cons == 1
+        con = [contrast_def.contrast1 contrast_def.contrast_format];
+
+    else
+        con = contrast_def.contrast;
+    end;
 end;
+
 
 nr_runs = study_design.number_sessions;
 
@@ -146,7 +151,11 @@ cd('atlas');
 atlas_dir = pwd;
 atlas_name = 'atlas.nii';
 atlas_compl = [atlas_dir f atlas_name];
+if exStats == 1
     matlabbatch{1}.spm.spatial.coreg.write.ref = {[stats_path f id{1} f stats_filled f con ',1']};
+else 
+    matlabbatch{1}.spm.spatial.coreg.write.ref = {[results_dir f 'template_3D.nii' ',1']};
+end;       
     matlabbatch{1}.spm.spatial.coreg.write.source = {[atlas_compl ',1']};
     matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 4;
     matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
@@ -175,7 +184,7 @@ rel_summary={};
 rel_summary(2:length(Labels)+1,1) = Labels;
 rel_summary(1,1) = {'atlas regions'};
 rel_summary(2:length(Labels_yeo)+1,2) = Labels_yeo(:,3);
-rel_summary(1,3) = {'yeo networks'};
+rel_summary(1,2) = {'yeo networks'};
 
 %% get GUI input
 corr = get(handles.corr,'Value');
