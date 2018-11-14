@@ -427,7 +427,7 @@ nr_vox = x*y*z;
 cd (dir_results);
 % for naming of outputs
 if roi == 1
-    str = 'ROI';
+    str = roi_name;
 else
     str = '';
 end;
@@ -598,9 +598,9 @@ if roi == 1
             if cons == 1 || abs == 1
                 disp('...calculating ICCs for mean ROI activity...')
                 %create data matrix
-                data=zeros(nr_subj,runs);
+                data=zeros(runs,nr_subj);
                 for ind_runs = 1:runs
-                    eval(sprintf('data(:,ind_runs) = img_%d_ROI;',ind_runs));
+                    eval(sprintf('data(ind_runs,:) = img_%d_ROI;',ind_runs));
                 end;
                 
                 disp('...over all sessions...')
@@ -633,9 +633,9 @@ if roi == 1
                 if nr_para > 0
                     for i_para = 1:nr_para
                         %create data matrix
-                        data=zeros(nr_subj,runs);
+                        data=zeros(runs,nr_subj);
                         for ind_runs = 1:runs
-                            eval(sprintf('data(:,ind_runs) = img_par%d_%d_ROI;',i_para,ind_runs));
+                            eval(sprintf('data(ind_runs,:) = img_par%d_%d_ROI;',i_para,ind_runs));
                         end;
                         
                         disp('...over all sessions...')
@@ -3023,7 +3023,7 @@ if cons == 1 || abs == 1
                     if ind_runs == 1
                         data = data1(ind_voxel,:,ind_runs);
                     else
-                        data = [data;data1(ind_vox,:,ind_runs)];
+                        data = [data;data1(ind_voxel,:,ind_runs)];
                     end;
                 end;
                 [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);
@@ -3165,7 +3165,7 @@ if cons == 1 || abs == 1
                             if ind_runs == 1
                                 data = data1(ind_voxel,:,ind_runs);
                             else
-                                data = [data;data1(ind_vox,:,ind_runs)];
+                                data = [data;data1(ind_voxel,:,ind_runs)];
                             end;
                         end;
                         [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,runs,data);                     
