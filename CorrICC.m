@@ -291,6 +291,21 @@ if roi == 1
     end;
     cd(dir_results);
     clear r_roi roi_ful;
+    else
+      str = '';
+      if exStats == 1
+          stats_filled = sprintf(stats,1);
+          temp = [path f id{1} f stats_filled f con];
+          temp = load_nii(temp);
+      elseif ex4D == 1
+          cd(results_dir)
+          abk_4Dto3D([results_dir f '4D_1.nii'],1)
+          temp = [results_dir f 'template_3D.nii'];
+          temp = load_nii(temp);
+      end;
+      [x,y,z] = size(temp.img);
+      r_roi_ind = zeros(x,y,z);
+      r_roi_ind = r_roi_ind==0;
 end;    
 %% load 4D images whole-brain, without ROI
 if exStats == 1
