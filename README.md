@@ -58,7 +58,7 @@ The required folder structure is (at the moment) as follows:
     1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in a placebo and drug condition: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
     1. If you have only one condition for several sessions, just denote the sessions by 4D_1.nii, 4D_2.nii ... 
     1. Please also provide an exemplary 3D nifti called 'temp_img.nii' to facilitate creating result images with the image dimensions of your study. This can be simply one image of the 4D.nii (this will be fixed in a future version)
-    1. In the GUI, select Contrast(s) of Interest and check either the box for one condition or more conditions (corresponding to the naming scheme of your 4D nifti files. Please also enter a prefix for the contrast definition and click on "save contrast definition" once you are finished.
+    1. In the GUI, select Contrast(s) of Interest and check either the box for one condition or more conditions (corresponding to the naming scheme of your 4D nifti files). Please also enter a prefix for the contrast definition and click on "save contrast definition" once you are finished.
     1. Please note that if you do not provide the first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
 
 ### Split-half reliability: Assessing reliability within a single contrast and session
