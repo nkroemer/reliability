@@ -53,11 +53,12 @@ The required folder structure is (at the moment) as follows:
 ### If no first-level statistics with design matrices are available (e.g., resting state or DWI)
     
 1. *fmreli beta 1.0* offers the possibility to use existing 4D files as input as well. Since this function was not at the heart of the development, there is only a limited work flow available at the moment. 
+    1. In the GUI, please select Design, enter the number of sessions, enter the number of subjects, select the "yes" checkbox for only 4D data as input, select a result directory with accompanying prefix, and click on "save study design" once you are finished.
     1. Please save your 4D files for the analysis in the defined results directory. 
     1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in a placebo and drug condition: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
     1. If you have only one condition for several sessions, just denote the sessions by 4D_1.nii, 4D_2.nii ... 
     1. Please also provide an exemplary 3D nifti called 'temp_img.nii' to facilitate creating result images with the image dimensions of your study. This can be simply one image of the 4D.nii (this will be fixed in a future version)
-    1. In the GUI, please select design, enter the number of sessions, enter the number of subjects, and select the "yes" checkbox for only 4D data as input. As result directory, you will have to enter the directory where the corresponding 4D niftis are stored.
+    1. In the GUI, select Contrast(s) of Interest and check either the box for one condition or more conditions (corresponding to the naming scheme of your 4D nifti files. Please also enter a prefix for the contrast definition and click on "save contrast definition" once you are finished.
     1. Please note that if you do not provide the first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
 
 ### Split-half reliability: Assessing reliability within a single contrast and session
