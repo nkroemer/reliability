@@ -500,14 +500,9 @@ cd (dir_results);
                                 eval(sprintf('first = img_%d_ROI;',i))
                                 eval(sprintf('second = img_%d_ROI;',i+j))
                                 if pear == 1
-                                    r = corrcoef(first,second, 'rows', 'pairwise');
-                                    if isnan (r(1,2))
-                                        r1(i_vox,1) = 0;
-                                        zr1(i_vox,1) = 0;
-                                    else
-                                        r1(i_vox,1) = r(1,2);
-                                        zr1(i_vox,1) = atanh(r(1,2));
-                                    end;
+                                    r = corr(first,second, 'Type','Pearson', 'rows', 'pairwise');
+                                    r1(i_vox,1) = r;  
+                                    zr1(i_vox,1) = atanh(r);
                                     summary(1,end+1)=r1;
                                     cols{1,end+1} = sprintf('Pearson_%d_%d',i,i+j);   
                                     summary(1,end+1)=zr1;
@@ -531,14 +526,9 @@ cd (dir_results);
                                         eval(sprintf('first = img_par%d_%d_ROI;',ind_p,i))
                                         eval(sprintf('second = img_par%d_%d_ROI;',ind_p,i+j))
                                         if pear == 1
-                                            r = corrcoef(first,second, 'rows', 'pairwise');
-                                            if isnan (r(1,2))
-                                                r1(i_vox,1) = 0;
-                                                zr1(i_vox,1) = 0;
-                                            else
-                                                r1(i_vox,1) = r(1,2);
-                                                zr1(i_vox,1) = atanh(r(1,2));
-                                            end;
+                                            r = corr(first,second, 'Type','Pearson', 'rows', 'pairwise');
+                                            r1(i_vox,1) = r;  
+                                            zr1(i_vox,1) = atanh(r); 
                                             summary(1,end+1)=r1;
                                             cols{1,end+1} = sprintf('Pearson_%d_%d_par%d',i,i+j,ind_p);   
                                             summary(1,end+1)=zr1;
@@ -792,14 +782,9 @@ if split == 0 && two_cons == 0 && runs > 1
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                            if isnan (r(1,2))
-                                r1(i_vox,1) = 0;
-                                zr1(i_vox,1) = 0;
-                            else
-                                r1(i_vox,1) = r(1,2);
-                                zr1(i_vox,1) = atanh(r(1,2));
-                            end;
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                            r1(i_vox,1) = r;  
+                            zr1(i_vox,1) = atanh(r);
                     end
                     if spea == 1
                             r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -973,14 +958,9 @@ if nr_para > 0
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                            if isnan (r(1,2))
-                                r1(i_vox,1) = 0;
-                                zr1(i_vox,1) = 0;
-                            else
-                                r1(i_vox,1) = r(1,2);
-                                zr1(i_vox,1) = atanh(r(1,2));
-                            end;
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                            r1(i_vox,1) = r;  
+                            zr1(i_vox,1) = atanh(r); 
                     end
                     if spea == 1
                             r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -1160,14 +1140,9 @@ elseif split == 1
     zr2 = zeros(nr_vox,1);
     for i_vox = 1:nr_vox
         if pear == 1 
-            r = corrcoef(data1(:,i_vox),data2(:,i_vox), 'rows', 'pairwise');
-                if isnan (r(1,2))
-                    r1(i_vox,1) = 0;
-                    zr1(i_vox,1) = 0;
-                else
-                    r1(i_vox,1) = r(1,2);
-                    zr1(i_vox,1) = atanh(r(1,2));
-                end;
+                r = corr(data1(:,i_vox),data2(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                r1(i_vox,1) = r;  
+                zr1(i_vox,1) = atanh(r);  
         end
         if spea == 1
                 r = corr(data1(:,i_vox),data2(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -1328,14 +1303,9 @@ if nr_para > 0
             zr2 = zeros(nr_vox,1);
             for i_vox = 1:nr_vox
                 if pear == 1 
-                    r = corrcoef(one(:,i_vox),two(:,i_vox), 'rows', 'pairwise');
-                        if isnan (r(1,2))
-                            r1(i_vox,1) = 0;
-                            zr1(i_vox,1) = 0;
-                        else
-                            r1(i_vox,1) = r(1,2);
-                            zr1(i_vox,1) = atanh(r(1,2));
-                        end;
+                        r = corr(one(:,i_vox),two(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                        r1(i_vox,1) = r;  
+                        zr1(i_vox,1) = atanh(r);
                 end
                 if spea == 1
                         r = corr(one(:,i_vox),two(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -1501,14 +1471,9 @@ elseif two_cons == 1
     zr2 = zeros(nr_vox,1);
     for i_vox = 1:nr_vox
         if pear == 1 
-            r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                if isnan (r(1,2))
-                    r1(i_vox,1) = 0;
-                    zr1(i_vox,1) = 0;
-                else
-                    r1(i_vox,1) = r(1,2);
-                    zr1(i_vox,1) = atanh(r(1,2));
-                end;
+                r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                r1(i_vox,1) = r;  
+                zr1(i_vox,1) = atanh(r);
         end
         if spea == 1
                 r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -1839,14 +1804,9 @@ for i_con = 1:2
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                            if isnan (r(1,2))
-                                r1(i_vox,1) = 0;
-                                zr1(i_vox,1) = 0;
-                            else
-                                r1(i_vox,1) = r(1,2);
-                                zr1(i_vox,1) = atanh(r(1,2));
-                            end;
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                            r1(i_vox,1) = r;  
+                            zr1(i_vox,1) = atanh(r);
                     end
                     if spea == 1
                             r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -2205,14 +2165,9 @@ elseif ex4D == 1
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                            if isnan (r(1,2))
-                                r1(i_vox,1) = 0;
-                                zr1(i_vox,1) = 0;
-                            else
-                                r1(i_vox,1) = r(1,2);
-                                zr1(i_vox,1) = atanh(r(1,2));
-                            end;
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                            r1(i_vox,1) = r;  
+                            zr1(i_vox,1) = atanh(r);
                     end
                     if spea == 1
                             r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -2390,14 +2345,9 @@ elseif ex4D == 1
     zr2 = zeros(nr_vox,1);
     for i_vox = 1:nr_vox
         if pear == 1 
-            r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                if isnan (r(1,2))
-                    r1(i_vox,1) = 0;
-                    zr1(i_vox,1) = 0;
-                else
-                    r1(i_vox,1) = r(1,2);
-                    zr1(i_vox,1) = atanh(r(1,2));
-                end;
+                r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                r1(i_vox,1) = r;  
+                zr1(i_vox,1) = atanh(r);
         end
         if spea == 1
                 r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
@@ -2555,14 +2505,9 @@ for i_con = 1:2
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
-                            if isnan (r(1,2))
-                                r1(i_vox,1) = 0;
-                                zr1(i_vox,1) = 0;
-                            else
-                                r1(i_vox,1) = r(1,2);
-                                zr1(i_vox,1) = atanh(r(1,2));
-                            end;
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Pearson', 'rows', 'pairwise');
+                            r1(i_vox,1) = r;  
+                            zr1(i_vox,1) = atanh(r);
                     end
                     if spea == 1
                             r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
