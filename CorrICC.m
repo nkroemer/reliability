@@ -298,9 +298,9 @@ if roi == 1
           temp = [path f id{1} f stats_filled f con];
           temp = load_nii(temp);
       elseif ex4D == 1
-          cd(results_dir)
-          abk_4Dto3D([results_dir f '4D_1.nii'],1)
-          temp = [results_dir f 'template_3D.nii'];
+          cd(dir_results)
+          abk_4Dto3D([dir_results f '4D_1.nii'],1)
+          temp = [dir_results f 'template_3D.nii'];
           temp = load_nii(temp);
       end;
       [x,y,z] = size(temp.img);
@@ -784,7 +784,7 @@ if split == 0 && two_cons == 0 && runs > 1
                 fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                 %load 4D images
                 eval(sprintf('one=data(:,:,%d);',i_run));
-                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -792,7 +792,7 @@ if split == 0 && two_cons == 0 && runs > 1
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                             if isnan (r(1,2))
                                 r1(i_vox,1) = 0;
                                 zr1(i_vox,1) = 0;
@@ -802,13 +802,13 @@ if split == 0 && two_cons == 0 && runs > 1
                             end;
                     end
                     if spea == 1
-                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                             r2(i_vox,1) = r;  
                             zr2(i_vox,1) = atanh(r);  
                     end;
                     
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image 
                 if pear == 1
@@ -965,7 +965,7 @@ if nr_para > 0
                 fprintf('...creates correlation maps for parametric contrast in session %d and session %d...\n',i_run,i_run+i_sec);
                 %load 4D images
                 eval(sprintf('one=data(:,:,%d);',i_run));
-                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -973,7 +973,7 @@ if nr_para > 0
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                             if isnan (r(1,2))
                                 r1(i_vox,1) = 0;
                                 zr1(i_vox,1) = 0;
@@ -983,13 +983,13 @@ if nr_para > 0
                             end;
                     end
                     if spea == 1
-                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                             r2(i_vox,1) = r;  
                             zr2(i_vox,1) = atanh(r);  
                     end;
                     
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image 
                 if pear == 1
@@ -1152,7 +1152,7 @@ elseif split == 1
     fprintf('...creates correlation maps for splitted session %d ...\n',i);
     %load 4D images
 %     one=data(:,:,1);
-%     second=data(:,:,2);
+%     two=data(:,:,2);
 
     r1 = zeros(nr_vox,1);
     zr1 = zeros(nr_vox,1);
@@ -1175,7 +1175,7 @@ elseif split == 1
                 zr2(i_vox,1) = atanh(r);  
         end;
     end;
-%     clear one second
+%     clear one two
                 
     % create correlation matrices for image 
     r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -1320,7 +1320,7 @@ if nr_para > 0
             fprintf('...creates correlation maps for splitted session %d ...\n',i);
             %load 4D images
              one=data(:,:,1);
-             second=data(:,:,2);
+             two=data(:,:,2);
 
             r1 = zeros(nr_vox,1);
             zr1 = zeros(nr_vox,1);
@@ -1328,7 +1328,7 @@ if nr_para > 0
             zr2 = zeros(nr_vox,1);
             for i_vox = 1:nr_vox
                 if pear == 1 
-                    r = corrcoef(one(:,i_vox),second(:,i_vox), 'rows', 'pairwise');
+                    r = corrcoef(one(:,i_vox),two(:,i_vox), 'rows', 'pairwise');
                         if isnan (r(1,2))
                             r1(i_vox,1) = 0;
                             zr1(i_vox,1) = 0;
@@ -1338,12 +1338,12 @@ if nr_para > 0
                         end;
                 end
                 if spea == 1
-                        r = corr(one(:,i_vox),second(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                        r = corr(one(:,i_vox),two(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                         r2(i_vox,1) = r;  
                         zr2(i_vox,1) = atanh(r);  
                 end;
             end;
-             clear one second
+             clear one two
                 
             % create correlation matrices for image 
             r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -1493,7 +1493,7 @@ elseif two_cons == 1
     fprintf('...creates correlation maps for two contrasts in session %d ...\n',i_run);
     %load 4D images
     one=data(:,:,1);
-    second=data(:,:,2);
+    two=data(:,:,2);
 
     r1 = zeros(nr_vox,1);
     zr1 = zeros(nr_vox,1);
@@ -1501,7 +1501,7 @@ elseif two_cons == 1
     zr2 = zeros(nr_vox,1);
     for i_vox = 1:nr_vox
         if pear == 1 
-            r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+            r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                 if isnan (r(1,2))
                     r1(i_vox,1) = 0;
                     zr1(i_vox,1) = 0;
@@ -1511,12 +1511,12 @@ elseif two_cons == 1
                 end;
         end
         if spea == 1
-                r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                 r2(i_vox,1) = r;  
                 zr2(i_vox,1) = atanh(r);  
         end;
     end;
-    clear one second
+    clear one two
                 
     % create correlation matrices for image 
     r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -1659,7 +1659,7 @@ clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
 %             fprintf('...creates correlation maps for parametric regressors of both contrasts in session %d ...\n',i);
 %             %load 4D images
 %             one=data(:,:,1);
-%             second=data(:,:,2);
+%             two=data(:,:,2);
 % 
 %             r1 = zeros(nr_vox,1);
 %             zr1 = zeros(nr_vox,1);
@@ -1667,7 +1667,7 @@ clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
 %             zr2 = zeros(nr_vox,1);
 %             for i_vox = 1:nr_vox
 %                 if pear == 1 
-%                     r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+%                     r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
 %                         if isnan (r(1,2))
 %                             r1(i_vox,1) = 0;
 %                             zr1(i_vox,1) = 0;
@@ -1677,12 +1677,12 @@ clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
 %                         end;
 %                 end
 %                 if spea == 1
-%                         r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+%                         r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
 %                         r2(i_vox,1) = r;  
 %                         zr2(i_vox,1) = atanh(r);  
 %                 end;
 %             end;
-%             clear one second
+%             clear one two
 %                 
 %             % create correlation matrices for image 
 %             r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -1831,7 +1831,7 @@ for i_con = 1:2
                 fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                 %load 4D images
                 eval(sprintf('one=data(:,:,%d);',i_run));
-                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -1839,7 +1839,7 @@ for i_con = 1:2
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                             if isnan (r(1,2))
                                 r1(i_vox,1) = 0;
                                 zr1(i_vox,1) = 0;
@@ -1849,13 +1849,13 @@ for i_con = 1:2
                             end;
                     end
                     if spea == 1
-                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                             r2(i_vox,1) = r;  
                             zr2(i_vox,1) = atanh(r);  
                     end;
                     
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image 
                 if pear == 1
@@ -2010,7 +2010,7 @@ clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
 %                 fprintf('...creates correlation maps for parametric contrast in session %d and session %d...\n',i_run,i_run+i_sec);
 %                 %load 4D images
 %                 eval(sprintf('one=data(:,:,%d);',i_run));
-%                 eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+%                 eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
 %                 
 %                 r1 = zeros(nr_vox,1);
 %                 zr1 = zeros(nr_vox,1);
@@ -2018,7 +2018,7 @@ clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
 %                 zr2 = zeros(nr_vox,1);
 %                 for i_vox = 1:nr_vox
 %                     if pear == 1 
-%                         r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+%                         r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
 %                             if isnan (r(1,2))
 %                                 r1(i_vox,1) = 0;
 %                                 zr1(i_vox,1) = 0;
@@ -2028,13 +2028,13 @@ clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
 %                             end;
 %                     end
 %                     if spea == 1
-%                             r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+%                             r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
 %                             r2(i_vox,1) = r;  
 %                             zr2(i_vox,1) = atanh(r);  
 %                     end;
 %                     
 %                 end;
-%                 clear one second
+%                 clear one two
 %                 
 %                 % create correlation matrices for image 
 %                 if pear == 1
@@ -2197,7 +2197,7 @@ elseif ex4D == 1
                 fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                 %load 4D images
                 eval(sprintf('one=data(:,:,%d);',i_run));
-                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -2205,7 +2205,7 @@ elseif ex4D == 1
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                             if isnan (r(1,2))
                                 r1(i_vox,1) = 0;
                                 zr1(i_vox,1) = 0;
@@ -2215,13 +2215,13 @@ elseif ex4D == 1
                             end;
                     end
                     if spea == 1
-                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                             r2(i_vox,1) = r;  
                             zr2(i_vox,1) = atanh(r);  
                     end;
                     
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image 
                 if pear == 1
@@ -2382,7 +2382,7 @@ elseif ex4D == 1
     fprintf('...creates correlation maps for two conditions in session %d ...\n',i_run);
     %load 4D images
     one=data(:,:,1);
-    second=data(:,:,2);
+    two=data(:,:,2);
 
     r1 = zeros(nr_vox,1);
     zr1 = zeros(nr_vox,1);
@@ -2390,7 +2390,7 @@ elseif ex4D == 1
     zr2 = zeros(nr_vox,1);
     for i_vox = 1:nr_vox
         if pear == 1 
-            r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+            r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                 if isnan (r(1,2))
                     r1(i_vox,1) = 0;
                     zr1(i_vox,1) = 0;
@@ -2400,12 +2400,12 @@ elseif ex4D == 1
                 end;
         end
         if spea == 1
-                r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                 r2(i_vox,1) = r;  
                 zr2(i_vox,1) = atanh(r);  
         end;
     end;
-    clear one second
+    clear one two
                 
     % create correlation matrices for image 
     r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -2547,7 +2547,7 @@ for i_con = 1:2
                 fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                 %load 4D images
                 eval(sprintf('one=data(:,:,%d);',i_run));
-                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -2555,7 +2555,7 @@ for i_con = 1:2
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1 
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                             if isnan (r(1,2))
                                 r1(i_vox,1) = 0;
                                 zr1(i_vox,1) = 0;
@@ -2565,13 +2565,13 @@ for i_con = 1:2
                             end;
                     end
                     if spea == 1
-                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                             r2(i_vox,1) = r;  
                             zr2(i_vox,1) = atanh(r);  
                     end;
                     
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image 
                 if pear == 1
