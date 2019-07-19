@@ -50,12 +50,15 @@ The required folder structure is (at the moment) as follows:
     1. Define the contrast(s) by the name they were given in the first-level SPM contrast manager. In case you renamed the output files, you can adjust the prefix accordingly in the dialog on the left.
     1. Click on the 'Save contrast definition' dialog. This saves a \*.mat file to your fmreli output folder containing your contrast information.
     
-1. In case you have other data than first-level statistics in SPM12, *fmreli beta 1.0* offers the possibility to use existing 4D files, e.g. of resting state or DTI data. 
-    1. Please save your 4D files of interest in the defined results directory. 
-    1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in placebo and intervention: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
-    1. If you have only one condition for several sessions, just indicate the sessions, such as 4D_1.nii, 4D_2.nii ... 
-    1. Please also provide an exemplary 3D niftii called 'temp_img.nii' to facilitate creating result images with the image dimensions of your study.
-    1. Attention: If you do not provide the original first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
+### If no first-level statistics with design matrices are available (e.g., resting state or DWI)
+    
+1. *fmreli beta 1.0* offers the possibility to use existing 4D files as input as well. Since this function was not at the heart of the development, there is only a limited work flow available at the moment. 
+    1. Please save your 4D files for the analysis in the defined results directory. 
+    1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in a placebo and drug condition: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
+    1. If you have only one condition for several sessions, just denote the sessions by 4D_1.nii, 4D_2.nii ... 
+    1. Please also provide an exemplary 3D nifti called 'temp_img.nii' to facilitate creating result images with the image dimensions of your study. This can be simply one image of the 4D.nii (this will be fixed in a future version)
+    1. In the GUI, please select design, enter the number of sessions, enter the number of subjects, and select the "yes" checkbox for only 4D data as input. As result directory, you will have to enter the directory where the corresponding 4D niftis are stored.
+    1. Please note that if you do not provide the first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
 
 ### Split-half reliability: Assessing reliability within a single contrast and session
 
