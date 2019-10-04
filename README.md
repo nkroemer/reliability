@@ -11,6 +11,7 @@ To use the toolbox, you need to have MATLAB (v2015 or later) and SPM12 installed
 ## Installing the toolbox
 
 1. Make sure that you have [SPM12](http://www.fil.ion.ucl.ac.uk/spm/software/download/) installed.
+1. For visualization purposes, please download these freely available color maps and add them to your path:  https://de.mathworks.com/matlabcentral/fileexchange/51986-perceptually-uniform-colormaps.
 1. Download the latest version of the toolbox on [github](https://github.com/nkroemer/reliability/) and save it into your intended directory.
 1. In the MATLAB 'Home' tab, click on the 'Set path' button and select 'Add with subfolders…'. Now, select the fmreli toolbox folder, save, and close. Windows users might have to open MATLAB as an administrator (by right-clicking on the MATLAB icon) to make permanent changes.
 Alternatively, you may use the command line to add the path:
@@ -21,8 +22,6 @@ savepath  fmreli toolbox folder/pathdef.m
 ```
 
 By default, the toolbox comes with the [CONN](https://www.nitrc.org/projects/conn/) atlas (i.e., Harvard-Oxford brain atlas + AAL cerebellum atlas). Other customized atlases can be used, if you provide an 'atlas.nii' and a corresponding 'labels.mat' file containing the atlas labels.
-
-For the similarity feature, please download the freely available color maps (https://de.mathworks.com/matlabcentral/fileexchange/51986-perceptually-uniform-colormaps). 
 
 That's it, you are good to go.
 
