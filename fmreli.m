@@ -71,7 +71,16 @@ function varargout = fmreli_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 disp('Starting fMRelI...');
-box_path=pwd;
+% Get toolbox path from Matlab pathfile
+matlab_paths = path;
+if contains(matlab_paths,';')
+	matlab_paths_cell = strsplit(matlab_paths,';');
+elseif contains(matlab_paths,':')
+	matlab_paths_cell = strsplit(matlab_paths,':');
+end
+path_index = find(contains(matlab_paths_cell, 'fmreli'));
+box_path = matlab_paths_cell{path_index(1)};
+%box_path=pwd;
 assignin('base','box_path',box_path);
 
 set(handles.specify,'TooltipString','Specification of sample, data folders etc.');
