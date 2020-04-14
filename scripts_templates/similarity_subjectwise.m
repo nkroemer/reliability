@@ -3,6 +3,7 @@ function out = similarity_subjectwise(nr_subj,TempFourD1,TempFourD2,use_roi,sim2
 if sim2mean ==  1
        mean_temp = [];
        mean_temp = mean(TempFourD2,4);
+       mean_temp = mean_temp(~isnan(mean_temp));
 end;
 
 for i = 1:nr_subj

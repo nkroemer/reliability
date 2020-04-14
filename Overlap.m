@@ -278,7 +278,7 @@ if length(r_roi)==2
         movefile(compl2,results_dir,'f');
     end;
     cd(results_dir);    
-    r_roi = load_nii(sprintf('r%s.img',roi));
+    r_roi = load_untouch_nii(sprintf('r%s.img',roi));
     r_roi_ind = r_roi.img==1;
 else
     if ~strcmp(roi_dir,results_dir)
@@ -286,7 +286,7 @@ else
     movefile(compl,results_dir,'f');
     end;
     cd(results_dir);    
-    r_roi = load_nii(sprintf('r%s.nii',roi));
+    r_roi = load_untouch_nii(sprintf('r%s.nii',roi));
     r_roi_ind = r_roi.img==1;        
 end;
 
@@ -1129,7 +1129,7 @@ else
         co_temp=[];
         cd(results_dir)
         % calculate T statistics via 4D images
-        tmp = load_nii(sprintf('4D_%d.nii',j));
+        tmp = load_untouch_nii(sprintf('4D_%d.nii',j));
         tmp = tmp.img;
         % Get standard error of beta maps
             Beta_sd = std(tmp,0,4);  
@@ -1215,7 +1215,7 @@ else
                 eval(sprintf('co_sig%d = [];',j));
                 cd(results_dir)
                 % calculate T statistics via 4D images
-                tmp = load_nii(sprintf('4D_par%d_%d.nii',ind_para,j));
+                tmp = load_untouch_nii(sprintf('4D_par%d_%d.nii',ind_para,j));
                 tmp = tmp.img;
                 % Get standard error of beta maps
                     Beta_sd = std(tmp,0,4);  
@@ -1303,7 +1303,7 @@ else
         co_temp=[];
         cd(results_dir)
         % calculate T statistics via 4D images
-        tmp = load_nii(sprintf('4D_split%d_%d.nii',ind_split,j));
+        tmp = load_untouch_nii(sprintf('4D_split%d_%d.nii',ind_split,j));
         tmp = tmp.img;
         % Get standard error of beta maps
             Beta_sd = std(tmp,0,4);  
@@ -1382,7 +1382,7 @@ else
                 co_temp=[];
                 cd(results_dir)
                 % calculate T statistics via 4D images
-                tmp = load_nii(sprintf('4D_split%d_par%d_%d.nii',ind_split,ind_para,j));
+                tmp = load_untouch_nii(sprintf('4D_split%d_par%d_%d.nii',ind_split,ind_para,j));
                 tmp = tmp.img;
                 % Get standard error of beta maps
                     Beta_sd = std(tmp,0,4);  
@@ -1464,7 +1464,7 @@ else
                 co_temp=[];
                 cd(results_dir)
                 % calculate T statistics via 4D images
-                tmp = load_nii(sprintf('4D_%s_%d.nii',con_temp,j));
+                tmp = load_untouch_nii(sprintf('4D_%s_%d.nii',con_temp,j));
                 tmp = tmp.img;
                 % Get standard error of beta maps
                     Beta_sd = std(tmp,0,4);  
@@ -1589,7 +1589,7 @@ else
                     co_temp=[];
                     cd(results_dir)
                     % calculate T statistics via 4D images
-                    tmp = load_nii(sprintf('4D_%s_par%d_%d.nii',con_temp,ind_para,j));
+                    tmp = load_untouch_nii(sprintf('4D_%s_par%d_%d.nii',con_temp,ind_para,j));
                     tmp = tmp.img;
                     % Get standard error of beta maps
                         Beta_sd = std(tmp,0,4);  

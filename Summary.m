@@ -172,7 +172,7 @@ end;
 atlas_r = [atlas_dir f f 'r' atlas_name];
 movefile (atlas_r,results_dir,'f');
 cd(results_dir);
-atlas = load_nii(sprintf('r%s',atlas_name));
+atlas = load_untouch_nii(sprintf('r%s',atlas_name));
 atlas = atlas.img;
 
 cd(atlas_dir);
@@ -194,7 +194,7 @@ if corr == 1
     corrsZ = dir('z_Corr*');
     %list_corrs = cell(1,length(corrs));
 %     for ind_corrs = 1:length(corrs)
-%         tmp = load_nii(corrs(ind_corrs).name);
+%         tmp = load_untouch_nii(corrs(ind_corrs).name);
 %         [pathstr,name,ext] = fileparts(corrs(ind_corrs).name) ;
 %         eval(sprintf('%s = tmp.img;',name));
 %         list_corrs{1,ind_corrs} = name;
@@ -202,7 +202,7 @@ if corr == 1
     %rel_summary(1,3:length(list_corrs)+2) = list_corrs;
     list_corrsZ = cell(1,length(corrsZ));
     for ind_corrsZ = 1:length(corrsZ)
-        tmp = load_nii(corrsZ(ind_corrsZ).name);
+        tmp = load_untouch_nii(corrsZ(ind_corrsZ).name);
         [pathstr,name,ext] = fileparts(corrsZ(ind_corrsZ).name) ;
         [a,b]=strtok(name,'z_');
         name=[a b];
@@ -218,7 +218,7 @@ if icc == 1
     iccsZ = dir('z_ICC*');
     %list_iccs = cell(1,length(iccs));
 %     for ind_iccs = 1:length(iccs)
-%         tmp = load_nii(iccs(ind_iccs).name);
+%         tmp = load_untouch_nii(iccs(ind_iccs).name);
 %         [pathstr,name,ext] = fileparts(iccs(ind_iccs).name) ;
 %         eval(sprintf('%s = tmp.img;',name));
 %         list_iccs{1,ind_iccs} = name;
@@ -226,7 +226,7 @@ if icc == 1
 %     rel_summary(1,end+1:length(rel_summary(1,:))+length(list_iccs)) = list_iccs;
     list_iccsZ = cell(1,length(iccsZ));
     for ind_iccsZ = 1:length(iccsZ)
-        tmp = load_nii(iccsZ(ind_iccsZ).name);
+        tmp = load_untouch_nii(iccsZ(ind_iccsZ).name);
         [pathstr,name,ext] = fileparts(iccsZ(ind_iccsZ).name) ;
         [a,b]=strtok(name,'z_');
         name=[a b];

@@ -257,7 +257,7 @@ atlas_compl = [atlas_dir f atlas_name];
 atlas_r = [atlas_dir f 'r' atlas_name];
 movefile (atlas_r,results_dir,'f');
 cd(results_dir);
-atlas = load_nii(sprintf('r%s',atlas_name));
+atlas = load_untouch_nii(sprintf('r%s',atlas_name));
 atlas = atlas.img;
 
 % load atlas labels
@@ -271,7 +271,7 @@ prefix = get(handles.prefix,'String');
 
 % loads template image to generate image dimensions
 temp_img = [stats_path f id{1} f stats_filled f con]; 
-temp_img=load_nii(temp_img);
+temp_img=load_untouch_nii(temp_img);
 dim = size(temp_img.img);
 x = dim(1);
 y = dim(2);
@@ -285,7 +285,7 @@ maps = evalin('base','maps');
 nr = str2double(get(handles.nr,'String'));
 
 for i = 1:nr
-   eval(sprintf('corr_map%d=load_nii(maps{i});',i));
+   eval(sprintf('corr_map%d=load_untouch_nii(maps{i});',i));
    eval(sprintf('corr_map%d = corr_map%d.img;',i,i));
 end;
    
@@ -327,7 +327,7 @@ save(cluster_name,'C');
 target_img = temp_img;
 target_img.fileprefix = sprintf('%s_%d_%0.2f.nii',prefix,k,r_thres);
 target_img.img = Y;
-save_nii(target_img,target_img.fileprefix);  
+save_untouch_nii(target_img,target_img.fileprefix);  
 
 
 
@@ -428,10 +428,10 @@ end;
 for count_runs = 1:runs
     if two_cons == 1
         file = sprintf('4D_%s_%d.nii',con,count_runs);
-        eval(sprintf('FourD_%d = load_nii(file);',count_runs));
+        eval(sprintf('FourD_%d = load_untouch_nii(file);',count_runs));
     else
         file = sprintf('4D_%d.nii',count_runs);
-        eval(sprintf('FourD_%d = load_nii(file);',count_runs));
+        eval(sprintf('FourD_%d = load_untouch_nii(file);',count_runs));
     end;
 end;
 
@@ -468,7 +468,7 @@ maps = evalin('base','maps');
 nr = str2double(get(handles.nr,'String'));
 
 for i = 1:nr
-   eval(sprintf('ICC_map%d=load_nii(maps{i});',i));
+   eval(sprintf('ICC_map%d=load_untouch_nii(maps{i});',i));
    eval(sprintf('ICC_map%d = ICC_map%d.img;',i,i));
 end;
    
@@ -507,7 +507,7 @@ end;
     target_img = temp_img;
     target_img.fileprefix = sprintf('%s_%d_%0.2f.nii',prefix,k,r_thres);
     target_img.img = Y;
-    save_nii(target_img,target_img.fileprefix);  
+    save_untouch_nii(target_img,target_img.fileprefix);  
 
     % load reliable clusters 
     nr_clusters = length(C);
@@ -605,7 +605,7 @@ end;
 %load 4D images
 for count_runs = 1:runs
     file = sprintf('4D_%d.nii',count_runs);
-    eval(sprintf('FourD_%d = load_nii(file);',count_runs));
+    eval(sprintf('FourD_%d = load_untouch_nii(file);',count_runs));
 end;
 
 %extract and average activation in cluster

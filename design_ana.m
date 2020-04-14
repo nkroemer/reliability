@@ -168,7 +168,7 @@ cd(results_dir);
 disp('...calculate average amplitude and SD...')
 if two_cons==1
     %con1 
-    Four_D = load_nii(sprintf('4D_%s_1.nii',con1));
+    Four_D = load_untouch_nii(sprintf('4D_%s_1.nii',con1));
     beta_subj = zeros(nr_subj,1);
 
     for i_subj = 1:nr_subj
@@ -178,7 +178,7 @@ if two_cons==1
     beta_avg1 = mean(beta_subj);
     beta_std1 = std(beta_subj);
     
-    Four_D = load_nii(sprintf('4D_%s_1.nii',con2));
+    Four_D = load_untouch_nii(sprintf('4D_%s_1.nii',con2));
     beta_subj = zeros(nr_subj,1);
     %con2
     for i_subj = 1:nr_subj
@@ -190,7 +190,7 @@ if two_cons==1
     
 else
     
-    Four_D = load_nii('4D_1.nii');
+    Four_D = load_untouch_nii('4D_1.nii');
     beta_subj = zeros(nr_subj,1);
 
     for i_subj = 1:nr_subj
@@ -205,7 +205,7 @@ end;
 
 if nr_para > 0
     for i_par = 1:nr_para
-    Four_D = load_nii(sprintf('4D_par%d_1.nii',i_par));
+    Four_D = load_untouch_nii(sprintf('4D_par%d_1.nii',i_par));
     beta_subj = zeros(nr_subj,1);
     for i_subj = 1:nr_subj
         subj=Four_D.img(:,:,:,i_subj);

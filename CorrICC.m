@@ -287,7 +287,7 @@ if roi == 1
             movefile(compl2,dir_results,'f');
         end;
         cd(dir_results);
-        r_roi = load_nii(sprintf('r%s.img',roi_name));
+        r_roi = load_untouch_nii(sprintf('r%s.img',roi_name));
         r_roi_ind = r_roi.img>0.0001;
     else
         compl = [roi_dir f 'r' roi_name '.nii'];
@@ -295,13 +295,13 @@ if roi == 1
             movefile(compl,dir_results,'f');
         end;
         cd(dir_results);
-        r_roi = load_nii(sprintf('r%s.nii',roi_name));
+        r_roi = load_untouch_nii(sprintf('r%s.nii',roi_name));
         r_roi_ind = r_roi.img>0.0001;
     end;
     cd(dir_results);
     if ex4D == 1
         temp = [dir_results f 'template_3D.nii'];
-        temp = load_nii(temp);
+        temp = load_untouch_nii(temp);
     end;
     clear r_roi roi_ful;
 else
@@ -309,10 +309,10 @@ else
     if exStats == 1
         stats_filled = sprintf(stats_dir,1);
         temp = [stats_path f id{1} f stats_filled f con];
-        temp = load_nii(temp);
+        temp = load_untouch_nii(temp);
     elseif ex4D == 1
         temp = [dir_results f 'template_3D.nii'];
-        temp = load_nii(temp);
+        temp = load_untouch_nii(temp);
     end;
     [x,y,z] = size(temp.img);
     r_roi_ind = zeros(x,y,z);
@@ -323,18 +323,18 @@ if exStats == 1
     disp('...loads image dimensions..');
     stats_temp =sprintf(stats_dir,1);
     temp_img = [stats_path f id{1} f stats_temp f con];
-    temp_img=load_nii(temp_img);
+    temp_img=load_untouch_nii(temp_img);
     dim = size(temp_img.img);
     x = dim(1);
     y = dim(2);
     z = dim(3);
     if split == 0 && two_cons == 0
         for i = 1:runs
-            img = load_nii(sprintf('4D_%d.nii',i));
+            img = load_untouch_nii(sprintf('4D_%d.nii',i));
             eval(sprintf('img_%d = img.img;',i));
             if nr_para > 0
                 for ind_para = 1:nr_para
-                    img = load_nii(sprintf('4D_par%d_%d.nii',ind_para,i));
+                    img = load_untouch_nii(sprintf('4D_par%d_%d.nii',ind_para,i));
                     eval(sprintf('img_par%d_%d = img.img;',ind_para,i));
                 end;
             end;
@@ -345,14 +345,14 @@ if exStats == 1
             if runs == 1
                 i = single_run;
             end;
-            img1 = load_nii(sprintf('4D_split1_%d.nii',i));
-            img2 = load_nii(sprintf('4D_split2_%d.nii',i));
+            img1 = load_untouch_nii(sprintf('4D_split1_%d.nii',i));
+            img2 = load_untouch_nii(sprintf('4D_split2_%d.nii',i));
             eval(sprintf('img_%d_split1 = img1.img;',i));
             eval(sprintf('img_%d_split2 = img2.img;',i));
             if nr_para > 0
                 for ind_para = 1:nr_para
-                    img1 = load_nii(sprintf('4D_split1_par%d_%d.nii',ind_para,i));
-                    img2 = load_nii(sprintf('4D_split2_par%d_%d.nii',ind_para,i));
+                    img1 = load_untouch_nii(sprintf('4D_split1_par%d_%d.nii',ind_para,i));
+                    img2 = load_untouch_nii(sprintf('4D_split2_par%d_%d.nii',ind_para,i));
                     eval(sprintf('img_%d_par%d_split1 = img1.img;',i,ind_para));
                     eval(sprintf('img_%d_par%d_split2 = img2.img;',i,ind_para));
                 end;
@@ -364,19 +364,19 @@ if exStats == 1
             if runs == 1
                 i = single_run;
             end;
-            img1 = load_nii(sprintf('4D_%s_%d.nii',con1,i));
-            img2 = load_nii(sprintf('4D_%s_%d.nii',con2,i));
+            img1 = load_untouch_nii(sprintf('4D_%s_%d.nii',con1,i));
+            img2 = load_untouch_nii(sprintf('4D_%s_%d.nii',con2,i));
             eval(sprintf('img_%d_con1 = img1.img;',i));
             eval(sprintf('img_%d_con2 = img2.img;',i));
             if nr_para1 > 0
                 for ind_para = 1:nr_para1
-                    img = load_nii(sprintf('4D_%s_par%d_%d.nii',con1,ind_para,i));
+                    img = load_untouch_nii(sprintf('4D_%s_par%d_%d.nii',con1,ind_para,i));
                     eval(sprintf('img_con1_par%d_%d = img.img;',ind_para,i));
                 end;
             end;
             if nr_para2 > 0
                 for ind_para = 1:nr_para2
-                    img = load_nii(sprintf('4D_%s_par%d_%d.nii',con2,ind_para,i));
+                    img = load_untouch_nii(sprintf('4D_%s_par%d_%d.nii',con2,ind_para,i));
                     eval(sprintf('img_con2_par%d_%d = img.img;',ind_para,i));
                 end;
             end;
@@ -396,7 +396,7 @@ elseif ex4D == 1
                 eval(sprintf('FourD%d = file;',ind_run));
                 cd(dir_results);
                 temp_img = temp;
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d = FourD%d.img;',ind_run,ind_run));
                 
                 %image dimensions
@@ -409,7 +409,7 @@ elseif ex4D == 1
                 eval(sprintf('FourD%d = file;',ind_run));
                 cd(dir_results);
                 temp_img = temp;
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%s%d = FourD%d.img;',conditions{ind_cond,1},ind_run,ind_run));
                 
                 %image dimensions
@@ -1115,7 +1115,7 @@ if pear == 1 || spea == 1
                                 r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec);
@@ -1126,7 +1126,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
                         
                         if spea == 1
@@ -1139,7 +1139,7 @@ if pear == 1 || spea == 1
                                 r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec);
@@ -1150,7 +1150,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
                         
                         %compute z mean and inverse Fisher's transformation
@@ -1181,12 +1181,12 @@ if pear == 1 || spea == 1
                     if i_run+i_sec <= runs
                         ind_comp = ind_comp+1;
                         if pear == 1
-                            map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec));
+                            map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec));
                             avg_corr_4D_pear(:,ind_comp) = map.img(:);
                             clear map
                         end;
                         if spea == 1
-                            map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec));
+                            map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec));
                             avg_corr_4D_spea(:,ind_comp) = map.img(:);
                             clear map
                         end;
@@ -1214,13 +1214,13 @@ if pear == 1 || spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_pear.nii',str);
                 target_img.img = avg_pear;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_spea.nii',str);
                 target_img.img = avg_spea;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
             
@@ -1293,7 +1293,7 @@ if pear == 1 || spea == 1
                                         r_vec_pear_1_2(~r_roi_ind)=0;
                                         target_img.img = r_vec_pear_1_2;
                                     end;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     target_img = temp_img;
                                     file = sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
@@ -1304,7 +1304,7 @@ if pear == 1 || spea == 1
                                         z_r_vec_pear_1_2(~r_roi_ind)=0;
                                         target_img.img = z_r_vec_pear_1_2;
                                     end;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                 end;
                                 
                                 if spea == 1
@@ -1317,7 +1317,7 @@ if pear == 1 || spea == 1
                                         r_vec_spea_1_2(~r_roi_ind)=0;
                                         target_img.img = r_vec_spea_1_2;
                                     end;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     target_img = temp_img;
                                     file = sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec);
@@ -1328,7 +1328,7 @@ if pear == 1 || spea == 1
                                         z_r_vec_spea_1_2(~r_roi_ind)=0;
                                         target_img.img = z_r_vec_spea_1_2;
                                     end;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                 end;
                                 
                                 %compute z mean and inverse Fisher's transformation
@@ -1359,11 +1359,11 @@ if pear == 1 || spea == 1
                             if i_run+i_sec <= runs
                                 ind_comp = ind_comp+1;
                                 if pear == 1
-                                    map = load_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
+                                    map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
                                     avg_corr_4D_pear(:,ind_comp) = map.img(:);
                                 end;
                                 if spea == 1
-                                    map = load_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
+                                    map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d.nii',str,i_par,i_run,i_run+i_sec));
                                     avg_corr_4D_spea(:,ind_comp) = map.img(:);
                                 end;
                             end;
@@ -1388,13 +1388,13 @@ if pear == 1 || spea == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d.nii',str,i_par);
                         target_img.img = avg_pear;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                     end;
                     if spea == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d.nii',str,i_par);
                         target_img.img = avg_spea;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                     end;
                     clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
                 end;
@@ -1468,7 +1468,7 @@ if pear == 1 || spea == 1
                         r_vec_pear_1_2(~r_roi_ind)=0;
                         target_img.img = r_vec_pear_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     file = sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i);
@@ -1479,7 +1479,7 @@ if pear == 1 || spea == 1
                         z_r_vec_pear_1_2(~r_roi_ind)=0;
                         target_img.img = z_r_vec_pear_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 
                 if spea == 1
@@ -1492,7 +1492,7 @@ if pear == 1 || spea == 1
                         r_vec_spea_1_2(~r_roi_ind)=0;
                         target_img.img = r_vec_spea_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     file = sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i);
@@ -1503,7 +1503,7 @@ if pear == 1 || spea == 1
                         z_r_vec_spea_1_2(~r_roi_ind)=0;
                         target_img.img = z_r_vec_spea_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 
                 %compute z mean and inverse Fisher's transformation
@@ -1531,12 +1531,12 @@ if pear == 1 || spea == 1
             for i_run = 1:runs
                 ind_comp = ind_comp+1;
                 if pear == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_split.nii',str,i));
                     avg_corr_4D_pear(:,ind_comp) = map.img(:);
                     clear map
                 end;
                 if spea == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_split.nii',str,i));
                     avg_corr_4D_spea(:,ind_comp) = map.img(:);
                     clear map
                 end;
@@ -1560,13 +1560,13 @@ if pear == 1 || spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_pear_split.nii',str);
                 target_img.img = avg_pear;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_spea_split.nii',str);
                 target_img.img = avg_spea;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             clear avg_spea avg_pear data
             %calculation for splitted parametric contrasts
@@ -1636,7 +1636,7 @@ if pear == 1 || spea == 1
                                 r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_pear_%d_par%d_split.nii',str,i,i_par);
@@ -1647,7 +1647,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
                         
                         if spea == 1
@@ -1660,7 +1660,7 @@ if pear == 1 || spea == 1
                                 r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_spea_%d_par%d_split.nii',str,i,i_par);
@@ -1671,7 +1671,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
                         
                         %compute z mean and inverse Fisher's transformation
@@ -1698,12 +1698,12 @@ if pear == 1 || spea == 1
                     for i_run = 1:runs
                         ind_comp = ind_comp+1;
                         if pear == 1
-                            map = load_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_split.nii',str,i,i_par));
+                            map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_split.nii',str,i,i_par));
                             avg_corr_4D_pear(:,ind_comp) = map.img(:);
                             clear map
                         end;
                         if spea == 1
-                            map = load_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_split.nii',str,i,i_par));
+                            map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_split.nii',str,i,i_par));
                             avg_corr_4D_spea(:,ind_comp) = map.img(:);
                             clear map
                         end;
@@ -1727,13 +1727,13 @@ if pear == 1 || spea == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_split.nii',str,i_par);
                         target_img.img = avg_pear;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                     end;
                     if spea == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_split.nii',str,i_par);
                         target_img.img = avg_spea;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                     end;
                     
                     
@@ -1809,7 +1809,7 @@ if pear == 1 || spea == 1
                         r_vec_pear_1_2(~r_roi_ind)=0;
                         target_img.img = r_vec_pear_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     file = sprintf('z_CorrMaps%s_pear_%d_between_contrasts.nii',str,i_run);
@@ -1820,7 +1820,7 @@ if pear == 1 || spea == 1
                         z_r_vec_pear_1_2(~r_roi_ind)=0;
                         target_img.img = z_r_vec_pear_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 
                 if spea == 1
@@ -1833,7 +1833,7 @@ if pear == 1 || spea == 1
                         r_vec_spea_1_2(~r_roi_ind)=0;
                         target_img.img = r_vec_spea_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     file = sprintf('z_CorrMaps%s_spea_%d_between_contrasts.nii',str,i_run);
@@ -1844,7 +1844,7 @@ if pear == 1 || spea == 1
                         z_r_vec_spea_1_2(~r_roi_ind)=0;
                         target_img.img = z_r_vec_spea_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 
                 %compute z mean and inverse Fisher's transformation
@@ -1871,12 +1871,12 @@ if pear == 1 || spea == 1
             for i_run = 1:runs
                 ind_comp = ind_comp+1;
                 if pear == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_pear_%d_between_contrasts.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_between_contrasts.nii',str,i_run));
                     avg_corr_4D_pear(:,ind_comp) = map.img(:);
                     clear map
                 end;
                 if spea == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_spea_%d_between_contrasts.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_between_contrasts.nii',str,i_run));
                     avg_corr_4D_spea(:,ind_comp) = map.img(:);
                     clear map
                 end;
@@ -1900,13 +1900,13 @@ if pear == 1 || spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_pear_between_contrasts.nii',str);
                 target_img.img = avg_pear;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_spea_between_contrasts.nii',str);
                 target_img.img = avg_spea;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             %calculation for parametric regressors of both contrasts
             if nr_para > 0
@@ -1975,7 +1975,7 @@ if pear == 1 || spea == 1
                                 r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i,i_par);
@@ -1986,7 +1986,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
             
                         if spea == 1
@@ -1999,7 +1999,7 @@ if pear == 1 || spea == 1
                             r_vec_spea_1_2(~r_roi_ind)=0;
                             target_img.img = r_vec_spea_1_2;
                         end;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
             
                         target_img = temp_img;
                         file = sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i,i_par);
@@ -2010,7 +2010,7 @@ if pear == 1 || spea == 1
                             z_r_vec_spea_1_2(~r_roi_ind)=0;
                             target_img.img = z_r_vec_spea_1_2;
                         end;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         end;
             
                         %compute z mean and inverse Fisher's transformation
@@ -2037,12 +2037,12 @@ if pear == 1 || spea == 1
                 for i_run = 1:runs
                     ind_comp = ind_comp+1;
                     if pear == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i_run,i_par));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i_run,i_par));
                     avg_corr_4D_pear(:,ind_comp) = map.img(:);
                     clear map
                     end;
                     if spea == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i_run,i_par));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i_run,i_par));
                     avg_corr_4D_spea(:,ind_comp) = map.img(:);
                     clear map
                     end;
@@ -2066,13 +2066,13 @@ if pear == 1 || spea == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_between_contrasts.nii',str,i_par);
                     target_img.img = avg_pear;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 if spea == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_between_contrasts.nii',str,i_par);
                     target_img.img = avg_spea;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
             
             
@@ -2156,7 +2156,7 @@ if pear == 1 || spea == 1
                                     r_vec_pear_1_2(~r_roi_ind)=0;
                                     target_img.img = r_vec_pear_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 target_img = temp_img;
                                 file = sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count);
@@ -2167,7 +2167,7 @@ if pear == 1 || spea == 1
                                     z_r_vec_pear_1_2(~r_roi_ind)=0;
                                     target_img.img = z_r_vec_pear_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                             end;
                             
                             if spea == 1
@@ -2180,7 +2180,7 @@ if pear == 1 || spea == 1
                                     r_vec_spea_1_2(~r_roi_ind)=0;
                                     target_img.img = r_vec_spea_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 target_img = temp_img;
                                 file = sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count);
@@ -2191,7 +2191,7 @@ if pear == 1 || spea == 1
                                     z_r_vec_spea_1_2(~r_roi_ind)=0;
                                     target_img.img = z_r_vec_spea_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                             end;
                             
                             %compute z mean and inverse Fisher's transformation
@@ -2222,11 +2222,11 @@ if pear == 1 || spea == 1
                         if i_run+i_sec <= runs
                             ind_comp = ind_comp+1;
                             if pear == 1
-                                map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
+                                map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
                                 avg_corr_4D_pear(:,ind_comp) = map.img(:);
                             end;
                             if spea == 1
-                                map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
+                                map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_%d_con%d.nii',str,i_run,i_run+i_sec,con_count));
                                 avg_corr_4D_spea(:,ind_comp) = map.img(:);
                             end;
                         end;
@@ -2253,13 +2253,13 @@ if pear == 1 || spea == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('CorrMaps%s_pear_con%d.nii',str,con_count);
                     target_img.img = avg_pear;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 if spea == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('CorrMaps%s_spea_con%d.nii',str,con_count);
                     target_img.img = avg_spea;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
                 
@@ -2334,7 +2334,7 @@ if pear == 1 || spea == 1
                                 r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                 
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_pear_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count);
@@ -2345,7 +2345,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             end;
                 
                             if spea == 1
@@ -2358,7 +2358,7 @@ if pear == 1 || spea == 1
                                 r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                 
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_spea_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count);
@@ -2369,7 +2369,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             end;
                 
                             %compute z mean and inverse Fisher's transformation
@@ -2400,11 +2400,11 @@ if pear == 1 || spea == 1
                             if i_run+i_sec <= runs
                                 ind_comp = ind_comp+1;
                                 if pear == 1
-                                map = load_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count));
+                                map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count));
                                 avg_corr_4D_pear(:,ind_comp) = map.img(:);
                                 end;
                                 if spea == 1
-                                map = load_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count));
+                                map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_par%d_%d_%d_con%d.nii',str,i_par,i_run,i_run+i_sec,con_count));
                                 avg_corr_4D_spea(:,ind_comp) = map.img(:);
                                 end;
                             end;
@@ -2429,13 +2429,13 @@ if pear == 1 || spea == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_con%d.nii',str,i_par,con_count);
                         target_img.img = avg_pear;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                     end;
                     if spea == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_con%d.nii',str,i_par,con_count);
                         target_img.img = avg_spea;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                     end;
                     clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
                      end;
@@ -2522,7 +2522,7 @@ if pear == 1 || spea == 1
                                 r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec);
@@ -2533,7 +2533,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_pear_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_pear_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
                         
                         if spea == 1
@@ -2546,7 +2546,7 @@ if pear == 1 || spea == 1
                                 r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file = sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec);
@@ -2557,7 +2557,7 @@ if pear == 1 || spea == 1
                                 z_r_vec_spea_1_2(~r_roi_ind)=0;
                                 target_img.img = z_r_vec_spea_1_2;
                             end;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                         end;
                         
                         %compute z mean and inverse Fisher's transformation
@@ -2588,12 +2588,12 @@ if pear == 1 || spea == 1
                     if i_run+i_sec <= runs
                         ind_comp = ind_comp+1;
                         if pear == 1
-                            map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec));
+                            map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_%d.nii',str,i_run,i_run+i_sec));
                             avg_corr_4D_pear(:,ind_comp) = map.img(:);
                             clear map
                         end;
                         if spea == 1
-                            map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec));
+                            map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_%d.nii',str,i_run,i_run+i_sec));
                             avg_corr_4D_spea(:,ind_comp) = map.img(:);
                             clear map
                         end;
@@ -2620,13 +2620,13 @@ if pear == 1 || spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_pear.nii',str);
                 target_img.img = avg_pear;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_spea.nii',str);
                 target_img.img = avg_spea;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             results_corr=dataset({summary(1,:),cols{:}});
             assignin('base','results_corr',results_corr);
@@ -2698,7 +2698,7 @@ if pear == 1 || spea == 1
                         r_vec_pear_1_2(~r_roi_ind)=0;
                         target_img.img = r_vec_pear_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     file = sprintf('z_CorrMaps%s_pear_%d_between_conditions.nii',str,i_run);
@@ -2709,7 +2709,7 @@ if pear == 1 || spea == 1
                         z_r_vec_pear_1_2(~r_roi_ind)=0;
                         target_img.img = z_r_vec_pear_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 
                 if spea == 1
@@ -2722,7 +2722,7 @@ if pear == 1 || spea == 1
                         r_vec_spea_1_2(~r_roi_ind)=0;
                         target_img.img = r_vec_spea_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     file = sprintf('z_CorrMaps%s_spea_%d_between_conditions.nii',str,i_run);
@@ -2733,7 +2733,7 @@ if pear == 1 || spea == 1
                         z_r_vec_spea_1_2(~r_roi_ind)=0;
                         target_img.img = z_r_vec_spea_1_2;
                     end;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 
                 %compute z mean and inverse Fisher's transformation
@@ -2760,12 +2760,12 @@ if pear == 1 || spea == 1
             for i_run = 1:runs
                 ind_comp = ind_comp+1;
                 if pear == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_pear_%d_between_conditions.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_between_conditions.nii',str,i_run));
                     avg_corr_4D_pear(:,ind_comp) = map.img(:);
                     clear map
                 end;
                 if spea == 1
-                    map = load_nii(sprintf('z_CorrMaps%s_spea_%d_between_conditions.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_between_conditions.nii',str,i_run));
                     avg_corr_4D_spea(:,ind_comp) = map.img(:);
                     clear map
                 end;
@@ -2789,13 +2789,13 @@ if pear == 1 || spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_pear_between_conditions.nii',str);
                 target_img.img = avg_pear;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if spea == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('CorrMaps%s_spea_between_conditions.nii',str);
                 target_img.img = avg_spea;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             % compare contrasts between sessions
             
@@ -2872,7 +2872,7 @@ if pear == 1 || spea == 1
                                     r_vec_pear_1_2(~r_roi_ind)=0;
                                     target_img.img = r_vec_pear_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 target_img = temp_img;
                                 file = sprintf('z_CorrMaps%s_pear_%d_%d_%s.nii',str,i_run,i_run+i_sec,conditions{i_con,1});
@@ -2883,7 +2883,7 @@ if pear == 1 || spea == 1
                                     z_r_vec_pear_1_2(~r_roi_ind)=0;
                                     target_img.img = z_r_vec_pear_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                             end;
                             
                             if spea == 1
@@ -2896,7 +2896,7 @@ if pear == 1 || spea == 1
                                     r_vec_spea_1_2(~r_roi_ind)=0;
                                     target_img.img = r_vec_spea_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 target_img = temp_img;
                                 file = sprintf('z_CorrMaps%s_spea_%d_%d_%s.nii',str,i_run,i_run+i_sec,conditions{i_con,1});
@@ -2907,7 +2907,7 @@ if pear == 1 || spea == 1
                                     z_r_vec_spea_1_2(~r_roi_ind)=0;
                                     target_img.img = z_r_vec_spea_1_2;
                                 end;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                             end;
                             
                             %compute z mean and inverse Fisher's transformation
@@ -2938,11 +2938,11 @@ if pear == 1 || spea == 1
                         if i_run+i_sec <= runs
                             ind_comp = ind_comp+1;
                             if pear == 1
-                                map = load_nii(sprintf('z_CorrMaps%s_pear_%d_%d_%s.nii',str,i_run,i_run+i_sec,conditions{i_con,1}));
+                                map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_%d_%s.nii',str,i_run,i_run+i_sec,conditions{i_con,1}));
                                 avg_corr_4D_pear(:,ind_comp) = map.img(:);
                             end;
                             if spea == 1
-                                map = load_nii(sprintf('z_CorrMaps%s_spea_%d_%d_%s.nii',str,i_run,i_run+i_sec,conditions{i_con,1}));
+                                map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_%d_%s.nii',str,i_run,i_run+i_sec,conditions{i_con,1}));
                                 avg_corr_4D_spea(:,ind_comp) = map.img(:);
                             end;
                         end;
@@ -2969,13 +2969,13 @@ if pear == 1 || spea == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('CorrMaps%s_pear_%s.nii',str,conditions{i_con,1});
                     target_img.img = avg_pear;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 if spea == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('CorrMaps%s_spea_%s.nii',str,conditions{i_con,1});
                     target_img.img = avg_spea;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                 end;
                 clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
                 
@@ -3073,48 +3073,48 @@ if cons == 1 || abs == 1
             target_img = temp_img;
             target_img.fileprefix = sprintf('ICC_con%s.nii',str);
             target_img.img = ICC_con_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('ICC_abs%s.nii',str);
             target_img.img = ICC_abs_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             target_img = temp_img;
             target_img.fileprefix = sprintf('z_ICC_con%s.nii',str);
             target_img.img = z_ICC_con_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('z_ICC_abs%s.nii',str);
             target_img.img = z_ICC_abs_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('BMS%s.nii',str);
             target_img.img = voxBMS;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('WMS%s.nii',str);
             target_img.img = voxWMS;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('JMS%s.nii',str);
             target_img.img = voxJMS;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('EMS%s.nii',str);
             target_img.img = voxEMS;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             % computing average ICC
             disp('...computing average ICC over all sessions...')
@@ -3214,48 +3214,48 @@ if cons == 1 || abs == 1
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('ICC_con%s_par%d.nii',str,i_par);
                     target_img.img = ICC_con_ROI;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     clear target_img;
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('ICC_abs%s_par%d.nii',str,i_par);
                     target_img.img = ICC_abs_ROI;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('z_ICC_con%s_par%d.nii',str,i_par);
                     target_img.img = z_ICC_con_ROI;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     clear target_img;
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('z_ICC_abs%s_par%d.nii',str,i_par);
                     target_img.img = z_ICC_abs_ROI;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     clear target_img;
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('BMS%s_par%d.nii',str,i_par);
                     target_img.img = voxBMS;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     clear target_img;
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('EMS%s_par%d.nii',str,i_par);
                     target_img.img = voxEMS;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     clear target_img;
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('JMS%s_par%d.nii',str,i_par);
                     target_img.img = voxJMS;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     clear target_img;
                     target_img = temp_img;
                     target_img.fileprefix = sprintf('WMS%s_par%d.nii',str,i_par);
                     target_img.img = voxWMS;
-                    save_nii(target_img,target_img.fileprefix);
+                    save_untouch_nii(target_img,target_img.fileprefix);
                     
                     % computing average ICC
                     disp('...computing average ICC for parametric contrast over all sessions...')
@@ -3355,55 +3355,55 @@ if cons == 1 || abs == 1
                             file1 = sprintf('ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file1;
                             target_img.img = ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file2 = sprintf('ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file2;
                             target_img.img = ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file3 = sprintf('z_ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file3;
                             target_img.img = z_ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file4 = sprintf('z_ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file4;
                             target_img.img = z_ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file4 = sprintf('BMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file4;
                             target_img.img = voxBMS;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file4 = sprintf('EMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file4;
                             target_img.img = voxEMS;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file4 = sprintf('WMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file4;
                             target_img.img = voxWMS;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file4 = sprintf('JMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file4;
                             target_img.img = voxJMS;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             % computing average ICC
                             fprintf('...calculate average ICC for session %d and session %d...\n',ind_run,ind_run+ind_sec);
@@ -3505,55 +3505,55 @@ if cons == 1 || abs == 1
                                     file1 = sprintf('ICC%s_con_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file1;
                                     target_img.img = ICC_con_ROI;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     clear target_img;
                                     target_img = temp_img;
                                     file2 = sprintf('ICC%s_abs_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file2;
                                     target_img.img = ICC_abs_ROI;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     target_img = temp_img;
                                     file3 = sprintf('z_ICC%s_con_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file3;
                                     target_img.img = z_ICC_con_ROI;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     clear target_img;
                                     target_img = temp_img;
                                     file4 = sprintf('z_ICC%s_abs_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file4;
                                     target_img.img = z_ICC_abs_ROI;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     clear target_img;
                                     target_img = temp_img;
                                     file4 = sprintf('BMS%s_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file4;
                                     target_img.img = voxBMS;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     clear target_img;
                                     target_img = temp_img;
                                     file4 = sprintf('JMS%s_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file4;
                                     target_img.img = voxJMS;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     clear target_img;
                                     target_img = temp_img;
                                     file4 = sprintf('EMS%s_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file4;
                                     target_img.img = voxEMS;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     clear target_img;
                                     target_img = temp_img;
                                     file4 = sprintf('WMS%s_%d_%d_par%d.nii',str,ind_run,ind_run+ind_sec,ind_para);
                                     target_img.fileprefix = file4;
                                     target_img.img = voxWMS;
-                                    save_nii(target_img,target_img.fileprefix);
+                                    save_untouch_nii(target_img,target_img.fileprefix);
                                     
                                     % computing average ICC
                                     fprintf('...calculate average ICC for parametric contrast in session %d and session %d...\n',ind_run,ind_run+ind_sec);
@@ -3660,48 +3660,48 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_%d_split.nii',str,ind_runs);
                 target_img.img = ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_%d_split.nii',str,ind_runs);
                 target_img.img = ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_con%s_%d_split.nii',str,ind_runs);
                 target_img.img = z_ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_abs%s_%d_split.nii',str,ind_runs);
                 target_img.img = z_ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_%d_split.nii',str,ind_runs);
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_%d_split.nii',str,ind_runs);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_%d_split.nii',str,ind_runs);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_%d_split.nii',str,ind_runs);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);                
+                save_untouch_nii(target_img,target_img.fileprefix);                
                 
                 % computing average ICC
                 disp('...computing average ICC for each split...')
@@ -3799,48 +3799,48 @@ if cons == 1 || abs == 1
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('ICC_con%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = ICC_con_ROI;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('ICC_abs%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = ICC_abs_ROI;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('z_ICC_con%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = z_ICC_con_ROI;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('z_ICC_abs%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = z_ICC_abs_ROI;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('BMS%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = voxBMS;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
 
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('EMS%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = voxEMS;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
 
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('WMS%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = voxWMS;
-                        save_nii(target_img,target_img.fileprefix);   
+                        save_untouch_nii(target_img,target_img.fileprefix);   
 
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('JMS%s_par%d_%d_split.nii',str,i_par,ind_runs);
                         target_img.img = voxJMS;
-                        save_nii(target_img,target_img.fileprefix);    
+                        save_untouch_nii(target_img,target_img.fileprefix);    
 
                         
                         % computing average ICC
@@ -3869,12 +3869,12 @@ if cons == 1 || abs == 1
             avg_ICC_4D_con = zeros(nr_vox,runs);
             for i_run = 1:runs
                 if abs == 1
-                    map = load_nii(sprintf('z_ICC_abs%s_%d_split.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_ICC_abs%s_%d_split.nii',str,i_run));
                     avg_ICC_4D_abs(:,i_run) = map.img(:);
                     clear map
                 end;
                 if cons == 1
-                    map = load_nii(sprintf('z_ICC_con%s_%d_split.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_ICC_con%s_%d_split.nii',str,i_run));
                     avg_ICC_4D_con(:,i_run) = map.img(:);
                     clear map
                 end;
@@ -3898,13 +3898,13 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_split.nii',str);
                 target_img.img = avg_abs;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if cons == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_split.nii',str);
                 target_img.img = avg_con;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             clear avg_abs avg_con
             
@@ -3991,48 +3991,48 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_con%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = z_ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_abs%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = z_ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_%d_between_contrasts.nii',str,ind_runs);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
                 
                 
                 
@@ -4131,48 +4131,48 @@ if cons == 1 || abs == 1
                  target_img = temp_img;
                  target_img.fileprefix = sprintf('ICC_con%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                  target_img.img = ICC_con_ROI;
-                 save_nii(target_img,target_img.fileprefix);
+                 save_untouch_nii(target_img,target_img.fileprefix);
                 
                  clear target_img;
                  target_img = temp_img;
                  target_img.fileprefix = sprintf('ICC_abs%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                  target_img.img = ICC_abs_ROI;
-                 save_nii(target_img,target_img.fileprefix);
+                 save_untouch_nii(target_img,target_img.fileprefix);
                 
                  target_img = temp_img;
                  target_img.fileprefix = sprintf('z_ICC_con%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                  target_img.img = z_ICC_con_ROI;
-                 save_nii(target_img,target_img.fileprefix);
+                 save_untouch_nii(target_img,target_img.fileprefix);
                 
                  clear target_img;
                  target_img = temp_img;
                  target_img.fileprefix = sprintf('z_ICC_abs%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                  target_img.img = z_ICC_abs_ROI;
-                 save_nii(target_img,target_img.fileprefix);
+                 save_untouch_nii(target_img,target_img.fileprefix);
                  
                  clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_par%d_%d_between_contrasts.nii',str,i_par,ind_runs);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
 
                 
                 % computing average ICC
@@ -4201,12 +4201,12 @@ if cons == 1 || abs == 1
             avg_ICC_4D_con = zeros(nr_vox,runs);
             for i_run = 1:runs
                 if abs == 1
-                    map = load_nii(sprintf('z_ICC_abs%s_%d_between_contrasts.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_ICC_abs%s_%d_between_contrasts.nii',str,i_run));
                     avg_ICC_4D_abs(:,i_run) = map.img(:);
                     clear map
                 end;
                 if cons == 1
-                    map = load_nii(sprintf('z_ICC_con%s_%d_between_contrasts.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_ICC_con%s_%d_between_contrasts.nii',str,i_run));
                     avg_ICC_4D_con(:,i_run) = map.img(:);
                     clear map
                 end;
@@ -4230,13 +4230,13 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_between_contrasts.nii',str);
                 target_img.img = avg_abs;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if cons == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_between_contrasts.nii',str);
                 target_img.img = avg_con;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             clear avg_abs avg_con
             
@@ -4326,48 +4326,48 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_con%d.nii',str,con_count);
                 target_img.img = ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_con%d.nii',str,con_count);
                 target_img.img = ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_con%s_con%d.nii',str,con_count);
                 target_img.img = z_ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_abs%s_con%d.nii',str,con_count);
                 target_img.img = z_ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_con%d.nii',str,con_count);
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_con%d.nii',str,con_count);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_con%d.nii',str,con_count);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_con%d.nii',str,con_count);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
 
                 
                 % computing average ICC
@@ -4470,48 +4470,48 @@ if cons == 1 || abs == 1
              target_img = temp_img;
              target_img.fileprefix = sprintf('ICC_con%s_par%d_con%d.nii',str,i_par,con_count);
              target_img.img = ICC_con_ROI;
-             save_nii(target_img,target_img.fileprefix);
+             save_untouch_nii(target_img,target_img.fileprefix);
             
              clear target_img;
              target_img = temp_img;
              target_img.fileprefix = sprintf('ICC_abs%s_par%d_con%d.nii',str,i_par,con_count);
              target_img.img = ICC_abs_ROI;
-             save_nii(target_img,target_img.fileprefix);
+             save_untouch_nii(target_img,target_img.fileprefix);
             
              target_img = temp_img;
              target_img.fileprefix = sprintf('z_ICC_con%s_par%d_con%d.nii',str,i_par,con_count);
              target_img.img = z_ICC_con_ROI;
-             save_nii(target_img,target_img.fileprefix);
+             save_untouch_nii(target_img,target_img.fileprefix);
             
              clear target_img;
              target_img = temp_img;
              target_img.fileprefix = sprintf('z_ICC_abs%s_par%d_con%d.nii',str,i_par,con_count);
              target_img.img = z_ICC_abs_ROI;
-             save_nii(target_img,target_img.fileprefix);
+             save_untouch_nii(target_img,target_img.fileprefix);
             
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_par%d_con%d.nii',str,i_par,con_count);
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_par%d_con%d.nii',str,i_par,con_count);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_par%d_con%d.nii',str,i_par,con_count);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_par%d_con%d.nii',str,i_par,con_count);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
 
              
             % computing average ICC
@@ -4620,52 +4620,52 @@ if cons == 1 || abs == 1
                                 file1 = sprintf('ICC%s_con_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.fileprefix = file1;
                                 target_img.img = ICC_con_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 file2 = sprintf('ICC%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.fileprefix = file2;
                                 target_img.img = ICC_abs_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 target_img = temp_img;
                                 file3 = sprintf('z_ICC%s_con_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.fileprefix = file3;
                                 target_img.img = z_ICC_con_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 file4 = sprintf('z_ICC%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.fileprefix = file4;
                                 target_img.img = z_ICC_abs_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('BMS%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.img = voxBMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('EMS%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.img = voxEMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('WMS%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.img = voxWMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('JMS%s_abs_%d_%d_con%d.nii',str,ind_run,ind_run+ind_sec,con_count);
                                 target_img.img = voxJMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
 
 
                                 % computing average ICC
@@ -4771,51 +4771,51 @@ if cons == 1 || abs == 1
                          file1 = sprintf('ICC%s_con_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                          target_img.fileprefix = file1;
                          target_img.img = ICC_con_ROI;
-                         save_nii(target_img,target_img.fileprefix);
+                         save_untouch_nii(target_img,target_img.fileprefix);
                 
                          clear target_img;
                          target_img = temp_img;
                          file2 = sprintf('ICC%s_abs_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                          target_img.fileprefix = file2;
                          target_img.img = ICC_abs_ROI;
-                         save_nii(target_img,target_img.fileprefix);
+                         save_untouch_nii(target_img,target_img.fileprefix);
                 
                          target_img = temp_img;
                          file3 = sprintf('z_ICC%s_con_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                          target_img.fileprefix = file3;
                          target_img.img = z_ICC_con_ROI;
-                         save_nii(target_img,target_img.fileprefix);
+                         save_untouch_nii(target_img,target_img.fileprefix);
                 
                          clear target_img;
                         target_img = temp_img;
                         file4 = sprintf('z_ICC%s_abs_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                         target_img.fileprefix = file4;
                         target_img.img = z_ICC_abs_ROI;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                 
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('BMS%s_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                         target_img.img = voxBMS;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('EMS%s_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                         target_img.img = voxEMS;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('WMS%s_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                         target_img.img = voxWMS;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
                         clear target_img;
                         target_img = temp_img;
                         target_img.fileprefix = sprintf('JMS%s_%d_%d_par%d_con%d.nii',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                         target_img.img = voxJMS;
-                        save_nii(target_img,target_img.fileprefix);
+                        save_untouch_nii(target_img,target_img.fileprefix);
                         
 
                         % computing average ICC
@@ -4926,48 +4926,48 @@ if cons == 1 || abs == 1
             target_img = temp_img;
             target_img.fileprefix = sprintf('ICC_con%s.nii',str);
             target_img.img = ICC_con_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('ICC_abs%s.nii',str);
             target_img.img = ICC_abs_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             target_img = temp_img;
             target_img.fileprefix = sprintf('z_ICC_con%s.nii',str);
             target_img.img = z_ICC_con_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
             clear target_img;
             target_img = temp_img;
             target_img.fileprefix = sprintf('z_ICC_abs%s.nii',str);
             target_img.img = z_ICC_abs_ROI;
-            save_nii(target_img,target_img.fileprefix);
+            save_untouch_nii(target_img,target_img.fileprefix);
             
 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s.nii',str);
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s.nii',str);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s.nii',str);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s.nii',str);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
 
             
             
@@ -5071,51 +5071,51 @@ if cons == 1 || abs == 1
                             file1 = sprintf('ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file1;
                             target_img.img = ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file2 = sprintf('ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file2;
                             target_img.img = ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             target_img = temp_img;
                             file3 = sprintf('z_ICC%s_con_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file3;
                             target_img.img = z_ICC_con_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             file4 = sprintf('z_ICC%s_abs_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.fileprefix = file4;
                             target_img.img = z_ICC_abs_ROI;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
                             
                             clear target_img;
                             target_img = temp_img;
                             target_img.fileprefix = sprintf('BMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.img = voxBMS;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
 
                             clear target_img;
                             target_img = temp_img;
                             target_img.fileprefix = sprintf('EMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.img = voxEMS;
-                            save_nii(target_img,target_img.fileprefix);
+                            save_untouch_nii(target_img,target_img.fileprefix);
 
                             clear target_img;
                             target_img = temp_img;
                             target_img.fileprefix = sprintf('WMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.img = voxWMS;
-                            save_nii(target_img,target_img.fileprefix);   
+                            save_untouch_nii(target_img,target_img.fileprefix);   
 
                             clear target_img;
                             target_img = temp_img;
                             target_img.fileprefix = sprintf('JMS%s_%d_%d.nii',str,ind_run,ind_run+ind_sec);
                             target_img.img = voxJMS;
-                            save_nii(target_img,target_img.fileprefix);    
+                            save_untouch_nii(target_img,target_img.fileprefix);    
 
 
                             
@@ -5215,49 +5215,49 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_con%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = z_ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_abs%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = z_ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_%d_between_conditions.nii',str,ind_runs);
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
 
 
                 
@@ -5287,12 +5287,12 @@ if cons == 1 || abs == 1
             avg_ICC_4D_con = zeros(nr_vox,runs);
             for i_run = 1:runs
                 if abs == 1
-                    map = load_nii(sprintf('z_ICC_abs%s_%d_between_conditions.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_ICC_abs%s_%d_between_conditions.nii',str,i_run));
                     avg_ICC_4D_abs(:,i_run) = map.img(:);
                     clear map
                 end;
                 if cons == 1
-                    map = load_nii(sprintf('z_ICC_con%s_%d_between_conditions.nii',str,i_run));
+                    map = load_untouch_nii(sprintf('z_ICC_con%s_%d_between_conditions.nii',str,i_run));
                     avg_ICC_4D_con(:,i_run) = map.img(:);
                     clear map
                 end;
@@ -5316,13 +5316,13 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_between_conditions.nii',str);
                 target_img.img = avg_abs;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             if cons == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_between_conditions.nii',str);
                 target_img.img = avg_con;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
             end;
             clear avg_abs avg_con
             
@@ -5412,48 +5412,48 @@ if cons == 1 || abs == 1
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_con%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('ICC_abs%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_con%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = z_ICC_con_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('z_ICC_abs%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = z_ICC_abs_ROI;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('BMS%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = voxBMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('EMS%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = voxEMS;
-                save_nii(target_img,target_img.fileprefix);
+                save_untouch_nii(target_img,target_img.fileprefix);
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('WMS%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = voxWMS;
-                save_nii(target_img,target_img.fileprefix);   
+                save_untouch_nii(target_img,target_img.fileprefix);   
                 
                 clear target_img;
                 target_img = temp_img;
                 target_img.fileprefix = sprintf('JMS%s_%s.nii',str,conditions{ind_con,1});
                 target_img.img = voxJMS;
-                save_nii(target_img,target_img.fileprefix);    
+                save_untouch_nii(target_img,target_img.fileprefix);    
 
 
                 
@@ -5559,51 +5559,51 @@ if cons == 1 || abs == 1
                                 file1 = sprintf('ICC%s_con_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.fileprefix = file1;
                                 target_img.img = ICC_con_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 file2 = sprintf('ICC%s_abs_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.fileprefix = file2;
                                 target_img.img = ICC_abs_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 target_img = temp_img;
                                 file3 = sprintf('z_ICC%s_con_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.fileprefix = file3;
                                 target_img.img = z_ICC_con_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 file4 = sprintf('z_ICC%s_abs_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.fileprefix = file4;
                                 target_img.img = z_ICC_abs_ROI;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('BMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.img = voxBMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('EMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.img = voxEMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('WMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.img = voxWMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
                                 
                                 clear target_img;
                                 target_img = temp_img;
                                 target_img.fileprefix = sprintf('JMS%s_%d_%d_%s.nii',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 target_img.img = voxJMS;
-                                save_nii(target_img,target_img.fileprefix);
+                                save_untouch_nii(target_img,target_img.fileprefix);
 
 
                                 

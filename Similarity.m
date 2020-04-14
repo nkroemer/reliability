@@ -247,7 +247,7 @@ if use_roi == 1
         movefile(compl2,results_dir,'f');
         end;
         cd(results_dir);    
-        r_roi = load_nii(sprintf('r%s.img',roi_pur));
+        r_roi = load_untouch_nii(sprintf('r%s.img',roi_pur));
         r_roi_ind = r_roi.img>0.0001;
     else
         if ~strcmp(roi_dir,results_dir)
@@ -255,7 +255,7 @@ if use_roi == 1
         movefile(compl,results_dir,'f');
         end;
         cd(results_dir);    
-        r_roi = load_nii(sprintf('r%s',roi_name));
+        r_roi = load_untouch_nii(sprintf('r%s',roi_name));
         r_roi_ind = r_roi.img>0.0001;        
     end;
 else
@@ -263,10 +263,10 @@ else
     if exStats == 1
         stats_filled = sprintf(stats,1);
         temp = [path f id{1} f stats_filled f con];
-        temp = load_nii(temp);
+        temp = load_untouch_nii(temp);
     elseif ex4D == 1
         temp = [results_dir f 'template_3D.nii'];
-        temp = load_nii(temp);
+        temp = load_untouch_nii(temp);
     end;
     [x,y,z] = size(temp.img);
     r_roi_ind = zeros(x,y,z);
@@ -281,7 +281,7 @@ if two_cons == 0 && split == 0
         fprintf('...load 4D image for run %d...\n',ind_run);
         file = [results_dir f '4D_' num2str(ind_run) '.nii'];
         eval(sprintf('FourD%d = file;',ind_run));
-        eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+        eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
         eval(sprintf('FourD%d = FourD%d.img;',ind_run,ind_run));
         eval(sprintf('dims = size(FourD%d(:,:,:,1));',ind_run));
         x = dims(1);
@@ -295,7 +295,7 @@ if two_cons == 0 && split == 0
                 fprintf('...load 4D parametric image for run %d...\n',ind_run);
                 file = [results_dir f '4D_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d_par = file;',ind_run));
-                eval(sprintf('FourD%d_par = load_nii(FourD%d_par);',ind_run,ind_run));
+                eval(sprintf('FourD%d_par = load_untouch_nii(FourD%d_par);',ind_run,ind_run));
                 eval(sprintf('FourD%d_par%d = FourD%d_par.img;',ind_run,ind_para,ind_run));
 
             end;
@@ -306,7 +306,7 @@ elseif two_cons == 1
         fprintf('...load 4D image for run %d and contrast %s...\n',ind_run,con1);
         file1 = [results_dir f '4D_' con1 '_' num2str(ind_run) '.nii'];
         eval(sprintf('FourD%d = file1;',ind_run));
-        eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+        eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
         eval(sprintf('FourD%d_%d = FourD%d.img;',ind_run,con1_count,ind_run));
         eval(sprintf('dims = size(FourD%d_%d(:,:,:,1));',ind_run,con1_count));
         x = dims(1);
@@ -316,7 +316,7 @@ elseif two_cons == 1
         fprintf('...load 4D image for run %d and contrast %s...\n',ind_run,con2);
         file2 = [results_dir f '4D_' con2 '_' num2str(ind_run) '.nii'];
         eval(sprintf('FourD%d = file2;',ind_run));
-        eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+        eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
         eval(sprintf('FourD%d_%d = FourD%d.img;',ind_run,con2_count,ind_run));
         eval(sprintf('dims = size(FourD%d_%d(:,:,:,1));',ind_run,con2_count));    
       
@@ -327,7 +327,7 @@ elseif two_cons == 1
                 fprintf('...load 4D image parametric for run %d and contrast %s...\n',ind_run,con1);
                 file1 = [results_dir f '4D_' con1 '_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file1;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con1_count,ind_para,ind_run));
             end;
         end;
@@ -338,7 +338,7 @@ elseif two_cons == 1
                 fprintf('...load 4D image parametric for run %d and contrast %s...\n',ind_run,con2);
                 file2 = [results_dir f '4D_' con2 '_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file2;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con2_count,ind_para,ind_run));
             end;
         end;
@@ -348,7 +348,7 @@ elseif split == 1
             fprintf('...load 4D image for run %d and split 1...\n',ind_run);
             file1 = [results_dir f '4D_split1_' num2str(ind_run) '.nii'];
             eval(sprintf('FourD%d = file1;',ind_run));
-            eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+            eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
             eval(sprintf('FourD%d_split1 = FourD%d.img;',ind_run,ind_run));
             eval(sprintf('dims = size(FourD%d_split1(:,:,:,1));',ind_run));
             x = dims(1);
@@ -358,7 +358,7 @@ elseif split == 1
             fprintf('...load 4D image for run %d and split 2...\n',ind_run);
             file2 = [results_dir f '4D_split2_' num2str(ind_run) '.nii'];
             eval(sprintf('FourD%d = file2;',ind_run));
-            eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+            eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
             eval(sprintf('FourD%d_split2 = FourD%d.img;',ind_run,ind_run));
 
 end;  
@@ -368,13 +368,13 @@ if nr_para > 0
                 fprintf('...load 4D image parametric for run %d and split 1...\n',ind_run);
                 file1 = [results_dir f '4D_split1_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];               
                 eval(sprintf('FourD%d = file1;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_split1_par%d = FourD%d.img;',ind_run,ind_para,ind_run));
 
                 fprintf('...load 4D image parametric for run %d and split 2...\n',ind_run);
                 file2 = [results_dir f '4D_split2_par' num2str(ind_para) '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file2;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_split2_par%d = FourD%d.img;',ind_run,ind_para,ind_run));
                 
         end;
@@ -392,7 +392,7 @@ elseif ex4D == 1
             if nr_cond == 1
                 file = [results_dir f '4D_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d = FourD%d.img;',ind_run,ind_run));
 
                 %calculation of mean activation 
@@ -404,7 +404,7 @@ elseif ex4D == 1
             else
                 file = [results_dir f '4D_' conditions{ind_cond,1} '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file;',ind_run));
-                eval(sprintf('FourD%d = load_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%s%d = FourD%d.img;',conditions{ind_cond,1},ind_run,ind_run));
              
             end;
