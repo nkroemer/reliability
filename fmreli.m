@@ -79,6 +79,9 @@ elseif contains(matlab_paths,':')
 	matlab_paths_cell = strsplit(matlab_paths,':');
 end
 path_index = find(contains(matlab_paths_cell, 'fmreli'));
+if isempty(path_index)
+    path_index = find(contains(matlab_paths_cell, 'reliability-master'));
+end
 box_path = matlab_paths_cell{path_index(1)};
 %box_path=pwd;
 assignin('base','box_path',box_path);
