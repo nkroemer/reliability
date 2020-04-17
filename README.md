@@ -54,7 +54,7 @@ The required folder structure is (at the moment) as follows:
     1. Please save your 4D files for the analysis in the defined results directory. 
     1. If you have several conditions, please name the 4D files accordingly. For example, when there is data for two sessions in a placebo and drug condition: 4D_int_1.nii, 4D_int_2.nii, 4D_pla_1.nii, 4D_pla_2.nii
     1. If you have only one condition for several sessions, just denote the sessions by 4D_1.nii, 4D_2.nii ... 
-    1. Please also provide an exemplary 3D nifti called 'temp_img.nii' to facilitate creating result images with the image dimensions of your study. This can be simply one image of the 4D.nii (this will be fixed in a future version)
+    1. Please also provide an exemplary 3D nifti called 'template_3D.nii' to facilitate creating result images with the image dimensions of your study. This can be simply one image of the 4D.nii (this will be fixed in a future version)
     1. In the GUI, please select design, enter the number of sessions, enter the number of subjects, and select the "yes" checkbox for only 4D data as input. As result directory, you will have to enter the directory where the corresponding 4D niftis are stored.
     1. Please note that if you do not provide the first-level statistics, the features split-half and overlap cannot be used, at least in the current version. 
 
