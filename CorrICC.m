@@ -498,9 +498,9 @@ cd (dir_results);
                         if i+j <= runs
                             if pear == 1 || spea == 1
                                 eval(sprintf('first = img_%d_ROI;',i))
-                                eval(sprintf('second = img_%d_ROI;',i+j))
+                                eval(sprintf('two = img_%d_ROI;',i+j))
                                 if pear == 1
-                                    r = corr(first,second, 'Type','Pearson', 'rows', 'pairwise');
+                                    r = corr(first,two, 'Type','Pearson', 'rows', 'pairwise');
                                     r1(i_vox,1) = r;  
                                     zr1(i_vox,1) = atanh(r);
                                     summary(1,end+1)=r1;
@@ -509,7 +509,7 @@ cd (dir_results);
                                     cols{1,end+1} = sprintf('zPearson_%d_%d',i,i+j); 
                                 end;
                                 if spea == 1
-                                    r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                    r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                     r2(i_vox,1) = r;  
                                     zr2(i_vox,1) = atanh(r);                            
 
@@ -520,13 +520,13 @@ cd (dir_results);
                                     cols{1,end+1} = sprintf('zSpearman_%d_%d',i,i+j);
                                 end;
                                 
-                                clear first second
+                                clear first two
                                 if nr_para > 0
                                     for ind_p = 1:nr_para
                                         eval(sprintf('first = img_par%d_%d_ROI;',ind_p,i))
-                                        eval(sprintf('second = img_par%d_%d_ROI;',ind_p,i+j))
+                                        eval(sprintf('two = img_par%d_%d_ROI;',ind_p,i+j))
                                         if pear == 1
-                                            r = corr(first,second, 'Type','Pearson', 'rows', 'pairwise');
+                                            r = corr(first,two, 'Type','Pearson', 'rows', 'pairwise');
                                             r1(i_vox,1) = r;  
                                             zr1(i_vox,1) = atanh(r); 
                                             summary(1,end+1)=r1;
@@ -535,7 +535,7 @@ cd (dir_results);
                                             cols{1,end+1} = sprintf('zPearson_%d_%d_par%d',i,i+j,ind_p); 
                                         end;
                                         if spea == 1
-                                            r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                            r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                             r2(i_vox,1) = r;  
                                             zr2(i_vox,1) = atanh(r);                            
 
@@ -544,7 +544,7 @@ cd (dir_results);
                                             summary(1,end+1)=zr2;
                                             cols{1,end+1} = sprintf('zSpearman_%d_%d_par%d',i,i+j,ind_p);
 
-                                            clear first second    
+                                            clear first two    
                                         end;
                                     end;
                                 end;
