@@ -286,8 +286,13 @@ if two_cons == 0 && split == 0
         eval(sprintf('dims = size(FourD%d(:,:,:,1));',ind_run));
         x = dims(1);
         y = dims(2);
-        z = dims(3);        
-    end;
+        z = dims(3);
+    end
+    if ~isa(FourD1,'double')
+        for ind_run = 1:runs
+            eval(sprintf('FourD%d = double(FourD%d);',ind_run,ind_run));
+        end    
+    end
     % load parametric modulator
     if nr_para > 0
         for ind_para = 1:nr_para
@@ -298,9 +303,17 @@ if two_cons == 0 && split == 0
                 eval(sprintf('FourD%d_par = load_untouch_nii(FourD%d_par);',ind_run,ind_run));
                 eval(sprintf('FourD%d_par%d = FourD%d_par.img;',ind_run,ind_para,ind_run));
 
-            end;
-        end;
-    end;
+            end
+        end
+        if ~isa(FourD1_par1,'double')
+            for ind_para = 1:nr_para
+                for ind_run = 1:runs
+                    eval(sprintf('FourD%d_par%d = double(FourD%d_par%d);',ind_run,ind_para,ind_run,ind_para));
+                end    
+            end
+        end       
+    end
+    
 elseif two_cons == 1
      for ind_run = 1:runs
         fprintf('...load 4D image for run %d and contrast %s...\n',ind_run,con1);
@@ -318,9 +331,14 @@ elseif two_cons == 1
         eval(sprintf('FourD%d = file2;',ind_run));
         eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
         eval(sprintf('FourD%d_%d = FourD%d.img;',ind_run,con2_count,ind_run));
-        eval(sprintf('dims = size(FourD%d_%d(:,:,:,1));',ind_run,con2_count));    
-      
-    end;
+     end
+    eval(sprintf('temp = FourD1_%d;',con2_count));    
+    if ~isa(temp,'double')
+        for ind_run = 1:runs
+            eval(sprintf('FourD%d_%d = double(FourD%d_%d);',ind_run,con1_count,ind_run,con1_count));
+            eval(sprintf('FourD%d_%d = double(FourD%d_%d);',ind_run,con2_count,ind_run,con2_count));
+        end    
+    end
     if nr_para1 > 0
         for ind_para = 1:nr_para1
             for ind_run = 1:runs
@@ -329,9 +347,18 @@ elseif two_cons == 1
                 eval(sprintf('FourD%d = file1;',ind_run));
                 eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con1_count,ind_para,ind_run));
-            end;
-        end;
-    end;
+            end
+        end
+        eval(sprintf('temp = FourD1_%d_par1;',con1_count));    
+        if ~isa(temp,'double')
+            for ind_para = 1:nr_para1
+                for ind_run = 1:runs
+                    eval(sprintf('FourD%d_%d_par%d = double(FourD%d_%d_par%d);',ind_run,con1_count,ind_para,ind_run,con1_count,ind_para));
+                end    
+            end
+        end
+    end
+    
     if nr_para2 > 0
         for ind_para = 1:nr_para2
             for ind_run = 1:runs    
@@ -340,9 +367,17 @@ elseif two_cons == 1
                 eval(sprintf('FourD%d = file2;',ind_run));
                 eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_%d_par%d = FourD%d.img;',ind_run,con2_count,ind_para,ind_run));
-            end;
-        end;
-    end;
+            end
+        end
+        eval(sprintf('temp = FourD1_%d_par1;',con2_count));    
+        if ~isa(temp,'double')
+            for ind_para = 1:nr_para2
+                for ind_run = 1:runs
+                    eval(sprintf('FourD%d_%d_par%d = double(FourD%d_%d_par%d);',ind_run,con2_count,ind_para,ind_run,con2_count,ind_para));
+                end    
+            end
+        end        
+    end
 elseif split == 1
     for ind_run = 1:runs
             fprintf('...load 4D image for run %d and split 1...\n',ind_run);
@@ -361,7 +396,13 @@ elseif split == 1
             eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
             eval(sprintf('FourD%d_split2 = FourD%d.img;',ind_run,ind_run));
 
-end;  
+    end
+    if ~isa(FourD1_split1,'double')
+        for ind_run = 1:runs
+            eval(sprintf('FourD%d_split1 = double(FourD%d_split1);',ind_run,ind_run));
+            eval(sprintf('FourD%d_split2 = double(FourD%d_split2);',ind_run,ind_run));
+        end    
+    end
 if nr_para > 0 
     for ind_para = 1:nr_para
         for ind_run = 1:runs
@@ -377,17 +418,25 @@ if nr_para > 0
                 eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
                 eval(sprintf('FourD%d_split2_par%d = FourD%d.img;',ind_run,ind_para,ind_run));
                 
-        end;
-    end;
-end;
-end;
+        end
+    end
+    if ~isa(FourD1_split1_par1,'double')
+        for ind_para = 1:nr_para
+            for ind_run = 1:runs
+                eval(sprintf('FourD%d_split1_par%d = double(FourD%d_split1_par%d);',ind_run,ind_para,ind_run,ind_para));
+                eval(sprintf('FourD%d_split2_par%d = double(FourD%d_split2_par%d);',ind_run,ind_para,ind_run,ind_para));
+            end    
+        end
+    end
+end
+end
 elseif ex4D == 1
     for ind_cond = 1:nr_cond
         for ind_run = 1:runs
             fprintf('...load 4D image for run %d...\n',ind_run);
             if nr_cond > 1
                 fprintf('...condition %s...\n',conditions{ind_cond,1})
-            end;
+            end
             
             if nr_cond == 1
                 file = [results_dir f '4D_' num2str(ind_run) '.nii'];
@@ -405,12 +454,15 @@ elseif ex4D == 1
                 file = [results_dir f '4D_' conditions{ind_cond,1} '_' num2str(ind_run) '.nii'];
                 eval(sprintf('FourD%d = file;',ind_run));
                 eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('check_double = FourD%d.img;',ind_run))
+                if ~isa(check_double,'double')
+                    eval(sprintf('FourD%d.img = double(FourD%d.img)',ind_run,ind_run))
+                end                
                 eval(sprintf('FourD%s%d = FourD%d.img;',conditions{ind_cond,1},ind_run,ind_run));
-             
-            end;
-        end;
-    end;
-end;
+             end
+        end
+    end
+end
 
 %% calculation of similarity
 if exStats == 1
@@ -428,7 +480,8 @@ for ind_run = 1:runs
                 
                [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                fig.PaperPositionMode = 'auto';
-               print(fig,sprintf('similarity-%s-%s-%d-%d',str,con,ind_run, ind_run+count),'-dpng','-r1200')
+               tempc = strsplit(con,'.');
+               print(fig,sprintf('similarity-%s-%s-%d-%d',str,tempc{1,1},ind_run, ind_run+count),'-dpng','-r1200')
 
                 close(fig);
                 clearvars out fig TempFourD1 TempFourD2 ;
@@ -450,7 +503,8 @@ if nr_para > 0
 
                         [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                         fig.PaperPositionMode = 'auto';
-                        print(fig,sprintf('similarity-%s-%s-par%d-%d-%d',str,con,ind_para,ind_run, ind_run+count),'-dpng','-r1200')
+                        tempc = strsplit(con,'.');
+                        print(fig,sprintf('similarity-%s-%s-par%d-%d-%d',str,tempc{1,1},ind_para,ind_run, ind_run+count),'-dpng','-r1200')
 
                         close(fig);
                         clearvars out fig TempFourD1 TempFourD2 ;
@@ -476,7 +530,8 @@ elseif two_cons == 1
                 
                 [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                 fig.PaperPositionMode = 'auto';
-                print(fig,sprintf('similarity-%s-%s-%d-%d',str,con1,ind_run, ind_run+count),'-dpng','-r1200')
+                tempc = strsplit(con1,'.');
+                print(fig,sprintf('similarity-%s-%s-%d-%d',str,tempc{1,1},ind_run, ind_run+count),'-dpng','-r1200')
 
                 close(fig);
                 clearvars out fig TempFourD1 TempFourD2 ;
@@ -494,12 +549,13 @@ elseif two_cons == 1
 
                         [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                         fig.PaperPositionMode = 'auto';
-                        print(fig,sprintf('similarity-%s-%s-par%-d-%d-%d',str,con1,ind_para,ind_run, ind_run+count),'-dpng','-r1200')
+                        tempc = strsplit(con1,'.');
+                        print(fig,sprintf('similarity-%s-%s-par%-d-%d-%d',str,tempc{1,1},ind_para,ind_run, ind_run+count),'-dpng','-r1200')
 
                         close(fig);
                         clearvars out fig TempFourD1 TempFourD2 ;    
-                    end;
-                end;
+                    end
+                end
 
                 %con2
                 fprintf('...compare session %d to %d in contrast %d...\n',ind_run,ind_run+count,con2_count);
@@ -512,7 +568,8 @@ elseif two_cons == 1
                 
                 [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                 fig.PaperPositionMode = 'auto';
-                print(fig,sprintf('similarity-%s-%s-%d-%d',str,con2,ind_run, ind_run+count),'-dpng','-r1200')
+                tempc = strsplit(con2,'.');
+                print(fig,sprintf('similarity-%s-%s-%d-%d',str,tempc{1,1},ind_run, ind_run+count),'-dpng','-r1200')
 
                 close(fig);
                 clearvars out fig TempFourD1 TempFourD2 ;
@@ -530,7 +587,8 @@ elseif two_cons == 1
 
                         [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                         fig.PaperPositionMode = 'auto';
-                        print(fig,sprintf('similarity-%s-%s-par%-d-%d-%d',str,con2,ind_para,ind_run, ind_run+count),'-dpng','-r1200')
+                        tempc = strsplit(con2,'.');
+                        print(fig,sprintf('similarity-%s-%s-par%-d-%d-%d',str,tempc{1,1},ind_para,ind_run, ind_run+count),'-dpng','-r1200')
 
                         close(fig);
                         clearvars out fig TempFourD1 TempFourD2 ;    
@@ -552,7 +610,9 @@ elseif two_cons == 1
                 
         [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run,str);
         fig.PaperPositionMode = 'auto';
-        print(fig,sprintf('similarity-%s-%s-%s-%d',str,con1,con2,ind_run),'-dpng','-r1200')
+        tempc1 = strsplit(con1,'.');
+        tempc2 = strsplit(con2,'.');
+        print(fig,sprintf('similarity-%s-%s-%s-%d',str,tempc1{1,1},tempc2{1,1},ind_run),'-dpng','-r1200')
 
         close(fig);
         clearvars out fig TempFourD1 TempFourD2 ;
@@ -568,7 +628,9 @@ elseif two_cons == 1
 
                 [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run,str);
                 fig.PaperPositionMode = 'auto';
-                print(fig,sprintf('similarity-%s-%s-%s-par%d-%d',str,con1,con2,ind_para,ind_run),'-dpng','-r1200')
+                tempc1 = strsplit(con1,'.');
+                tempc2 = strsplit(con2,'.');                
+                print(fig,sprintf('similarity-%s-%s-%s-par%d-%d',str,tempc1{1,1},tempc2{1,1},ind_para,ind_run),'-dpng','-r1200')
 
                 close(fig);
                 clearvars out fig TempFourD1 TempFourD2 ;
@@ -590,7 +652,8 @@ elseif split == 1
         
         [fig] = similarity_figure(out.r_mat,sim2mean,i_run,i_run,str);
         fig.PaperPositionMode = 'auto';
-        print(fig,sprintf('similarity-%s-%s-%d-split',str,con,i_run),'-dpng','-r1200')
+        tempc = strsplit(con,'.');                
+        print(fig,sprintf('similarity-%s-%s-%d-split',str,tempc{1,1},i_run),'-dpng','-r1200')
 
         close(fig);
         clearvars out fig TempFourD1 TempFourD2 ;
@@ -606,7 +669,8 @@ elseif split == 1
                 
                 [fig] = similarity_figure(out.r_mat,sim2mean,i_run,i_run,str);
                 fig.PaperPositionMode = 'auto';
-                print(fig,sprintf('similarity-%s-%s-par%d-%d-split',str,con,ind_para,i_run),'-dpng','-r1200')
+                tempc = strsplit(con,'.');
+                print(fig,sprintf('similarity-%s-%s-par%d-%d-split',str,tempc{1,1},ind_para,i_run),'-dpng','-r1200')
 
                 close(fig);
                 clearvars out fig TempFourD1 TempFourD2 ;
@@ -629,6 +693,7 @@ for ind_run = 1:runs
                 
                [fig] = similarity_figure(out.r_mat,sim2mean,ind_run,ind_run+count,str);
                fig.PaperPositionMode = 'auto';
+               
                print(fig,sprintf('similarity-%s-%d-%d',str,ind_run, ind_run+count),'-dpng','-r1200')
 
                 close(fig);

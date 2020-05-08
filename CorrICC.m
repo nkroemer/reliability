@@ -332,13 +332,20 @@ if exStats == 1
         for i = 1:runs
             img = load_untouch_nii(sprintf('4D_%d.nii',i));
             eval(sprintf('img_%d = img.img;',i));
+            if ~isa(img.img,'double')
+                eval(sprintf('img_%d = double(img_%d);',i,i));
+            end          
             if nr_para > 0
                 for ind_para = 1:nr_para
                     img = load_untouch_nii(sprintf('4D_par%d_%d.nii',ind_para,i));
                     eval(sprintf('img_par%d_%d = img.img;',ind_para,i));
-                end;
-            end;
-        end;
+                    if ~isa(img.img,'double')
+                        eval(sprintf('img_par%d_%d = double(img_par%d_%d);',ind_para,i,ind_para,i));
+                    end                     
+                end
+            end
+        end
+
         clear img;
     elseif split == 1
         for i = 1:runs
@@ -349,55 +356,76 @@ if exStats == 1
             img2 = load_untouch_nii(sprintf('4D_split2_%d.nii',i));
             eval(sprintf('img_%d_split1 = img1.img;',i));
             eval(sprintf('img_%d_split2 = img2.img;',i));
+            if ~isa(img1.img,'double')
+                eval(sprintf('img_%d_split1 = double(img_%d_split1);',i,i));
+                eval(sprintf('img_%d_split2 = double(img_%d_split2);',i,i));                
+            end            
             if nr_para > 0
                 for ind_para = 1:nr_para
                     img1 = load_untouch_nii(sprintf('4D_split1_par%d_%d.nii',ind_para,i));
                     img2 = load_untouch_nii(sprintf('4D_split2_par%d_%d.nii',ind_para,i));
                     eval(sprintf('img_%d_par%d_split1 = img1.img;',i,ind_para));
                     eval(sprintf('img_%d_par%d_split2 = img2.img;',i,ind_para));
-                end;
-            end;
-        end;
+                    if ~isa(img1.img,'double')
+                        eval(sprintf('img_%d_par%d_split1 = double(img_%d_par%d_split1);',i,ind_para,i,ind_para));
+                        eval(sprintf('img_%d_par%d_split2 = double(img_%d_par%d_split2);',i,ind_para,i,ind_para));                
+                    end                     
+                end
+            end
+        end
         clear img1 img2
     elseif two_cons == 1
         for i = 1:runs
             if runs == 1
                 i = single_run;
-            end;
+            end
             img1 = load_untouch_nii(sprintf('4D_%s_%d.nii',con1,i));
             img2 = load_untouch_nii(sprintf('4D_%s_%d.nii',con2,i));
             eval(sprintf('img_%d_con1 = img1.img;',i));
             eval(sprintf('img_%d_con2 = img2.img;',i));
+            if ~isa(img1.img,'double')
+                eval(sprintf('img_%d_con1 = double(img_%d_con1);',i,i));
+                eval(sprintf('img_%d_con2 = double(img_%d_con2);',i,i));                
+            end            
             if nr_para1 > 0
                 for ind_para = 1:nr_para1
                     img = load_untouch_nii(sprintf('4D_%s_par%d_%d.nii',con1,ind_para,i));
                     eval(sprintf('img_con1_par%d_%d = img.img;',ind_para,i));
-                end;
-            end;
+                    if ~isa(img.img,'double')
+                        eval(sprintf('img_con1_par%d_%d = double(img_con1_par%d_%d);',ind_para,i,ind_para,i));
+                    end
+                end
+            end
             if nr_para2 > 0
                 for ind_para = 1:nr_para2
                     img = load_untouch_nii(sprintf('4D_%s_par%d_%d.nii',con2,ind_para,i));
                     eval(sprintf('img_con2_par%d_%d = img.img;',ind_para,i));
-                end;
-            end;
-        end;
+                    if ~isa(img.img,'double')
+                        eval(sprintf('img_con2_par%d_%d = double(img_con2_par%d_%d);',ind_para,i,ind_para,i));
+                    end
+                end
+            end
+        end
         clear img1 img2 img
-    end;
+    end
 elseif ex4D == 1
     for ind_cond = 1:nr_cond
         for ind_run = 1:runs
             fprintf('...load 4D image for run %d...\n',ind_run);
             if nr_cond > 1
                 fprintf('...condition %s...\n',conditions{ind_cond,1})
-            end;
+            end
             
             if nr_cond == 1
                 file = [dir_results f '4D_' num2str(ind_run) '.nii'];
-                eval(sprintf('FourD%d = file;',ind_run));
                 cd(dir_results);
                 temp_img = temp;
-                eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('FourD%d = load_untouch_nii(file);',ind_run));
                 eval(sprintf('FourD%d = FourD%d.img;',ind_run,ind_run));
+                eval(sprintf('check_double = FourD%d.img;',ind_run));
+                if ~isa(check_double,'double')
+                    eval(sprintf('FourD%d = double(FourD%d);',ind_run,ind_run));
+                end
                 
                 %image dimensions
                 eval(sprintf('dims = size(FourD%d(:,:,:,1));',ind_run));
@@ -410,6 +438,10 @@ elseif ex4D == 1
                 cd(dir_results);
                 temp_img = temp;
                 eval(sprintf('FourD%d = load_untouch_nii(FourD%d);',ind_run,ind_run));
+                eval(sprintf('check_double = FourD%d.img;',ind_run));
+                if ~isa(check_double,'double')
+                    eval(sprintf('FourD%d.img = double(FourD%d.img);',ind_run,ind_run));
+                end                
                 eval(sprintf('FourD%s%d = FourD%d.img;',conditions{ind_cond,1},ind_run,ind_run));
                 
                 %image dimensions
@@ -417,10 +449,10 @@ elseif ex4D == 1
                 x = dims(1);
                 y = dims(2);
                 z = dims(3);
-            end;
-        end;
-    end;
-end;
+            end
+        end
+    end
+end
 nr_vox = x*y*z;
 
 %% create correlation maps
@@ -430,7 +462,7 @@ if roi == 1
     str = roi_name;
 else
     str = '';
-end;
+end
 
 if roi == 1
     disp('...calculate correlation of mean ROI activity...')
@@ -534,9 +566,9 @@ if roi == 1
                         % correlation of mean ROI activity
                         if pear == 1 || spea == 1
                             eval(sprintf('first = img_%d_ROI;',i))
-                            eval(sprintf('second = img_%d_ROI;',i+j))
+                            eval(sprintf('two = img_%d_ROI;',i+j))
                             if pear == 1
-                                r = corrcoef(first,second, 'rows', 'pairwise');
+                                r = corrcoef(first,two, 'rows', 'pairwise');
                                 if isnan (r(1,2))
                                     r1 = 0;
                                     zr1 = 0;
@@ -550,7 +582,7 @@ if roi == 1
                                 cols{1,end+1} = sprintf('zPearson_%d_%d',i,i+j);
                             end;
                             if spea == 1
-                                r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                 zr2 = atanh(r);
                                 
                                 summary(1,end+1)=r;
@@ -559,13 +591,13 @@ if roi == 1
                                 cols{1,end+1} = sprintf('zSpearman_%d_%d',i,i+j);
                             end;
                             
-                            clear first second
+                            clear first two
                             if nr_para > 0
                                 for ind_p = 1:nr_para
                                     eval(sprintf('first = img_par%d_%d_ROI;',ind_p,i))
-                                    eval(sprintf('second = img_par%d_%d_ROI;',ind_p,i+j))
+                                    eval(sprintf('two = img_par%d_%d_ROI;',ind_p,i+j))
                                     if pear == 1
-                                        r = corrcoef(first,second, 'rows', 'pairwise');
+                                        r = corrcoef(first,two, 'rows', 'pairwise');
                                         if isnan (r(1,2))
                                             r1 = 0;
                                             zr1 = 0;
@@ -579,7 +611,7 @@ if roi == 1
                                         cols{1,end+1} = sprintf('zPearson_%d_%d_par%d',i,i+j,ind_p);
                                     end;
                                     if spea == 1
-                                        r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                        r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                         zr2(i_vox,1) = atanh(r);
                                         
                                         summary(1,end+1)=r;
@@ -587,7 +619,7 @@ if roi == 1
                                         summary(1,end+1)=zr2;
                                         cols{1,end+1} = sprintf('zSpearman_%d_%d_par%d',i,i+j,ind_p);
                                         
-                                        clear first second
+                                        clear first two
                                     end;
                                 end;
                             end;
@@ -673,9 +705,9 @@ if roi == 1
                             % correlation of mean ROI activity
                             if pear == 1 || spea == 1
                                 eval(sprintf('first = img_%d_ROI_con%d;',i,i_con))
-                                eval(sprintf('second = img_%d_ROI_con%d;',i+j,i_con))
+                                eval(sprintf('two = img_%d_ROI_con%d;',i+j,i_con))
                                 if pear == 1
-                                    r = corrcoef(first,second, 'rows', 'pairwise');
+                                    r = corrcoef(first,two, 'rows', 'pairwise');
                                     if isnan (r(1,2))
                                         r1 = 0;
                                         zr1 = 0;
@@ -689,7 +721,7 @@ if roi == 1
                                     cols{1,end+1} = sprintf('zPearson_%d_%d_con%d',i,i+j,i_con);
                                 end;
                                 if spea == 1
-                                    r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                    r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                     zr2 = atanh(r);
                                     
                                     summary(1,end+1)=r;
@@ -698,14 +730,14 @@ if roi == 1
                                     cols{1,end+1} = sprintf('zSpearman_%d_%d_con%d',i,i+j,i_con);
                                 end;
                                 
-                                clear first second
+                                clear first two
                                 eval(sprintf('nr_para = nr_para%d;',i_con))
                                 if nr_para > 0
                                     for ind_p = 1:nr_para
                                         eval(sprintf('first = img_par%d_%d_ROI_con%d;',ind_p,i,i_con))
-                                        eval(sprintf('second = img_par%d_%d_ROI_con%d;',ind_p,i+j,i_con))
+                                        eval(sprintf('two = img_par%d_%d_ROI_con%d;',ind_p,i+j,i_con))
                                         if pear == 1
-                                            r = corrcoef(first,second, 'rows', 'pairwise');
+                                            r = corrcoef(first,two, 'rows', 'pairwise');
                                             if isnan (r(1,2))
                                                 r1 = 0;
                                                 zr1 = 0;
@@ -719,7 +751,7 @@ if roi == 1
                                             cols{1,end+1} = sprintf('zPearson_%d_%d_par%d_con%d',i,i+j,ind_p,i_con);
                                         end;
                                         if spea == 1
-                                            r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                            r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                             zr2(i_vox,1) = atanh(r);
                                             
                                             summary(1,end+1)=r;
@@ -727,7 +759,7 @@ if roi == 1
                                             summary(1,end+1)=zr2;
                                             cols{1,end+1} = sprintf('zSpearman_%d_%d_par%d_con%d',i,i+j,ind_p,i_con);
                                             
-                                            clear first second
+                                            clear first two
                                         end;
                                     end;
                                 end;
@@ -810,12 +842,12 @@ if roi == 1
             for i_run = 1:runs
                 if pear == 1 || spea == 1
                     eval(sprintf('first = img_%d_ROI_split1;',i_run))
-                    eval(sprintf('second = img_%d_ROI_split2',i_run))
+                    eval(sprintf('two = img_%d_ROI_split2',i_run))
                     disp('...calculating correlations for mean ROI activity...\n')
                     fprintf('...over splits in session %d...\n',i_run)
                     
                     if pear == 1
-                        r = corrcoef(first,second, 'rows', 'pairwise');
+                        r = corrcoef(first,two, 'rows', 'pairwise');
                         if isnan (r(1,2))
                             r1 = 0;
                             zr1 = 0;
@@ -829,7 +861,7 @@ if roi == 1
                         cols{1,end+1} = sprintf('zPearson_%d_split',i_run);
                     end;
                     if spea == 1
-                        r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                        r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                         zr2(i_vox,1) = atanh(r);
                         
                         summary(1,end+1)=r;
@@ -837,7 +869,7 @@ if roi == 1
                         summary(1,end+1)=zr2;
                         cols{1,end+1} = sprintf('zSpearman_%d_split',i_run);
                         
-                        clear first second
+                        clear first two
                     end;
                 end;
                 if cons == 1 || abs == 1
@@ -951,14 +983,14 @@ if roi == 1
                             if nr_cond == 1
                                 str_cond = '';
                                 eval(sprintf('first = img_%d_ROI;',i))
-                                eval(sprintf('second = img_%d_ROI;',i+j))
+                                eval(sprintf('two = img_%d_ROI;',i+j))
                             else
                                 eval(sprintf('first = img_%d_ROI_%s;',i,conditions{ind_cond,1}))
-                                eval(sprintf('second = img_%d_ROI_%s;',i+j,conditions{ind_cond,1}))
+                                eval(sprintf('two = img_%d_ROI_%s;',i+j,conditions{ind_cond,1}))
                                 str_cond = sprintf('_%s',conditions{ind_cond,1});
                             end;
                             if pear == 1
-                                r = corrcoef(first,second, 'rows', 'pairwise');
+                                r = corrcoef(first,two, 'rows', 'pairwise');
                                 if isnan (r(1,2))
                                     r1 = 0;
                                     zr1 = 0;
@@ -972,7 +1004,7 @@ if roi == 1
                                 cols{1,end+1} = sprintf('zPearson_%d_%d%s',i,i+j,str_cond);
                             end;
                             if spea == 1
-                                r = corr(first,second, 'Type','Spearman', 'rows', 'pairwise');
+                                r = corr(first,two, 'Type','Spearman', 'rows', 'pairwise');
                                 zr2 = atanh(r);
                                 
                                 summary(1,end+1)=r;
@@ -981,7 +1013,7 @@ if roi == 1
                                 cols{1,end+1} = sprintf('zSpearman_%d_%d%s',i,i+j,str_cond);
                             end;
                             
-                            clear first second
+                            clear first two
                         end;
                     end;
                 end;
@@ -1064,7 +1096,7 @@ if pear == 1 || spea == 1
                         fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                         %load 4D images
                         eval(sprintf('one=data(:,:,%d);',i_run));
-                        eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                        eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                         
                         r1 = zeros(nr_vox,1);
                         zr1 = zeros(nr_vox,1);
@@ -1072,7 +1104,7 @@ if pear == 1 || spea == 1
                         zr2 = zeros(nr_vox,1);
                         for i_vox = 1:nr_vox
                             if pear == 1
-                                r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                 if isnan (r(1,2))
                                     r1(i_vox,1) = 0;
                                     zr1(i_vox,1) = 0;
@@ -1082,13 +1114,13 @@ if pear == 1 || spea == 1
                                 end;
                             end
                             if spea == 1
-                                r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                 r2(i_vox,1) = r;
                                 zr2(i_vox,1) = atanh(r);
                             end;
                             
                         end;
-                        clear one second
+                        clear one two
                         
                         % create correlation matrices for image
                         if pear == 1
@@ -1244,7 +1276,7 @@ if pear == 1 || spea == 1
                                 fprintf('...creates correlation maps for parametric contrast in session %d and session %d...\n',i_run,i_run+i_sec);
                                 %load 4D images
                                 eval(sprintf('one=data(:,:,%d);',i_run));
-                                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                                 
                                 r1 = zeros(nr_vox,1);
                                 zr1 = zeros(nr_vox,1);
@@ -1252,7 +1284,7 @@ if pear == 1 || spea == 1
                                 zr2 = zeros(nr_vox,1);
                                 for i_vox = 1:nr_vox
                                     if pear == 1
-                                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                         if isnan (r(1,2))
                                             r1(i_vox,1) = 0;
                                             zr1(i_vox,1) = 0;
@@ -1262,12 +1294,12 @@ if pear == 1 || spea == 1
                                         end;
                                     end
                                     if spea == 1
-                                        r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                        r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                         r2(i_vox,1) = r;
                                         zr2(i_vox,1) = atanh(r);
                                     end;
                                 end;
-                                clear one second
+                                clear one two
                                 
                                 % create correlation matrices for image
                                 if pear == 1
@@ -1593,7 +1625,7 @@ if pear == 1 || spea == 1
                         fprintf('...creates correlation maps for splitted session %d ...\n',i);
                         %load 4D images
                         one=data(:,:,1);
-                        second=data(:,:,2);
+                        two=data(:,:,2);
                         
                         r1 = zeros(nr_vox,1);
                         zr1 = zeros(nr_vox,1);
@@ -1601,7 +1633,7 @@ if pear == 1 || spea == 1
                         zr2 = zeros(nr_vox,1);
                         for i_vox = 1:nr_vox
                             if pear == 1
-                                r = corrcoef(one(:,i_vox),second(:,i_vox), 'rows', 'pairwise');
+                                r = corrcoef(one(:,i_vox),two(:,i_vox), 'rows', 'pairwise');
                                 if isnan (r(1,2))
                                     r1(i_vox,1) = 0;
                                     zr1(i_vox,1) = 0;
@@ -1611,12 +1643,12 @@ if pear == 1 || spea == 1
                                 end;
                             end
                             if spea == 1
-                                r = corr(one(:,i_vox),second(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                r = corr(one(:,i_vox),two(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                 r2(i_vox,1) = r;
                                 zr2(i_vox,1) = atanh(r);
                             end;
                         end;
-                        clear one second
+                        clear one two
                         
                         % create correlation matrices for image
                         r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -1766,7 +1798,7 @@ if pear == 1 || spea == 1
                 fprintf('...creates correlation maps for two contrasts in session %d ...\n',i_run);
                 %load 4D images
                 one=data(:,:,1);
-                second=data(:,:,2);
+                two=data(:,:,2);
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -1774,7 +1806,7 @@ if pear == 1 || spea == 1
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                         if isnan (r(1,2))
                             r1(i_vox,1) = 0;
                             zr1(i_vox,1) = 0;
@@ -1784,12 +1816,12 @@ if pear == 1 || spea == 1
                         end;
                     end
                     if spea == 1
-                        r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                        r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                         r2(i_vox,1) = r;
                         zr2(i_vox,1) = atanh(r);
                     end;
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image
                 r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -1909,9 +1941,9 @@ if pear == 1 || spea == 1
                 save_untouch_nii(target_img,target_img.fileprefix);
             end;
             %calculation for parametric regressors of both contrasts
-            if nr_para > 0
+            if nr_para1 > 0
                  count_comp = 0;
-                 for i_par = 1:nr_para
+                 for i_par = 1:nr_para1
                     for i = 1:runs
                         if runs == 1
                             i = single_run;
@@ -1932,7 +1964,7 @@ if pear == 1 || spea == 1
                         fprintf('...creates correlation maps for parametric regressors of both contrasts in session %d ...\n',i);
                         %load 4D images
                         one=data(:,:,1);
-                        second=data(:,:,2);
+                        two=data(:,:,2);
             
                         r1 = zeros(nr_vox,1);
                         zr1 = zeros(nr_vox,1);
@@ -1940,7 +1972,7 @@ if pear == 1 || spea == 1
                         zr2 = zeros(nr_vox,1);
                         for i_vox = 1:nr_vox
                             if pear == 1
-                                r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                     if isnan (r(1,2))
                                         r1(i_vox,1) = 0;
                                         zr1(i_vox,1) = 0;
@@ -1950,12 +1982,12 @@ if pear == 1 || spea == 1
                                     end;
                             end
                             if spea == 1
-                                    r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                    r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                     r2(i_vox,1) = r;
                                     zr2(i_vox,1) = atanh(r);
                             end;
                         end;
-                        clear one second
+                        clear one two
             
                         % create correlation matrices for image
                         r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -2078,7 +2110,175 @@ if pear == 1 || spea == 1
             
                  end;
             end;
+            if nr_para2 > 0
+                 count_comp = 0;
+                 for i_par = 1:nr_para2
+                    for i = 1:runs
+                        if runs == 1
+                            i = single_run;
+                        end;
+                        % create data matrix with data for all voxels in cols, subjects in rows
+                        % and 2 splits in third dimension
+                        data = zeros(nr_subj,nr_vox,2);
+                        for ind_con = 1:2
+                            for ind_subj = 1:nr_subj
+                                eval(sprintf('temp = img_con%d_par%d_%d(:,:,:,ind_subj);',ind_con,i_par,i));
+                                data(ind_subj,:,ind_con)=temp(:);
+                            end;
+                        end;
+                        clear temp
             
+                        %correlations for each split
+                        count_comp = count_comp +1;
+                        fprintf('...creates correlation maps for parametric regressors of both contrasts in session %d ...\n',i);
+                        %load 4D images
+                        one=data(:,:,1);
+                        two=data(:,:,2);
+            
+                        r1 = zeros(nr_vox,1);
+                        zr1 = zeros(nr_vox,1);
+                        r2 = zeros(nr_vox,1);
+                        zr2 = zeros(nr_vox,1);
+                        for i_vox = 1:nr_vox
+                            if pear == 1
+                                r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                    if isnan (r(1,2))
+                                        r1(i_vox,1) = 0;
+                                        zr1(i_vox,1) = 0;
+                                    else
+                                        r1(i_vox,1) = r(1,2);
+                                        zr1(i_vox,1) = atanh(r(1,2));
+                                    end;
+                            end
+                            if spea == 1
+                                    r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                    r2(i_vox,1) = r;
+                                    zr2(i_vox,1) = atanh(r);
+                            end;
+                        end;
+                        clear one two
+            
+                        % create correlation matrices for image
+                        r_vec_pear_1_2 = reshape(r1,x,y,z);
+                        r_vec_spea_1_2 = reshape(r2,x,y,z);
+                        z_r_vec_pear_1_2 = reshape(zr1,x,y,z);
+                        z_r_vec_spea_1_2 = reshape(zr2,x,y,z);
+                        clear r1 zr1 r2 zr2;
+            
+                        % save correlation maps
+                        if pear == 1
+                            target_img = temp_img;
+                            file = sprintf('CorrMaps%d%d_pear_%d_par%d_between_contrasts.nii',con1_count,con2_count,i,i_par);
+                            target_img.fileprefix = file;
+                            if roi == 0
+                                target_img.img = r_vec_pear_1_2;
+                            else
+                                r_vec_pear_1_2(~r_roi_ind)=0;
+                                target_img.img = r_vec_pear_1_2;
+                            end;
+                            save_untouch_nii(target_img,target_img.fileprefix);
+            
+                            target_img = temp_img;
+                            file = sprintf('z_CorrMaps%d%d_pear_%d_par%d_between_contrasts.nii',con1_count,con2_count,i,i_par);
+                            target_img.fileprefix = file;
+                            if roi == 0
+                                target_img.img = z_r_vec_pear_1_2;
+                            else
+                                z_r_vec_pear_1_2(~r_roi_ind)=0;
+                                target_img.img = z_r_vec_pear_1_2;
+                            end;
+                            save_untouch_nii(target_img,target_img.fileprefix);
+                        end;
+            
+                        if spea == 1
+                        target_img = temp_img;
+                        file = sprintf('CorrMaps%d%d_spea_%d_par%d_between_contrasts.nii',con1_count,con2_count,i,i_par);
+                        target_img.fileprefix = file;
+                        if roi == 0
+                            target_img.img = r_vec_spea_1_2;
+                        else
+                            r_vec_spea_1_2(~r_roi_ind)=0;
+                            target_img.img = r_vec_spea_1_2;
+                        end;
+                        save_untouch_nii(target_img,target_img.fileprefix);
+            
+                        target_img = temp_img;
+                        file = sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i,i_par);
+                        target_img.fileprefix = file;
+                        if roi == 0
+                            target_img.img = z_r_vec_spea_1_2;
+                        else
+                            z_r_vec_spea_1_2(~r_roi_ind)=0;
+                            target_img.img = z_r_vec_spea_1_2;
+                        end;
+                        save_untouch_nii(target_img,target_img.fileprefix);
+                        end;
+            
+                        %compute z mean and inverse Fisher's transformation
+                        if pear == 1
+                            mean_z = mean(z_r_vec_pear_1_2(~isinf(z_r_vec_pear_1_2)),'omitnan');
+                            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                            summary(1,end+1)=mean_r;
+                            cols{1,end+1} = sprintf('mean_pear_%d%d_%d_par%d_between_contrasts',con1_count,con2_count,i,i_par);
+                        end;
+                        if spea == 1
+                            mean_z = mean(z_r_vec_spea_1_2(~isinf(z_r_vec_spea_1_2)),'omitnan');
+                            mean_r=(exp(2*mean_z)-1)./(exp(2*mean_z)+1);
+                            summary(1,end+1)=mean_r;
+                            cols{1,end+1} = sprintf('mean_spea%d%d_%d_par%d_between_contrasts',con1_count,con2_count,i,i_par);
+                        end;
+                    end;
+                    clear z_r_vec_spea_1_2 r_vec_spea_1_2 z_r_vec_pear_1_2 r_vec_pear_1_2
+            
+                % calculate average correlation for all comparisons
+                disp('...creates average correlation maps over all parametric regressors of both contrasts...');
+                avg_corr_4D_pear = zeros(nr_vox,count_comp);
+                avg_corr_4D_spea = zeros(nr_vox,count_comp);
+                ind_comp = 0;
+                for i_run = 1:runs
+                    ind_comp = ind_comp+1;
+                    if pear == 1
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_pear_%d_par%d_between_contrasts.nii',str,i_run,i_par));
+                    avg_corr_4D_pear(:,ind_comp) = map.img(:);
+                    clear map
+                    end;
+                    if spea == 1
+                    map = load_untouch_nii(sprintf('z_CorrMaps%s_spea_%d_par%d_between_contrasts.nii',str,i_run,i_par));
+                    avg_corr_4D_spea(:,ind_comp) = map.img(:);
+                    clear map
+                    end;
+                end;
+                avg_pear = zeros(nr_vox,1);
+                avg_spea = zeros(nr_vox,1);
+                if pear == 1
+                    for ind_vox = 1:nr_vox
+                        avg_temp = mean(avg_corr_4D_pear(ind_vox,:));
+                        avg_pear(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+                    end;
+                end;
+                if spea == 1
+                    for ind_vox = 1:nr_vox
+                        avg_temp = mean(avg_corr_4D_spea(ind_vox,:));
+                        avg_spea(ind_vox,1) = (exp(2*avg_temp)-1)./(exp(2*avg_temp)+1);
+                    end;
+                end;
+                clear avg_corr_4D_pear avg_corr_4D_spea
+                if pear == 1
+                    target_img = temp_img;
+                    target_img.fileprefix = sprintf('CorrMaps%s_pear_par%d_between_contrasts.nii',str,i_par);
+                    target_img.img = avg_pear;
+                    save_untouch_nii(target_img,target_img.fileprefix);
+                end;
+                if spea == 1
+                    target_img = temp_img;
+                    target_img.fileprefix = sprintf('CorrMaps%s_spea_par%d_between_contrasts.nii',str,i_par);
+                    target_img.img = avg_spea;
+                    save_untouch_nii(target_img,target_img.fileprefix);
+                end;
+            
+            
+                 end;
+            end;            
             % compare contrasts between sessions
             
             for i_con = 1:2
@@ -2104,7 +2304,7 @@ if pear == 1 || spea == 1
                             fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                             %load 4D images
                             eval(sprintf('one=data(:,:,%d);',i_run));
-                            eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                            eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                             
                             r1 = zeros(nr_vox,1);
                             zr1 = zeros(nr_vox,1);
@@ -2112,7 +2312,7 @@ if pear == 1 || spea == 1
                             zr2 = zeros(nr_vox,1);
                             for i_vox = 1:nr_vox
                                 if pear == 1
-                                    r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                    r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                     if isnan (r(1,2))
                                         r1(i_vox,1) = 0;
                                         zr1(i_vox,1) = 0;
@@ -2122,13 +2322,13 @@ if pear == 1 || spea == 1
                                     end;
                                 end
                                 if spea == 1
-                                    r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                    r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                     r2(i_vox,1) = r;
                                     zr2(i_vox,1) = atanh(r);
                                 end;
                                 
                             end;
-                            clear one second
+                            clear one two
                             
                             % create correlation matrices for image
                             if pear == 1
@@ -2263,6 +2463,11 @@ if pear == 1 || spea == 1
                 end;
                 clear avg_spea avg_pear avg_corr_4D_spea avg_corr_4D_pear z_r_vec_spea_1_2
                 
+                if i_con == 1
+                    nr_para = nr_para1;
+                elseif i_con == 2
+                    nr_para = nr_para2;
+                end
                 if nr_para > 0
                      count_comp = 0;
                      for i_par = 1:nr_para
@@ -2283,7 +2488,7 @@ if pear == 1 || spea == 1
                                 fprintf('...creates correlation maps for parametric contrast in session %d and session %d...\n',i_run,i_run+i_sec);
                                 %load 4D images
                                 eval(sprintf('one=data(:,:,%d);',i_run));
-                                eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                                eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                 
                                 r1 = zeros(nr_vox,1);
                                 zr1 = zeros(nr_vox,1);
@@ -2291,7 +2496,7 @@ if pear == 1 || spea == 1
                                 zr2 = zeros(nr_vox,1);
                                 for i_vox = 1:nr_vox
                                     if pear == 1
-                                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                             if isnan (r(1,2))
                                                 r1(i_vox,1) = 0;
                                                 zr1(i_vox,1) = 0;
@@ -2301,13 +2506,13 @@ if pear == 1 || spea == 1
                                             end;
                                     end
                                     if spea == 1
-                                            r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                            r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                             r2(i_vox,1) = r;
                                             zr2(i_vox,1) = atanh(r);
                                     end;
                 
                                 end;
-                                clear one second
+                                clear one two
                 
                                 % create correlation matrices for image
                                 if pear == 1
@@ -2391,7 +2596,7 @@ if pear == 1 || spea == 1
                     end;
                 
                     % calculate average correlation for all comparisons
-                    disp('...creates average correlation maps for parametric contrast.../n');
+                    disp('...creates average correlation maps for parametric contrast...\n');
                     avg_corr_4D_pear = zeros(nr_vox,count_comp);
                     avg_corr_4D_spea = zeros(nr_vox,count_comp);
                     ind_comp = 0;
@@ -2470,7 +2675,7 @@ if pear == 1 || spea == 1
                         fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                         %load 4D images
                         eval(sprintf('one=data(:,:,%d);',i_run));
-                        eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                        eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                         
                         r1 = zeros(nr_vox,1);
                         zr1 = zeros(nr_vox,1);
@@ -2478,7 +2683,7 @@ if pear == 1 || spea == 1
                         zr2 = zeros(nr_vox,1);
                         for i_vox = 1:nr_vox
                             if pear == 1
-                                r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                 if isnan (r(1,2))
                                     r1(i_vox,1) = 0;
                                     zr1(i_vox,1) = 0;
@@ -2488,13 +2693,13 @@ if pear == 1 || spea == 1
                                 end;
                             end
                             if spea == 1
-                                r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                 r2(i_vox,1) = r;
                                 zr2(i_vox,1) = atanh(r);
                             end;
                             
                         end;
-                        clear one second
+                        clear one two
                         
                         % create correlation matrices for image
                         if pear == 1
@@ -2655,7 +2860,7 @@ if pear == 1 || spea == 1
                 fprintf('...creates correlation maps for two conditions in session %d ...\n',i_run);
                 %load 4D images
                 one=data(:,:,1);
-                second=data(:,:,2);
+                two=data(:,:,2);
                 
                 r1 = zeros(nr_vox,1);
                 zr1 = zeros(nr_vox,1);
@@ -2663,7 +2868,7 @@ if pear == 1 || spea == 1
                 zr2 = zeros(nr_vox,1);
                 for i_vox = 1:nr_vox
                     if pear == 1
-                        r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                        r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                         if isnan (r(1,2))
                             r1(i_vox,1) = 0;
                             zr1(i_vox,1) = 0;
@@ -2673,12 +2878,12 @@ if pear == 1 || spea == 1
                         end;
                     end
                     if spea == 1
-                        r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                        r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                         r2(i_vox,1) = r;
                         zr2(i_vox,1) = atanh(r);
                     end;
                 end;
-                clear one second
+                clear one two
                 
                 % create correlation matrices for image
                 r_vec_pear_1_2 = reshape(r1,x,y,z);
@@ -2820,7 +3025,7 @@ if pear == 1 || spea == 1
                             fprintf('...creates correlation maps for session %d and session %d...\n',i_run,i_run+i_sec);
                             %load 4D images
                             eval(sprintf('one=data(:,:,%d);',i_run));
-                            eval(sprintf('second=data(:,:,%d);',i_run+i_sec));
+                            eval(sprintf('two=data(:,:,%d);',i_run+i_sec));
                             
                             r1 = zeros(nr_vox,1);
                             zr1 = zeros(nr_vox,1);
@@ -2828,7 +3033,7 @@ if pear == 1 || spea == 1
                             zr2 = zeros(nr_vox,1);
                             for i_vox = 1:nr_vox
                                 if pear == 1
-                                    r = corrcoef(second(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
+                                    r = corrcoef(two(:,i_vox),one(:,i_vox), 'rows', 'pairwise');
                                     if isnan (r(1,2))
                                         r1(i_vox,1) = 0;
                                         zr1(i_vox,1) = 0;
@@ -2838,13 +3043,13 @@ if pear == 1 || spea == 1
                                     end;
                                 end
                                 if spea == 1
-                                    r = corr(second(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
+                                    r = corr(two(:,i_vox),one(:,i_vox), 'Type','Spearman', 'rows', 'pairwise');
                                     r2(i_vox,1) = r;
                                     zr2(i_vox,1) = atanh(r);
                                 end;
                                 
                             end;
-                            clear one second
+                            clear one two
                             
                             % create correlation matrices for image
                             if pear == 1
@@ -3273,7 +3478,7 @@ if cons == 1 || abs == 1
                         cols{1,end+1} = sprintf('mean_ICCcon%s_par%d',str,i_par);
                     end;
                                       
-                    clear data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj voxBMS voxEMS voxJMS voxWMS
+                    %clear data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj voxBMS voxEMS voxJMS voxWMS
                 end;
             end;
             
@@ -3297,17 +3502,17 @@ if cons == 1 || abs == 1
                         data1(:,ind_subj,ind_runs)=temp(:);
                     end;
                 end;
-                clear temp
+                %clear temp
                 
                 for ind_run = 1:runs
                     for ind_sec = 1:runs-1
                         if ind_run + ind_sec <= runs
-                            fprintf('...calculate ICC for session %d and session %d...\n',ind_run,ind_run+ind_sec);
                             for ind_vox = 1:nr_vox
-                                data = data1(ind_vox,:,ind_run);
-                                data = [data;data1(ind_vox,:,ind_run+ind_sec)];
+                                fprintf('...calculate ICC for voxel %d in session %d and session %d...\n',ind_vox,ind_run,ind_run+ind_sec);
+                                data2 = data1(ind_vox,:,ind_run);
+                                data2 = [data2;data1(ind_vox,:,ind_run+ind_sec)];
 
-                                [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
+                                [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data2);
                                 voxBMS(ind_vox,1) = BMS; % between subject
                                 voxWMS(ind_vox,1) = WMS; % within subject
                                 voxEMS(ind_vox,1) = EMS; % error
@@ -3317,7 +3522,7 @@ if cons == 1 || abs == 1
                                     voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS);
                                     ICC_con_ROI(ind_vox,1) = voxICC_con;
                                     z_ICC_con_ROI(ind_vox,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                                end;
+                                end
                                 
                                 %absolute agreement
                                 if abs==1
@@ -3325,9 +3530,9 @@ if cons == 1 || abs == 1
                                         2.* (JMS-EMS)./nr_subj);
                                     ICC_abs_ROI(ind_vox,1) = voxICC_abs;
                                     z_ICC_abs_ROI(ind_vox,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                                end;
-                            clear data
-                            end;
+                                end
+                            clear data2
+                            end
                             
                             disp('...saving ICC images...')
                             ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
@@ -3348,7 +3553,7 @@ if cons == 1 || abs == 1
                                 voxEMS(~r_roi_ind)=0;
                                 voxJMS(~r_roi_ind)=0;
                                 voxWMS(~r_roi_ind)=0;
-                            end;
+                            end
                             
                             % save ICC maps
                             target_img = temp_img;
@@ -3421,7 +3626,7 @@ if cons == 1 || abs == 1
                                 cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d',str,ind_run,ind_run+ind_sec);
                             end;
                                                         
-                            clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj voxWMS voxBMS voxEMS voxJMS
+                           %clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj voxWMS voxBMS voxEMS voxJMS
                             
                         end;
                     end;
@@ -3570,7 +3775,7 @@ if cons == 1 || abs == 1
                                         summary(1,end+1)=mean_r;
                                         cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_par%d',str,ind_run,ind_run+ind_sec,ind_para);
                                     end;
-                                    clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                                    %clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                                 end;
                             end;
                         end;
@@ -3718,7 +3923,7 @@ if cons == 1 || abs == 1
                     summary(1,end+1)=mean_r;
                     cols{1,end+1} = sprintf('mean_ICCcon%s_%d_split',str,ind_runs);
                 end;
-                clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj target_img
+                %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj target_img
                
                 if nr_para > 0
                     for i_par = 1:nr_para
@@ -3844,7 +4049,7 @@ if cons == 1 || abs == 1
 
                         
                         % computing average ICC
-                        fprintf('...computing average ICC for parametric regressor in session %d...',ind_runs)
+                        fprintf('...computing average ICC for parametric regressor in session %d... \n',ind_runs)
                         %compute z mean and inverse Fisher's transformation
                         if abs == 1
                             mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
@@ -3858,7 +4063,7 @@ if cons == 1 || abs == 1
                             summary(1,end+1)=mean_r;
                             cols{1,end+1} = sprintf('mean_ICCcon%s_par%d_%d_split',str,i_par,ind_runs);
                         end;
-                        clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                        %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                     end;
                 end;
             end;
@@ -3936,9 +4141,10 @@ if cons == 1 || abs == 1
                 clear temp
                 
                 %calculate ICCs
-                fprintf('...calculate ICC between contrasts for session %d...',ind_runs);
                 
                 for ind_voxel = 1:nr_vox
+                    fprintf('...calculate ICC in voxel nr %d between contrasts for session %d..\n.',ind_voxel,ind_runs);
+
                     data = data1(ind_voxel,:,1);
                     data = [data;data1(ind_voxel,:,2)];
                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
@@ -3952,7 +4158,7 @@ if cons == 1 || abs == 1
                         voxICC_con=(BMS-EMS)./(BMS+(2-1).*EMS);
                         ICC_con_ROI(ind_voxel,1) = voxICC_con;
                         z_ICC_con_ROI(ind_voxel,1) = .5.*log((1+voxICC_con)./(1-voxICC_con));
-                    end;
+                    end
                     
                     %absolute agreement
                     if abs==1
@@ -3960,8 +4166,9 @@ if cons == 1 || abs == 1
                             2.* (JMS-EMS)./nr_subj);
                         ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
                         z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
-                    end;
-                end;
+                    end
+                    clear data
+                end
                 
                 disp('...saving ICC images...')
                 ICC_con_ROI = reshape(ICC_con_ROI,x,y,z);
@@ -4037,7 +4244,7 @@ if cons == 1 || abs == 1
                 
                 
                 % computing average ICC
-                fprintf('...computing average ICC between conditions in session %d...\n',ind_runs)
+                fprintf('...computing average ICC between contrasts in session %d...\n',ind_runs)
                 %compute z mean and inverse Fisher's transformation
                 if abs == 1
                     mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
@@ -4051,9 +4258,10 @@ if cons == 1 || abs == 1
                     summary(1,end+1)=mean_r;
                     cols{1,end+1} = sprintf('mean_ICCcon%s_%d_between_contrasts',str,ind_runs);
                 end;
-                clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                nr_para = nr_para1 + nr_para2;
                 if nr_para > 0
-                    for i_par = 1:nr_para
+                    i_par = 1;
                     %initiating variables
                     ICC_con_ROI=zeros(nr_vox,1);
                     ICC_abs_ROI=zeros(nr_vox,1);
@@ -4065,7 +4273,6 @@ if cons == 1 || abs == 1
                     voxEMS = zeros(nr_vox,1);
 
                     
-                    fprintf('...calculating ICCs between parametric regressors of contrasts in session %d...',ind_runs)
                 
                     %create data matrix
                     data1=zeros(nr_vox,nr_subj,2);
@@ -4079,6 +4286,7 @@ if cons == 1 || abs == 1
                 
                         %calculate ICCs
                         for ind_voxel = 1:nr_vox
+                            fprintf('...calculating ICCs in voxel nr %d between parametric regressors of contrasts in session %d... \n',ind_voxel,ind_runs)
                             data = data1(ind_voxel,:,1);
                             data = [data;data1(ind_voxel,:,2)];
                             [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
@@ -4101,6 +4309,7 @@ if cons == 1 || abs == 1
                                ICC_abs_ROI(ind_voxel,1) = voxICC_abs;
                                z_ICC_abs_ROI(ind_voxel,1) = .5.*log((1+voxICC_abs)./(1-voxICC_abs));
                           end;
+                          clear data
                        end;
                 
                  disp('...saving ICC images...')
@@ -4176,7 +4385,7 @@ if cons == 1 || abs == 1
 
                 
                 % computing average ICC
-                 fprintf('...computing average ICC for parametric regressor between contrasts in session %d...',ind_runs)
+                 fprintf('...computing average ICC for parametric regressor between contrasts in session %d...\n',ind_runs)
                     %compute z mean and inverse Fisher's transformation
                     if abs == 1
                         mean_z = mean(z_ICC_abs_ROI(~isinf(z_ICC_abs_ROI)),'omitnan');
@@ -4190,13 +4399,12 @@ if cons == 1 || abs == 1
                         summary(1,end+1)=mean_r;
                         cols{1,end+1} = sprintf('mean_ICCcon%s_par%d_%d_between_contrasts',str,i_par,ind_runs);
                     end;
-                clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
-                    end;
+                %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                 end;
             end;
             
             % calculate voxelwise average ICC over all splits
-            disp('...creates average ICC maps over all contrast comparisons of parametric regressors...');
+            disp('...creates average ICC maps over all contrast comparisons of parametric regressors...\n');
             avg_ICC_4D_abs = zeros(nr_vox,runs);
             avg_ICC_4D_con = zeros(nr_vox,runs);
             for i_run = 1:runs
@@ -4242,7 +4450,6 @@ if cons == 1 || abs == 1
             
             % ICCs within contrast over sessions
             for ind_con = 1:2
-                fprintf('...calculating ICC within contrast %d over all sessions...\n',ind_con)
                 eval(sprintf('con=con%d;',ind_con));
                 eval(sprintf('con_count = con%d_count;',ind_con));
                 count_comp = 0;
@@ -4269,6 +4476,8 @@ if cons == 1 || abs == 1
                 
                 %calculate ICCs
                 for ind_voxel = 1:nr_vox
+                    fprintf('...calculating ICC in voxel nr %d within contrast %d over all sessions...\n',ind_voxel,ind_con)
+
                     for ind_runs = 1:runs
                         if ind_runs == 1
                             data = data1(ind_voxel,:,ind_runs);
@@ -4385,9 +4594,8 @@ if cons == 1 || abs == 1
                     summary(1,end+1)=mean_r;
                     cols{1,end+1} = sprintf('mean_ICCcon%s_con%d',str,con_count);
                 end;
-            clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+            %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
             if nr_para > 0
-                fprintf('...calculating ICC for parametric regressor within contrast %d over all sessions...',ind_con)
             
                 for i_par = 1:nr_para
                 %initiating variables
@@ -4414,6 +4622,8 @@ if cons == 1 || abs == 1
             
                     %calculate ICCs
                     for ind_voxel = 1:nr_vox
+                         fprintf('...calculating ICC for voxel nr %d for parametric regressor within contrast %d over all sessions...\n',ind_voxel, ind_con)
+
                         for ind_runs = 1:runs
                             if ind_runs == 1
                                 data = data1(ind_voxel,:,ind_runs);
@@ -4563,9 +4773,10 @@ if cons == 1 || abs == 1
                     for ind_run = 1:runs
                         for ind_sec = 1:runs-1
                             if ind_run + ind_sec <= runs
-                                fprintf('...calculating ICC within contrast %d between session %d and %d...',con_count,ind_run, ind_run+ind_sec)
                                 
                                 for ind_vox = 1:nr_vox
+                                    fprintf('...calculating ICC in voxel nr %d within contrast %d between session %d and %d...',ind_vox,con_count,ind_run, ind_run+ind_sec)
+
                                     data1 = data(ind_vox,:,ind_run);
                                     data1 = [data1,data(ind_vox,:,ind_run+ind_sec)];    
                                     [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data1);
@@ -4683,7 +4894,7 @@ if cons == 1 || abs == 1
                                     summary(1,end+1)=mean_r;
                                     cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_con%d',str,ind_run,ind_run+ind_sec,con_count);
                                 end;
-                                clearvars ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                                % clearvars ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                             end;
                         end;
                     end;
@@ -4833,7 +5044,7 @@ if cons == 1 || abs == 1
                                 summary(1,end+1)=mean_r;
                                 cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_par%d_con%d',str,ind_run,ind_run+ind_sec,ind_para,con_count);
                             end;
-                        clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                        %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                              end;
                         end;
                     end;
@@ -4986,7 +5197,7 @@ if cons == 1 || abs == 1
                 summary(1,end+1)=mean_r;
                 cols{1,end+1} = sprintf('mean_ICCcon%s',str);
             end;
-            clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+            %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
             
             %calculation ICC for each comparison
             if runs > 1
@@ -5134,7 +5345,7 @@ if cons == 1 || abs == 1
                                 summary(1,end+1)=mean_r;
                                 cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d',str,ind_run,ind_run+ind_sec);
                             end;
-                            clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                            %clear ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                             
                         end;
                     end;
@@ -5277,7 +5488,7 @@ if cons == 1 || abs == 1
                     summary(1,end+1)=mean_r;
                     cols{1,end+1} = sprintf('mean_ICCcon%s_%d_between_conditions',str,ind_runs);
                 end;
-                clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                 
             end;
             
@@ -5473,7 +5684,7 @@ if cons == 1 || abs == 1
                     cols{1,end+1} = sprintf('mean_ICCcon%s_%s',str,conditions{ind_con,1});
                 end;
             end;
-            clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+            %clearvars data ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
             
             
             %calculation ICC for each comparison
@@ -5622,7 +5833,7 @@ if cons == 1 || abs == 1
                                     summary(1,end+1)=mean_r;
                                     cols{1,end+1} = sprintf('mean_ICCcon%s_%d_%d_%s',str,ind_run,ind_run+ind_sec,conditions{ind_cons,1});
                                 end;
-                                clearvars ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
+                                %clearvars ICC_con_ROI ICC_abs_ROI z_ICC_con_ROI z_ICC_abs_ROI ROI_subj
                             end;
                         end;
                     end;

@@ -151,7 +151,7 @@ subjects = study_design.subject_list;
 load(subjects);
 nr_subj = str2double(study_design.number_subjects);
 stats_path = study_design.stats_path;
-runs = str2double(study_design.number_sessions);
+runs = study_design.number_sessions;
 stats_dir = study_design.stats_directory;
 
 % get GUI input

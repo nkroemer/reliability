@@ -170,7 +170,9 @@ if two_cons==1
     %con1 
     Four_D = load_untouch_nii(sprintf('4D_%s_1.nii',con1));
     beta_subj = zeros(nr_subj,1);
-
+    if ~isa(Four_D.img,'double')
+        Four_D.img = double(Four_D.img);
+    end
     for i_subj = 1:nr_subj
         subj=Four_D.img(:,:,:,i_subj);
         beta_subj(i_subj,1)=mean(subj(:),'omitnan');
@@ -181,6 +183,9 @@ if two_cons==1
     Four_D = load_untouch_nii(sprintf('4D_%s_1.nii',con2));
     beta_subj = zeros(nr_subj,1);
     %con2
+    if ~isa(Four_D.img,'double')
+        Four_D.img = double(Four_D.img);
+    end    
     for i_subj = 1:nr_subj
         subj=Four_D.img(:,:,:,i_subj);
         beta_subj(i_subj,1)=mean(subj(:),'omitnan');
@@ -192,7 +197,9 @@ else
     
     Four_D = load_untouch_nii('4D_1.nii');
     beta_subj = zeros(nr_subj,1);
-
+    if ~isa(Four_D.img,'double')
+        Four_D.img = double(Four_D.img);
+    end
     for i_subj = 1:nr_subj
         subj=Four_D.img(:,:,:,i_subj);
         beta_subj(i_subj,1)=mean(subj(:),'omitnan');
@@ -207,6 +214,9 @@ if nr_para > 0
     for i_par = 1:nr_para
     Four_D = load_untouch_nii(sprintf('4D_par%d_1.nii',i_par));
     beta_subj = zeros(nr_subj,1);
+    if ~isa(Four_D.img,'double')
+        Four_D.img = double(Four_D.img);
+    end
     for i_subj = 1:nr_subj
         subj=Four_D.img(:,:,:,i_subj);
         beta_subj(i_subj,1)=mean(subj(:),'omitnan');

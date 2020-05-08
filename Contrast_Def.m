@@ -311,7 +311,7 @@ if exStats == 1
         else
             con = con(1).name;
             contrast_def.contrast = con;        
-        end;
+        end
         
         spmmat = [path f id{1} f stats_filled f 'SPM.mat'];
         load(spmmat);        
@@ -320,28 +320,41 @@ if exStats == 1
                 for ind_c = 1:length(SPM.xCon(i).c)
                     if SPM.xCon(i).c(ind_c) == 1
                         idx = ind_c;
-                    end;
-                end;
-            end;
-        end;
+                    end
+                end
+            end
+        end
         contrast_def.number_regressor = idx;    
         [pathstr,name,ext] = fileparts(con);
         contrast_def.contrast_number = str2double(regexp(con,'[\d]+','match'));
         contrast_def.contrast_format = ext;
         
         % info parametric modulators
-        if strcmp(SPM.Sess(1).U(idx).P(1).name,'none')
+        count_regressors = 0; % to identify idx in SPM.U.Sess 
+        for i_U = 1:length(SPM.Sess.U)
+            if count_regressors < idx-length(SPM.Sess.U(i_U).name)
+                count_regressors = length(SPM.Sess.U(i_U).name) + count_regressors; 
+            else
+                for i_temp = 1:length(SPM.Sess.U(i_U).name)
+                    count_regressors = i_temp + count_regressors;
+                    if count_regressors == idx
+                        xcon_idx = i_U;
+                    end
+                end
+            end
+        end
+        if strcmp(SPM.Sess(1).U(xcon_idx).P(1).name,'none')
             study_design.number_parametric = 0;
             contrast_def.number_parametric = 0;
 
             nr_para = 0;
         else
-            nr_para = size(SPM.Sess(1).U(idx).P,2);
+            nr_para = size(SPM.Sess(1).U(xcon_idx).P,2);
             study_design.number_parametric = nr_para;
             contrast_def.number_parametric = nr_para;            
         end;
         cd(dir_results)
-        save(name_design,'study_design');
+        save([dir_results name_design],'study_design');
     elseif two_cons == 1 
         con1=get(handles.con1,'String');
         contrast_def.contrast1 = con1;        
@@ -539,6 +552,7 @@ if two_cons == 0
     
     % run batch
     disp('...runs batch...');
+    spm_jobman('initcfg');
     spm_jobman('serial','batch_3D-4D.mat');
 
     % go to results folder 

@@ -1131,6 +1131,9 @@ else
         % calculate T statistics via 4D images
         tmp = load_untouch_nii(sprintf('4D_%d.nii',j));
         tmp = tmp.img;
+        if ~isa(tmp,'double')
+            tmp = double(tmp);
+        end
         % Get standard error of beta maps
             Beta_sd = std(tmp,0,4);  
             Beta_se = Beta_sd / sqrt(nr_subj);
@@ -1217,6 +1220,9 @@ else
                 % calculate T statistics via 4D images
                 tmp = load_untouch_nii(sprintf('4D_par%d_%d.nii',ind_para,j));
                 tmp = tmp.img;
+                if ~isa(tmp,'double')
+                    tmp = double(tmp);
+                end
                 % Get standard error of beta maps
                     Beta_sd = std(tmp,0,4);  
                     Beta_se = Beta_sd / sqrt(nr_subj);
@@ -1305,6 +1311,9 @@ else
         % calculate T statistics via 4D images
         tmp = load_untouch_nii(sprintf('4D_split%d_%d.nii',ind_split,j));
         tmp = tmp.img;
+        if ~isa(tmp,'double')
+            tmp = double(tmp);
+        end
         % Get standard error of beta maps
             Beta_sd = std(tmp,0,4);  
             Beta_se = Beta_sd / sqrt(nr_subj);
@@ -1384,6 +1393,9 @@ else
                 % calculate T statistics via 4D images
                 tmp = load_untouch_nii(sprintf('4D_split%d_par%d_%d.nii',ind_split,ind_para,j));
                 tmp = tmp.img;
+                if ~isa(tmp,'double')
+                    tmp = double(tmp);
+                end
                 % Get standard error of beta maps
                     Beta_sd = std(tmp,0,4);  
                     Beta_se = Beta_sd / sqrt(nr_subj);
@@ -1466,6 +1478,9 @@ else
                 % calculate T statistics via 4D images
                 tmp = load_untouch_nii(sprintf('4D_%s_%d.nii',con_temp,j));
                 tmp = tmp.img;
+                if ~isa(tmp,'double')
+                    tmp = double(tmp);
+                end
                 % Get standard error of beta maps
                     Beta_sd = std(tmp,0,4);  
                     Beta_se = Beta_sd / sqrt(nr_subj);
@@ -1591,6 +1606,9 @@ else
                     % calculate T statistics via 4D images
                     tmp = load_untouch_nii(sprintf('4D_%s_par%d_%d.nii',con_temp,ind_para,j));
                     tmp = tmp.img;
+                    if ~isa(tmp,'double')
+                        tmp = double(tmp);
+                    end
                     % Get standard error of beta maps
                         Beta_sd = std(tmp,0,4);  
                         Beta_se = Beta_sd / sqrt(nr_subj);

@@ -223,7 +223,7 @@ use_icc = get(handles.use_icc,'value');
 %get study design info
 results_dir = study_design.results_directory;
 stats_path = study_design.stats_path;
-runs = str2double(study_design.number_sessions);
+runs = study_design.number_sessions;
 load(study_design.subject_list); % loads id list
 stats_filled = sprintf(study_design.stats_directory,1);
 two_cons = contrast_def.two_contrasts;
@@ -251,6 +251,7 @@ atlas_compl = [atlas_dir f atlas_name];
     save('batch_reslice_atlas','matlabbatch');
 
     % run batch
+    spm_jobman('initcfg');
     spm_jobman('serial',matlabbatch);
 
 % load resliced atlas
@@ -432,6 +433,10 @@ for count_runs = 1:runs
     else
         file = sprintf('4D_%d.nii',count_runs);
         eval(sprintf('FourD_%d = load_untouch_nii(file);',count_runs));
+        if ~isa(FourD_1,'double')
+        eval(sprintf('FourD_%d.img = double(FourD_%d.img);',count_runs,count_runs));
+            
+        end
     end;
 end;
 
