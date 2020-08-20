@@ -331,11 +331,11 @@ if exStats == 1
         
         % info parametric modulators
         count_regressors = 0; % to identify idx in SPM.U.Sess 
-        for i_U = 1:length(SPM.Sess.U)
-            if count_regressors < idx-length(SPM.Sess.U(i_U).name)
-                count_regressors = length(SPM.Sess.U(i_U).name) + count_regressors; 
+        for i_U = 1:length(SPM.Sess(1).U)
+            if count_regressors < idx-length(SPM.Sess(1).U(i_U).name)
+                count_regressors = length(SPM.Sess(1).U(i_U).name) + count_regressors; 
             else
-                for i_temp = 1:length(SPM.Sess.U(i_U).name)
+                for i_temp = 1:length(SPM.Sess(1).U(i_U).name)
                     count_regressors = i_temp + count_regressors;
                     if count_regressors == idx
                         xcon_idx = i_U;
@@ -376,18 +376,18 @@ if exStats == 1
 
         % info parametric modulators 
         new_idx = 0;
-        for count = 1:length(SPM.Sess.U)
+        for count = 1:length(SPM.Sess(1).U)
             if new_idx == idx
                 Uidx = count;
             end;
-            if length(SPM.Sess.U(count).name)>1
-                for count2 = 1:(length(SPM.Sess.U(count).name)-1)
+            if length(SPM.Sess(1).U(count).name)>1
+                for count2 = 1:(length(SPM.Sess(1).U(count).name)-1)
                     if new_idx+count2 == idx
                         Uidx = count;
                     end;
                 end; 
             end;    
-            new_idx = new_idx + length(SPM.Sess.U(count).name);        
+            new_idx = new_idx + length(SPM.Sess(1).U(count).name);        
         end; 
         contrast_def.Uidx1 = Uidx;
 
@@ -419,18 +419,18 @@ if exStats == 1
 
         % info parametric modulators 
         new_idx = 0;
-        for count = 1:length(SPM.Sess.U)
+        for count = 1:length(SPM.Sess(1).U)
             if new_idx == idx
                 Uidx = count;
             end;
-            if length(SPM.Sess.U(count).name)>1
-                for count2 = 1:(length(SPM.Sess.U(count).name)-1)
+            if length(SPM.Sess(1).U(count).name)>1
+                for count2 = 1:(length(SPM.Sess(1).U(count).name)-1)
                     if new_idx+count2 == idx
                         Uidx = count;
                     end;
                 end; 
             end;    
-            new_idx = new_idx + length(SPM.Sess.U(count).name);        
+            new_idx = new_idx + length(SPM.Sess(1).U(count).name);        
         end;
         contrast_def.Uidx2 = Uidx;
         
