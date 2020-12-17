@@ -936,6 +936,7 @@ for m = 1:runs
                 end;
             end;  
         else
+            cons = {};
             for ind_cons = 1:length(con_vec)
                 if  eval(sprintf('nr_para_reg%d>0',ind_cons))
                     nr_para = eval(sprintf('nr_para_reg%d',ind_cons));
@@ -946,7 +947,7 @@ for m = 1:runs
                         eval(sprintf('cons{o}=con%d;',o));
                     end;
                 else
-                    cons = {};
+                    %cons = {};
                         con = con_vec(1,ind_cons);
                         eval(sprintf('con%d_1=zeros(size(SPM.xX.xKXs.X,2),1);',ind_cons));
                         eval(sprintf('con%d_1(%d,1)=1;',ind_cons,con+ind_cons-1));
@@ -1016,12 +1017,13 @@ for m = 1:runs
             for i = 1:length(con_vec)
                 length_vec = length_vec + 1 + eval(sprintf('nr_para_reg%d',i));
             end;           
-            vec=1:length(vec);      
+            %vec=1:length(vec);      
+            vec=1:length_vec;
         end;
         SPM = spm_contrasts(SPM,vec);
 
         save SPM.mat SPM;
-        clearvars -except box_path f nr_subj new_dir split_dir split_name con_vec study_design oldpointer handles run runs count id n con par path name con1 con2 con3 con4 cwd SPM_list nr_para stats_path stats_dir m o p q r s;
+        clearvars -except box_path f nr_subj new_dir split_dir split_name con_vec study_design oldpointer handles run runs count id n con par path name con1 con2 con3 con4 cwd SPM_list nr_para nr_para_reg1 nr_para_reg2 stats_path stats_dir m o p q r s;
         fprintf('...new statistic for %s in session %d done...\n',id{count},m);
     end;
 end;
