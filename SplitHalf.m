@@ -452,7 +452,7 @@ for m = 1:runs
                     eval(sprintf('Sess(sess_count).U(con+1) = U_%d(2);',ind_con));
                     if ind_con ~= length(con_vec)
                         next_con = con_vec(1,ind_con+1);
-                        Sess(sess_count).U(con+2:next_con-1) = SPM.Sess(sess_count).U(con+1:next_con-1);
+                        Sess(sess_count).U(con+2) = SPM.Sess(sess_count).U(con+1:next_con-1);
                     else
                         U_rest = SPM.Sess(sess_count).U(con+1:end);
                         if length(U_rest) ~= 0
