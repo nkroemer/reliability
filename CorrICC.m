@@ -3264,14 +3264,14 @@ if cons == 1 || abs == 1
             voxEMS = reshape(voxEMS,x,y,z);
             
             if roi == 1
-                ICC_con_ROI(~r_roi_ind)=0;
-                z_ICC_con_ROI(~r_roi_ind)=0;
-                ICC_abs_ROI(~r_roi_ind)=0;
-                z_ICC_abs_ROI(~r_roi_ind)=0;
-                voxBMS(~r_roi_ind)=0;
-                voxWMS(~r_roi_ind)=0;
-                voxJMS(~r_roi_ind)=0;
-                voxEMS(~r_roi_ind)=0;
+                ICC_con_ROI(~r_roi_ind)=NaN;
+                z_ICC_con_ROI(~r_roi_ind)=NaN;
+                ICC_abs_ROI(~r_roi_ind)=NaN;
+                z_ICC_abs_ROI(~r_roi_ind)=NaN;
+                voxBMS(~r_roi_ind)=NaN;
+                voxWMS(~r_roi_ind)=NaN;
+                voxJMS(~r_roi_ind)=NaN;
+                voxEMS(~r_roi_ind)=NaN;
             end;
             
             % save ICC maps
@@ -3405,14 +3405,14 @@ if cons == 1 || abs == 1
                     voxJMS = reshape(voxJMS,x,y,z);
                     voxEMS = reshape(voxEMS,x,y,z);
                     if roi == 1
-                        ICC_con_ROI(~r_roi_ind)=0;
-                        z_ICC_con_ROI(~r_roi_ind)=0;
-                        ICC_abs_ROI(~r_roi_ind)=0;
-                        z_ICC_abs_ROI(~r_roi_ind)=0;
-                        voxBMS(~r_roi_ind)=0;
-                        voxWMS(~r_roi_ind)=0;
-                        voxJMS(~r_roi_ind)=0;
-                        voxEMS(~r_roi_ind)=0;
+                        ICC_con_ROI(~r_roi_ind)=NaN;
+                        z_ICC_con_ROI(~r_roi_ind)=NaN;
+                        ICC_abs_ROI(~r_roi_ind)=NaN;
+                        z_ICC_abs_ROI(~r_roi_ind)=NaN;
+                        voxBMS(~r_roi_ind)=NaN;
+                        voxWMS(~r_roi_ind)=NaN;
+                        voxJMS(~r_roi_ind)=NaN;
+                        voxEMS(~r_roi_ind)=NaN;
                     end;
                     
                     % save ICC maps
@@ -3545,14 +3545,14 @@ if cons == 1 || abs == 1
                             voxEMS = reshape(voxEMS,x,y,z);
                             
                             if roi == 1
-                                ICC_con_ROI(~r_roi_ind)=0;
-                                z_ICC_con_ROI(~r_roi_ind)=0;
-                                ICC_abs_ROI(~r_roi_ind)=0;
-                                z_ICC_abs_ROI(~r_roi_ind)=0;
-                                voxBMS(~r_roi_ind)=0;
-                                voxEMS(~r_roi_ind)=0;
-                                voxJMS(~r_roi_ind)=0;
-                                voxWMS(~r_roi_ind)=0;
+                                ICC_con_ROI(~r_roi_ind)=NaN;
+                                z_ICC_con_ROI(~r_roi_ind)=NaN;
+                                ICC_abs_ROI(~r_roi_ind)=NaN;
+                                z_ICC_abs_ROI(~r_roi_ind)=NaN;
+                                voxBMS(~r_roi_ind)=NaN;
+                                voxEMS(~r_roi_ind)=NaN;
+                                voxJMS(~r_roi_ind)=NaN;
+                                voxWMS(~r_roi_ind)=NaN;
                             end
                             
                             % save ICC maps
@@ -3699,10 +3699,10 @@ if cons == 1 || abs == 1
                                     voxWMS = reshape(z_ICC_abs_ROI,x,y,z);
                                     
                                     if roi == 1
-                                        ICC_con_ROI(~r_roi_ind)=0;
-                                        z_ICC_con_ROI(~r_roi_ind)=0;
-                                        ICC_abs_ROI(~r_roi_ind)=0;
-                                        z_ICC_abs_ROI(~r_roi_ind)=0;
+                                        ICC_con_ROI(~r_roi_ind)=NaN;
+                                        z_ICC_con_ROI(~r_roi_ind)=NaN;
+                                        ICC_abs_ROI(~r_roi_ind)=NaN;
+                                        z_ICC_abs_ROI(~r_roi_ind)=NaN;
                                     end;
                                     
                                     % save ICC maps
@@ -3844,20 +3844,20 @@ if cons == 1 || abs == 1
                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                 if roi == 1
-                    ICC_con_ROI(~r_roi_ind)=0;
-                    z_ICC_con_ROI(~r_roi_ind)=0;
-                    ICC_abs_ROI(~r_roi_ind)=0;
-                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                    ICC_con_ROI(~r_roi_ind)=NaN;
+                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                 end;
                 voxBMS = reshape(voxBMS,x,y,z);
                 voxEMS = reshape(voxEMS,x,y,z);
                 voxJMS = reshape(voxJMS,x,y,z);
                 voxWMS = reshape(voxWMS,x,y,z);
                 if roi == 1
-                    voxBMS(~r_roi_ind)=0;
-                    voxWMS(~r_roi_ind)=0;
-                    voxEMS(~r_roi_ind)=0;
-                    voxJMS(~r_roi_ind)=0;
+                    voxBMS(~r_roi_ind)=NaN;
+                    voxWMS(~r_roi_ind)=NaN;
+                    voxEMS(~r_roi_ind)=NaN;
+                    voxJMS(~r_roi_ind)=NaN;
                 end;                
                 
                 
@@ -3982,10 +3982,10 @@ if cons == 1 || abs == 1
                         z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                         z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                         if roi == 1
-                            ICC_con_ROI(~r_roi_ind)=0;
-                            z_ICC_con_ROI(~r_roi_ind)=0;
-                            ICC_abs_ROI(~r_roi_ind)=0;
-                            z_ICC_abs_ROI(~r_roi_ind)=0;
+                            ICC_con_ROI(~r_roi_ind)=NaN;
+                            z_ICC_con_ROI(~r_roi_ind)=NaN;
+                            ICC_abs_ROI(~r_roi_ind)=NaN;
+                            z_ICC_abs_ROI(~r_roi_ind)=NaN;
                         end;
                         
                         voxBMS = reshape(voxBMS,x,y,z);
@@ -3993,10 +3993,10 @@ if cons == 1 || abs == 1
                         voxJMS = reshape(voxJMS,x,y,z);
                         voxWMS = reshape(voxWMS,x,y,z);
                         if roi == 1
-                            voxBMS(~r_roi_ind)=0;
-                            voxWMS(~r_roi_ind)=0;
-                            voxEMS(~r_roi_ind)=0;
-                            voxJMS(~r_roi_ind)=0;
+                            voxBMS(~r_roi_ind)=NaN;
+                            voxWMS(~r_roi_ind)=NaN;
+                            voxEMS(~r_roi_ind)=NaN;
+                            voxJMS(~r_roi_ind)=NaN;
                         end;  
 
                         
@@ -4176,10 +4176,10 @@ if cons == 1 || abs == 1
                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                 if roi == 1
-                    ICC_con_ROI(~r_roi_ind)=0;
-                    z_ICC_con_ROI(~r_roi_ind)=0;
-                    ICC_abs_ROI(~r_roi_ind)=0;
-                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                    ICC_con_ROI(~r_roi_ind)=NaN;
+                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                 end;
                 
                 voxBMS = reshape(voxBMS,x,y,z);
@@ -4187,10 +4187,10 @@ if cons == 1 || abs == 1
                 voxJMS = reshape(voxJMS,x,y,z);
                 voxWMS = reshape(voxWMS,x,y,z);
                 if roi == 1
-                    voxBMS(~r_roi_ind)=0;
-                    voxWMS(~r_roi_ind)=0;
-                    voxEMS(~r_roi_ind)=0;
-                    voxJMS(~r_roi_ind)=0;
+                    voxBMS(~r_roi_ind)=NaN;
+                    voxWMS(~r_roi_ind)=NaN;
+                    voxEMS(~r_roi_ind)=NaN;
+                    voxJMS(~r_roi_ind)=NaN;
                 end;  
                 
                 
@@ -4318,10 +4318,10 @@ if cons == 1 || abs == 1
                  z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                  z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                  if roi == 1
-                     ICC_con_ROI(~r_roi_ind)=0;
-                     z_ICC_con_ROI(~r_roi_ind)=0;
-                     ICC_abs_ROI(~r_roi_ind)=0;
-                     z_ICC_abs_ROI(~r_roi_ind)=0;
+                     ICC_con_ROI(~r_roi_ind)=NaN;
+                     z_ICC_con_ROI(~r_roi_ind)=NaN;
+                     ICC_abs_ROI(~r_roi_ind)=NaN;
+                     z_ICC_abs_ROI(~r_roi_ind)=NaN;
                  end;
                  
                 voxBMS = reshape(voxBMS,x,y,z);
@@ -4329,10 +4329,10 @@ if cons == 1 || abs == 1
                 voxJMS = reshape(voxJMS,x,y,z);
                 voxWMS = reshape(voxWMS,x,y,z);
                 if roi == 1
-                    voxBMS(~r_roi_ind)=0;
-                    voxWMS(~r_roi_ind)=0;
-                    voxEMS(~r_roi_ind)=0;
-                    voxJMS(~r_roi_ind)=0;
+                    voxBMS(~r_roi_ind)=NaN;
+                    voxWMS(~r_roi_ind)=NaN;
+                    voxEMS(~r_roi_ind)=NaN;
+                    voxJMS(~r_roi_ind)=NaN;
                 end;  
 
                 
@@ -4514,10 +4514,10 @@ if cons == 1 || abs == 1
                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                 if roi == 1
-                    ICC_con_ROI(~r_roi_ind)=0;
-                    z_ICC_con_ROI(~r_roi_ind)=0;
-                    ICC_abs_ROI(~r_roi_ind)=0;
-                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                    ICC_con_ROI(~r_roi_ind)=NaN;
+                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                 end;
 
                 voxBMS = reshape(voxBMS,x,y,z);
@@ -4525,10 +4525,10 @@ if cons == 1 || abs == 1
                 voxJMS = reshape(voxJMS,x,y,z);
                 voxWMS = reshape(voxWMS,x,y,z);
                 if roi == 1
-                    voxBMS(~r_roi_ind)=0;
-                    voxWMS(~r_roi_ind)=0;
-                    voxEMS(~r_roi_ind)=0;
-                    voxJMS(~r_roi_ind)=0;
+                    voxBMS(~r_roi_ind)=NaN;
+                    voxWMS(~r_roi_ind)=NaN;
+                    voxEMS(~r_roi_ind)=NaN;
+                    voxJMS(~r_roi_ind)=NaN;
                 end;  
                 
                 % save ICC maps
@@ -4659,10 +4659,10 @@ if cons == 1 || abs == 1
              z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
              z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
              if roi == 1
-                 ICC_con_ROI(~r_roi_ind)=0;
-                 z_ICC_con_ROI(~r_roi_ind)=0;
-                 ICC_abs_ROI(~r_roi_ind)=0;
-                 z_ICC_abs_ROI(~r_roi_ind)=0;
+                 ICC_con_ROI(~r_roi_ind)=NaN;
+                 z_ICC_con_ROI(~r_roi_ind)=NaN;
+                 ICC_abs_ROI(~r_roi_ind)=NaN;
+                 z_ICC_abs_ROI(~r_roi_ind)=NaN;
              end;
              
              voxBMS = reshape(voxBMS,x,y,z);
@@ -4670,10 +4670,10 @@ if cons == 1 || abs == 1
              voxJMS = reshape(voxJMS,x,y,z);
              voxWMS = reshape(voxWMS,x,y,z);
              if roi == 1
-                 voxBMS(~r_roi_ind)=0;
-                 voxWMS(~r_roi_ind)=0;
-                 voxEMS(~r_roi_ind)=0;
-                 voxJMS(~r_roi_ind)=0;
+                 voxBMS(~r_roi_ind)=NaN;
+                 voxWMS(~r_roi_ind)=NaN;
+                 voxEMS(~r_roi_ind)=NaN;
+                 voxJMS(~r_roi_ind)=NaN;
              end;
             
              % save ICC maps
@@ -4808,10 +4808,10 @@ if cons == 1 || abs == 1
                                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                                 if roi == 1
-                                    ICC_con_ROI(~r_roi_ind)=0;
-                                    z_ICC_con_ROI(~r_roi_ind)=0;
-                                    ICC_abs_ROI(~r_roi_ind)=0;
-                                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                                    ICC_con_ROI(~r_roi_ind)=NaN;
+                                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                                 end;
                                                                 
                                 voxBMS = reshape(voxBMS,x,y,z);
@@ -4819,10 +4819,10 @@ if cons == 1 || abs == 1
                                 voxJMS = reshape(voxJMS,x,y,z);
                                 voxWMS = reshape(voxWMS,x,y,z);
                                 if roi == 1
-                                    voxBMS(~r_roi_ind)=0;
-                                    voxWMS(~r_roi_ind)=0;
-                                    voxEMS(~r_roi_ind)=0;
-                                    voxJMS(~r_roi_ind)=0;
+                                    voxBMS(~r_roi_ind)=NaN;
+                                    voxWMS(~r_roi_ind)=NaN;
+                                    voxEMS(~r_roi_ind)=NaN;
+                                    voxJMS(~r_roi_ind)=NaN;
                                 end;
 
                                 
@@ -4959,10 +4959,10 @@ if cons == 1 || abs == 1
                          z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                          z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                          if roi == 1
-                             ICC_con_ROI(~r_roi_ind)=0;
-                             z_ICC_con_ROI(~r_roi_ind)=0;
-                             ICC_abs_ROI(~r_roi_ind)=0;
-                             z_ICC_abs_ROI(~r_roi_ind)=0;
+                             ICC_con_ROI(~r_roi_ind)=NaN;
+                             z_ICC_con_ROI(~r_roi_ind)=NaN;
+                             ICC_abs_ROI(~r_roi_ind)=NaN;
+                             z_ICC_abs_ROI(~r_roi_ind)=NaN;
                          end;
                          
                          voxBMS = reshape(voxBMS,x,y,z);
@@ -4970,10 +4970,10 @@ if cons == 1 || abs == 1
                          voxJMS = reshape(voxJMS,x,y,z);
                          voxWMS = reshape(voxWMS,x,y,z);
                          if roi == 1
-                             voxBMS(~r_roi_ind)=0;
-                             voxWMS(~r_roi_ind)=0;
-                             voxEMS(~r_roi_ind)=0;
-                             voxJMS(~r_roi_ind)=0;
+                             voxBMS(~r_roi_ind)=NaN;
+                             voxWMS(~r_roi_ind)=NaN;
+                             voxEMS(~r_roi_ind)=NaN;
+                             voxJMS(~r_roi_ind)=NaN;
                          end;
 
                 
@@ -5115,10 +5115,10 @@ if cons == 1 || abs == 1
             z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
             z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
             if roi == 1
-                ICC_con_ROI(~r_roi_ind)=0;
-                z_ICC_con_ROI(~r_roi_ind)=0;
-                ICC_abs_ROI(~r_roi_ind)=0;
-                z_ICC_abs_ROI(~r_roi_ind)=0;
+                ICC_con_ROI(~r_roi_ind)=NaN;
+                z_ICC_con_ROI(~r_roi_ind)=NaN;
+                ICC_abs_ROI(~r_roi_ind)=NaN;
+                z_ICC_abs_ROI(~r_roi_ind)=NaN;
             end;
             
             voxBMS = reshape(voxBMS,x,y,z);
@@ -5126,10 +5126,10 @@ if cons == 1 || abs == 1
             voxJMS = reshape(voxJMS,x,y,z);
             voxWMS = reshape(voxWMS,x,y,z);
             if roi == 1
-                voxBMS(~r_roi_ind)=0;
-                voxWMS(~r_roi_ind)=0;
-                voxEMS(~r_roi_ind)=0;
-                voxJMS(~r_roi_ind)=0;
+                voxBMS(~r_roi_ind)=NaN;
+                voxWMS(~r_roi_ind)=NaN;
+                voxEMS(~r_roi_ind)=NaN;
+                voxJMS(~r_roi_ind)=NaN;
             end;
 
             
@@ -5259,10 +5259,10 @@ if cons == 1 || abs == 1
                             z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                             z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                             if roi == 1
-                                ICC_con_ROI(~r_roi_ind)=0;
-                                z_ICC_con_ROI(~r_roi_ind)=0;
-                                ICC_abs_ROI(~r_roi_ind)=0;
-                                z_ICC_abs_ROI(~r_roi_ind)=0;
+                                ICC_con_ROI(~r_roi_ind)=NaN;
+                                z_ICC_con_ROI(~r_roi_ind)=NaN;
+                                ICC_abs_ROI(~r_roi_ind)=NaN;
+                                z_ICC_abs_ROI(~r_roi_ind)=NaN;
                             end;
                             
                             voxBMS = reshape(voxBMS,x,y,z);
@@ -5270,10 +5270,10 @@ if cons == 1 || abs == 1
                             voxJMS = reshape(voxJMS,x,y,z);
                             voxWMS = reshape(voxWMS,x,y,z);
                             if roi == 1
-                                voxBMS(~r_roi_ind)=0;
-                                voxWMS(~r_roi_ind)=0;
-                                voxEMS(~r_roi_ind)=0;
-                                voxJMS(~r_roi_ind)=0;
+                                voxBMS(~r_roi_ind)=NaN;
+                                voxWMS(~r_roi_ind)=NaN;
+                                voxEMS(~r_roi_ind)=NaN;
+                                voxJMS(~r_roi_ind)=NaN;
                             end;  
 
                             
@@ -5404,10 +5404,10 @@ if cons == 1 || abs == 1
                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                 if roi == 1
-                    ICC_con_ROI(~r_roi_ind)=0;
-                    z_ICC_con_ROI(~r_roi_ind)=0;
-                    ICC_abs_ROI(~r_roi_ind)=0;
-                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                    ICC_con_ROI(~r_roi_ind)=NaN;
+                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                 end;
                 
                 voxBMS = reshape(voxBMS,x,y,z);
@@ -5415,10 +5415,10 @@ if cons == 1 || abs == 1
                 voxJMS = reshape(voxJMS,x,y,z);
                 voxWMS = reshape(voxWMS,x,y,z);
                 if roi == 1
-                    voxBMS(~r_roi_ind)=0;
-                    voxWMS(~r_roi_ind)=0;
-                    voxEMS(~r_roi_ind)=0;
-                    voxJMS(~r_roi_ind)=0;
+                    voxBMS(~r_roi_ind)=NaN;
+                    voxWMS(~r_roi_ind)=NaN;
+                    voxEMS(~r_roi_ind)=NaN;
+                    voxJMS(~r_roi_ind)=NaN;
                 end;  
 
                 
@@ -5601,10 +5601,10 @@ if cons == 1 || abs == 1
                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                 if roi == 1
-                    ICC_con_ROI(~r_roi_ind)=0;
-                    z_ICC_con_ROI(~r_roi_ind)=0;
-                    ICC_abs_ROI(~r_roi_ind)=0;
-                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                    ICC_con_ROI(~r_roi_ind)=NaN;
+                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                 end;
                 
                 voxBMS = reshape(voxBMS,x,y,z);
@@ -5612,10 +5612,10 @@ if cons == 1 || abs == 1
                 voxJMS = reshape(voxJMS,x,y,z);
                 voxWMS = reshape(voxWMS,x,y,z);
                 if roi == 1
-                    voxBMS(~r_roi_ind)=0;
-                    voxWMS(~r_roi_ind)=0;
-                    voxEMS(~r_roi_ind)=0;
-                    voxJMS(~r_roi_ind)=0;
+                    voxBMS(~r_roi_ind)=NaN;
+                    voxWMS(~r_roi_ind)=NaN;
+                    voxEMS(~r_roi_ind)=NaN;
+                    voxJMS(~r_roi_ind)=NaN;
                 end;  
                 
                 
@@ -5746,10 +5746,10 @@ if cons == 1 || abs == 1
                                 z_ICC_con_ROI = reshape(z_ICC_con_ROI,x,y,z);
                                 z_ICC_abs_ROI = reshape(z_ICC_abs_ROI,x,y,z);
                                 if roi == 1
-                                    ICC_con_ROI(~r_roi_ind)=0;
-                                    z_ICC_con_ROI(~r_roi_ind)=0;
-                                    ICC_abs_ROI(~r_roi_ind)=0;
-                                    z_ICC_abs_ROI(~r_roi_ind)=0;
+                                    ICC_con_ROI(~r_roi_ind)=NaN;
+                                    z_ICC_con_ROI(~r_roi_ind)=NaN;
+                                    ICC_abs_ROI(~r_roi_ind)=NaN;
+                                    z_ICC_abs_ROI(~r_roi_ind)=NaN;
                                 end;
                                 
                                 
@@ -5758,10 +5758,10 @@ if cons == 1 || abs == 1
                                 voxJMS = reshape(voxJMS,x,y,z);
                                 voxWMS = reshape(voxWMS,x,y,z);
                                 if roi == 1
-                                    voxBMS(~r_roi_ind)=0;
-                                    voxWMS(~r_roi_ind)=0;
-                                    voxEMS(~r_roi_ind)=0;
-                                    voxJMS(~r_roi_ind)=0;
+                                    voxBMS(~r_roi_ind)=NaN;
+                                    voxWMS(~r_roi_ind)=NaN;
+                                    voxEMS(~r_roi_ind)=NaN;
+                                    voxJMS(~r_roi_ind)=NaN;
                                 end;
 
                                 
