@@ -330,29 +330,30 @@ if exStats == 1
         contrast_def.contrast_format = ext;
         
         % info parametric modulators
-        count_regressors = 0; % to identify idx in SPM.U.Sess 
-        for i_U = 1:length(SPM.Sess(1).U)
-            if count_regressors < idx-length(SPM.Sess(1).U(i_U).name)
-                count_regressors = length(SPM.Sess(1).U(i_U).name) + count_regressors; 
-            else
-                for i_temp = 1:length(SPM.Sess(1).U(i_U).name)
-                    count_regressors = i_temp + count_regressors;
-                    if count_regressors == idx
-                        xcon_idx = i_U;
-                    end
-                end
-            end
-        end
-        if strcmp(SPM.Sess(1).U(xcon_idx).P(1).name,'none')
+        new_idx = 0;
+        for count = 1:length(SPM.Sess.U)
+            if new_idx == idx
+                Uidx = count;
+            end;
+            if length(SPM.Sess(1).U(count).name)>1
+                for count2 = 1:(length(SPM.Sess(1).U(count).name)-1)
+                    if new_idx+count2 == idx
+                        Uidx = count;
+                    end;
+                end; 
+            end;    
+            new_idx = new_idx + length(SPM.Sess.U(count).name);        
+        end; 
+        if strcmp(SPM.Sess(1).U(Uidx).P(1).name,'none')
             study_design.number_parametric = 0;
             contrast_def.number_parametric = 0;
-
             nr_para = 0;
         else
-            nr_para = size(SPM.Sess(1).U(xcon_idx).P,2);
+            nr_para = size(SPM.Sess(1).U(Uidx).P,2);
             study_design.number_parametric = nr_para;
             contrast_def.number_parametric = nr_para;            
         end;
+        contrast_def.Uidx = Uidx;
         cd(dir_results)
         save([dir_results name_design],'study_design');
     elseif two_cons == 1 
