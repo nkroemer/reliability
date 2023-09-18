@@ -1452,7 +1452,7 @@ else
 
             %create results table
             results_overlap = [];
-            for k1 = 1:3
+            for k1 = 1:runs
                     eval(sprintf('results_overlap(1,end+1)=[dice_split%d];',k1));
                     eval(sprintf('results_overlap(1,end+1)=[jaccard_split%d];',k1));
             end;
