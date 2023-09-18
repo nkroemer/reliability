@@ -3817,7 +3817,7 @@ if cons == 1 || abs == 1
                     data = data1(ind_voxel,:,1);
                     data = [data;data1(ind_voxel,:,2)];
 
-                    [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data(ind_voxel,:,:));
+                    [BMS,WMS,JMS,EMS] = ICC_computation(nr_subj,2,data);
                     voxBMS(ind_voxel,1) = BMS; % between subject
                     voxWMS(ind_voxel,1) = WMS; % within subject
                     voxEMS(ind_voxel,1) = EMS; % error
