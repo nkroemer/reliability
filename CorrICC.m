@@ -903,7 +903,7 @@ if roi == 1
                         summary(1,end+1)=ICC_abs;
                         cols{1,end+1} = sprintf('ICC_abs_%d_split',i_run);
                         summary(1,end+1)=zICC_abs;
-                        cols{1,end+1} = sprintf('ICC_abs_%d_split',i_run);
+                        cols{1,end+1} = sprintf('zICC_abs_%d_split',i_run);
                     end;
                     clear data
                     
