@@ -1414,7 +1414,7 @@ else
 
                 for count_roi = 1:length(roi_xyz)
                     fprintf('...voxel x = %d .. y = %d .. z = %d ...\n',roi_xyz(1,count_roi),roi_xyz(2,count_roi),roi_xyz(3,count_roi));
-                    for count_sig = 1:length(eval(sprintf('co_sig%d(1,:)',j)))
+                    for count_sig = 1:length(eval(sprintf('co_sig%d_split%d(1,:)',j,ind_split)))
                         if isequal(eval(sprintf('co_sig%d(:,count_sig)',j)),roi_xyz(:,count_roi))
                             eval(sprintf('co_temp(:,end+1)=co_sig%d(:,count_sig);',j));
                             fprintf('...significant...\n');
