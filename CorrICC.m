@@ -923,9 +923,9 @@ if roi == 1
                                 ICC_con=(BMS-EMS)./(BMS+(2-1).*EMS);
                                 zICC_con = .5.*log((1+ICC_con)./(1-ICC_con));
                                 summary(1,end+1)=ICC_con;
-                                cols{1,end+1} = sprintf('ICC_con_par%d_split',i_para);
+                                cols{1,end+1} = sprintf('ICC_con_par%d_%d_split',i_para,i_run);
                                 summary(1,end+1)=zICC_con;
-                                cols{1,end+1} = sprintf('zICC_con_par%d_split',i_para);
+                                cols{1,end+1} = sprintf('zICC_con_par%d_%d_split',i_para,i_run);
                             end;
                             
                             %absolute agreement
@@ -934,9 +934,9 @@ if roi == 1
                                     2.* (JMS-EMS)./nr_subj);
                                 zICC_abs = .5.*log((1+ICC_abs)./(1-ICC_abs));
                                 summary(1,end+1)=ICC_abs;
-                                cols{1,end+1} = sprintf('ICC_abs_par%d_split',i_para);
+                                cols{1,end+1} = sprintf('ICC_abs_par%d_%d_split',i_para,i_run);
                                 summary(1,end+1)=zICC_abs;
-                                cols{1,end+1} = sprintf('zICC_abs_par%d_split',i_para);
+                                cols{1,end+1} = sprintf('zICC_abs_par%d_%d_split',i_para,i_run);
                             end;
                         end;
                     end;
